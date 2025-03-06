@@ -1,1 +1,792 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kegel Exercise Timer</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #42b883;
+            --dark-color: #2c3e50;
+            --light-color: #f9f9f9;
+            --accent-color: #e74c3c;
+            --font-family: 'Arial', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: var(--light-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* Timer Section */
+        .timer-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        /* Visual Timer */
+        .visual-timer-container {
+            width: 250px;
+            height: 250px;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .visual-timer {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #e6e6e6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            transform-origin: center bottom;
+            transition: transform 0.1s linear;
+        }
+
+        .timer-negative {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+            transform-origin: center bottom;
+            transition: transform 0.1s linear;
+        }
+
+        .timer-fill.hold {
+            background-color: var(--primary-color);
+        }
+
+        .timer-fill.relax {
+            background-color: var(--secondary-color);
+        }
+
+        .timer-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .timer-text {
+            font-size: 60px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        .phase-label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: var(--dark-color);
+        }
+
+        .instruction {
+            font-size: 18px;
+            margin: 15px 0;
+            height: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #b3cef2;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section-button {
+            background-color: var(--dark-color);
+        }
+
+        .section-button:hover {
+            background-color: #1a2530;
+        }
+
+        .exercise-button {
+            min-width: 120px;
+        }
+
+        .control-button {
+            width: 100%;
+            max-width: 200px;
+            margin: 5px auto;
+        }
+
+        /* Customize Panel */
+        .customize-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            display: none;
+        }
+
+        .customize-panel h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Content Panels */
+        .content-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            display: none;
+        }
+
+        .content-panel h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .exercise-box {
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 15px 0;
+            background-color: #f5f9ff;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .benefit-card {
+            background-color: #f5f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        /* Blinking Animation */
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .blinking {
+            animation: blink 0.5s infinite;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 12px;
+            background-color: #f1f1f1;
+            margin-top: auto;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Media Queries */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+            
+            .button-container {
+                max-width: 600px;
+                margin: 20px auto;
+            }
+            
+            .customize-panel, .content-panel {
+                max-width: 600px;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Kegel Exercise Timer</h1>
+    </header>
+
+    <div class="container">
+        <!-- Timer Section -->
+        <div class="timer-section">
+            <div class="visual-timer-container">
+                <div class="visual-timer">
+                    <div class="timer-negative" id="timer-negative"></div>
+                    <div class="timer-fill" id="timer-fill"></div>
+                    <div class="timer-content">
+                        <div class="timer-text" id="countdown">0</div>
+                        <div class="phase-label" id="phase-label">READY</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="instruction" id="instruction">Select an exercise to begin</div>
+            
+            <!-- Exercise Type Buttons -->
+            <div class="button-container">
+                <button class="exercise-button" id="start-basic">Basic Routine</button>
+                <button class="exercise-button" id="start-long">Long Holds</button>
+                <button class="exercise-button" id="start-quick">Quick Contractions</button>
+                <button class="exercise-button" id="customize-btn">Customize</button>
+            </div>
+            
+            <button class="control-button" id="stop-btn" disabled>Stop Exercise</button>
+            
+            <!-- Section Navigation Buttons -->
+            <div class="button-container">
+                <button class="section-button" id="exercises-btn">Exercises</button>
+                <button class="section-button" id="progress-btn">Progress</button>
+                <button class="section-button" id="about-btn">About</button>
+                <button class="section-button" id="benefits-btn">Benefits</button>
+                <button class="section-button" id="faq-btn">FAQ</button>
+            </div>
+        </div>
+        
+        <!-- Customize Panel -->
+        <div class="customize-panel" id="customize-panel">
+            <h2>Customize Your Exercise</h2>
+            <div class="input-group">
+                <label for="custom-hold">Hold Time (seconds):</label>
+                <input type="number" id="custom-hold" value="5" min="1" max="30">
+            </div>
+            <div class="input-group">
+                <label for="custom-relax">Relax Time (seconds):</label>
+                <input type="number" id="custom-relax" value="5" min="1" max="30">
+            </div>
+            <div class="input-group">
+                <label for="custom-reps">Repetitions:</label>
+                <input type="number" id="custom-reps" value="10" min="1" max="50">
+            </div>
+            <button class="control-button" id="start-custom">Start Custom Routine</button>
+            <button class="control-button" id="close-customize">Close</button>
+        </div>
+        
+        <!-- Exercises Panel -->
+        <div class="content-panel" id="exercises-panel">
+            <h2>Kegel Exercise Routines</h2>
+            
+            <div class="exercise-box">
+                <h3>Basic Contraction</h3>
+                <p><strong>How to do it:</strong> Tighten your pelvic floor muscles, hold the contraction for 5 seconds, and then relax for 5 seconds. Repeat 10 times.</p>
+                <p><strong>Tips:</strong> Focus on isolating just the pelvic floor muscles. Avoid tensing your abdomen, thighs, or buttocks.</p>
+                <button class="exercise-button" data-exercise="basic">Start This Exercise</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Long Contraction</h3>
+                <p><strong>How to do it:</strong> Contract your pelvic floor muscles and hold for 10 seconds, then relax for 10 seconds. Repeat 10 times.</p>
+                <p><strong>Goal:</strong> Build up to holding contractions for 10 seconds each.</p>
+                <button class="exercise-button" data-exercise="long">Start This Exercise</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Quick Contractions</h3>
+                <p><strong>How to do it:</strong> Rapidly contract and relax your pelvic floor muscles 20 times in a row.</p>
+                <p><strong>Goal:</strong> Improve muscle responsiveness.</p>
+                <button class="exercise-button" data-exercise="quick">Start This Exercise</button>
+            </div>
+            
+            <button class="control-button" id="close-exercises">Close</button>
+        </div>
+        
+        <!-- Progress Panel -->
+        <div class="content-panel" id="progress-panel">
+            <h2>Track Your Progress</h2>
+            <p>Consistency is key for Kegel exercises. Practice them daily for best results.</p>
+            
+            <div class="exercise-box">
+                <h3>Today's Activity</h3>
+                <div id="today-count">Sessions completed today: 0</div>
+                <button class="control-button" id="log-session" style="margin-top:10px">Log Completed Session</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Your Streak</h3>
+                <div id="streak">Current streak: 0 days</div>
+                <p>Try to maintain your daily practice!</p>
+            </div>
+            
+            <button class="control-button" id="close-progress">Close</button>
+        </div>
+        
+        <!-- About Panel -->
+        <div class="content-panel" id="about-panel">
+            <h2>What are Kegel Exercises?</h2>
+            <p>Kegel exercises strengthen the pelvic floor muscles, which support the bladder, bowel, and in women, the uterus. Named after gynecologist Dr. Arnold Kegel, these exercises can help prevent or control urinary incontinence and other pelvic floor problems.</p>
+            
+            <h3>How to Find Your Pelvic Floor Muscles</h3>
+            <p>To identify your pelvic floor muscles, try to stop urination in midstream. The muscles you use to do this are your pelvic floor muscles. (Note: Don't make a habit of starting and stopping your urine flow as this can lead to incomplete emptying of the bladder.)</p>
+            
+            <h3>When to Do Kegel Exercises</h3>
+            <p>You can do Kegel exercises at any time, while sitting, standing or lying down. You might find it easiest to do them lying down at first. Aim for at least 3 sets of exercises per day.</p>
+            
+            <button class="control-button" id="close-about">Close</button>
+        </div>
+        
+        <!-- Benefits Panel -->
+        <div class="content-panel" id="benefits-panel">
+            <h2>Benefits of Kegel Exercises</h2>
+            
+            <div class="benefit-card">
+                <h3>For Women</h3>
+                <ul>
+                    <li>Reduces urinary incontinence</li>
+                    <li>Prevents pelvic organ prolapse</li>
+                    <li>May improve sexual function</li>
+                    <li>Helps during pregnancy and postpartum recovery</li>
+                </ul>
+            </div>
+            
+            <div class="benefit-card">
+                <h3>For Men</h3>
+                <ul>
+                    <li>Improves urinary control</li>
+                    <li>Can help with recovery after prostate surgery</li>
+                    <li>May improve sexual function</li>
+                    <li>Can help manage symptoms of an overactive bladder</li>
+                </ul>
+            </div>
+            
+            <p>Regular practice of Kegel exercises has been shown to strengthen pelvic floor muscles and provide long-term benefits for bladder and bowel control.</p>
+            
+            <button class="control-button" id="close-benefits">Close</button>
+        </div>
+        
+        <!-- FAQ Panel -->
+        <div class="content-panel" id="faq-panel">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <h3>How often should I do Kegel exercises?</h3>
+                <p>For the best results, practice Kegel exercises 3 times a day, every day. Each session should include 10-15 repetitions of each exercise type.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>How long until I see results?</h3>
+                <p>Most people notice improvements after 4-6 weeks of regular practice. However, this can vary depending on individual circumstances and consistency.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Can I do Kegel exercises anywhere?</h3>
+                <p>Yes! One of the benefits of Kegel exercises is that they can be done anywhere, anytime, and no one will know you're doing them.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Are there any risks with Kegel exercises?</h3>
+                <p>Kegel exercises are generally safe, but if performed incorrectly (such as with too much straining) or too frequently, they might lead to muscle fatigue or increased pelvic tension. If you experience pain or discomfort, consult a healthcare provider.</p>
+            </div>
+            
+            <button class="control-button" id="close-faq">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Disclaimer: This app provides general information about Kegel exercises and is not intended as medical advice. Please consult with a healthcare professional before starting any new exercise program.</p>
+        <p>&copy; 2025 Kegel Exercise Timer</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const startBasicBtn = document.getElementById('start-basic');
+            const startLongBtn = document.getElementById('start-long');
+            const startQuickBtn = document.getElementById('start-quick');
+            const stopBtn = document.getElementById('stop-btn');
+            const customizeBtn = document.getElementById('customize-btn');
+            const startCustomBtn = document.getElementById('start-custom');
+            const closeCustomizeBtn = document.getElementById('close-customize');
+            const instruction = document.getElementById('instruction');
+            const countdown = document.getElementById('countdown');
+            const phaseLabel = document.getElementById('phase-label');
+            const timerFill = document.getElementById('timer-fill');
+            const timerNegative = document.getElementById('timer-negative');
+            
+            // Panel Elements
+            const customizePanel = document.getElementById('customize-panel');
+            const exercisesPanel = document.getElementById('exercises-panel');
+            const progressPanel = document.getElementById('progress-panel');
+            const aboutPanel = document.getElementById('about-panel');
+            const benefitsPanel = document.getElementById('benefits-panel');
+            const faqPanel = document.getElementById('faq-panel');
+            
+            // Section Buttons
+            const exercisesBtn = document.getElementById('exercises-btn');
+            const progressBtn = document.getElementById('progress-btn');
+            const aboutBtn = document.getElementById('about-btn');
+            const benefitsBtn = document.getElementById('benefits-btn');
+            const faqBtn = document.getElementById('faq-btn');
+            
+            // Close Buttons
+            const closeExercisesBtn = document.getElementById('close-exercises');
+            const closeProgressBtn = document.getElementById('close-progress');
+            const closeAboutBtn = document.getElementById('close-about');
+            const closeBenefitsBtn = document.getElementById('close-benefits');
+            const closeFaqBtn = document.getElementById('close-faq');
+            
+            // Customize Inputs
+            const customHoldInput = document.getElementById('custom-hold');
+            const customRelaxInput = document.getElementById('custom-relax');
+            const customRepsInput = document.getElementById('custom-reps');
+            
+            // Progress Tracking
+            const todayCountDisplay = document.getElementById('today-count');
+            const streakDisplay = document.getElementById('streak');
+            const logSessionBtn = document.getElementById('log-session');
+            
+            let todayCount = 0;
+            let streak = 0;
+            
+            // Load saved data
+            if (localStorage.getItem('todayCount')) {
+                todayCount = parseInt(localStorage.getItem('todayCount'));
+                todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+            }
+            
+            if (localStorage.getItem('streak')) {
+                streak = parseInt(localStorage.getItem('streak'));
+                streakDisplay.textContent = `Current streak: ${streak} days`;
+            }
+            
+            // Timer Variables
+            let timer;
+            let seconds = 0;
+            let phaseSeconds = 0;
+            let phaseDuration = 0;
+            let isHolding = true;
+            let count = 0;
+            let totalReps = 0;
+            
+            // Helper Functions
+            function hideAllPanels() {
+                customizePanel.style.display = 'none';
+                exercisesPanel.style.display = 'none';
+                progressPanel.style.display = 'none';
+                aboutPanel.style.display = 'none';
+                benefitsPanel.style.display = 'none';
+                faqPanel.style.display = 'none';
+            }
+            
+            function updateTimerVisuals() {
+                const remainingTime = phaseDuration - phaseSeconds;
+                const percentage = (phaseSeconds / phaseDuration) * 100;
+                
+                // Update countdown display
+                countdown.textContent = remainingTime;
+                
+                // Update phase label
+                phaseLabel.textContent = isHolding ? "HOLD" : "RELAX";
+                
+                // Update timer colors
+                if (isHolding) {
+                    timerFill.className = 'timer-fill hold';
+                } else {
+                    timerFill.className = 'timer-fill relax';
+                }
+                
+                // Clip path for timer fill (what's left)
+                timerFill.style.transform = `scaleY(${1 - (percentage / 100)})`;
+                
+                // Clip path for timer negative (what's used)
+                timerNegative.style.transform = `scaleY(${percentage / 100})`;
+                
+                // Add blinking effect for last 3 seconds
+                if (remainingTime <= 3) {
+                    timerFill.classList.add('blinking');
+                    timerNegative.classList.add('blinking');
+                } else {
+                    timerFill.classList.remove('blinking');
+                    timerNegative.classList.remove('blinking');
+                }
+            }
+            
+            function resetTimer() {
+                timerFill.style.transform = 'scaleY(1)';
+                timerNegative.style.transform = 'scaleY(0)';
+                timerFill.className = 'timer-fill';
+                timerNegative.className = 'timer-negative';
+                countdown.textContent = '0';
+                phaseLabel.textContent = 'READY';
+                instruction.textContent = 'Select an exercise to begin';
+            }
+            
+            function stopTimer() {
+                clearInterval(timer);
+                startBasicBtn.disabled = false;
+                startLongBtn.disabled = false;
+                startQuickBtn.disabled = false;
+                customizeBtn.disabled = false;
+                stopBtn.disabled = true;
+                resetTimer();
+            }
+            
+            function startExercise(holdTime, relaxTime, repetitions) {
+                stopTimer();
+                seconds = 0;
+                phaseSeconds = 0;
+                phaseDuration = holdTime;
+                isHolding = true;
+                count = 0;
+                totalReps = repetitions;
+                
+                startBasicBtn.disabled = true;
+                startLongBtn.disabled = true;
+                startQuickBtn.disabled = true;
+                customizeBtn.disabled = true;
+                stopBtn.disabled = false;
+                
+                instruction.textContent = "Contract your pelvic floor muscles";
+                updateTimerVisuals();
+                
+                timer = setInterval(() => {
+                    phaseSeconds++;
+                    seconds++;
+                    updateTimerVisuals();
+                    
+                    if (phaseSeconds >= phaseDuration) {
+                        phaseSeconds = 0;
+                        isHolding = !isHolding;
+                        
+                        if (isHolding) {
+                            // Starting a new rep
+                            count++;
+                            phaseDuration = holdTime;
+                            instruction.textContent = "Contract your pelvic floor muscles";
+                            
+                            if (count >= totalReps) {
+                                clearInterval(timer);
+                                instruction.textContent = "Well done! Session complete.";
+                                countdown.textContent = "✓";
+                                phaseLabel.textContent = "DONE";
+                                setTimeout(() => {
+                                    stopTimer();
+                                    promptLogSession();
+                                }, 1500);
+                            }
+                        } else {
+                            // Switching to relax phase
+                            phaseDuration = relaxTime;
+                            instruction.textContent = "Relax your muscles";
+                        }
+                    }
+                }, 1000);
+            }
+            
+            function promptLogSession() {
+                progressPanel.style.display = 'block';
+                window.scrollTo({ top: progressPanel.offsetTop, behavior: 'smooth' });
+            }
+            
+            // Event Listeners
+            // Exercise Buttons
+            startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
+            startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
+            startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
+            stopBtn.addEventListener('click', stopTimer);
+            
+            // Custom Exercise
+            customizeBtn.addEventListener('click', () => {
+                hideAllPanels();
+                customizePanel.style.display = 'block';
+            });
+            
+            startCustomBtn.addEventListener('click', () => {
+                const holdTime = parseInt(customHoldInput.value) || 5;
+                const relaxTime = parseInt(customRelaxInput.value) || 5;
+                const reps = parseInt(customRepsInput.value) || 10;
+                
+                startExercise(holdTime, relaxTime, reps);
+                customizePanel.style.display = 'none';
+            });
+            
+            closeCustomizeBtn.addEventListener('click', () => {
+                customizePanel.style.display = 'none';
+            });
+            
+            // Section Buttons
+            exercisesBtn.addEventListener('click', () => {
+                hideAllPanels();
+                exercisesPanel.style.display = 'block';
+            });
+            
+            progressBtn.addEventListener('click', () => {
+                hideAllPanels();
+                progressPanel.style.display = 'block';
+            });
+            
+            aboutBtn.addEventListener('click', () => {
+                hideAllPanels();
+                aboutPanel.style.display = 'block';
+            });
+            
+            benefitsBtn.addEventListener('click', () => {
+                hideAllPanels();
+                benefitsPanel.style.display = 'block';
+            });
+            
+            faqBtn.addEventListener('click', () => {
+                hideAllPanels();
+                faqPanel.style.display = 'block';
+            });
+            
+            // Close Buttons
+            closeExercisesBtn.addEventListener('click', () => {
+                exercisesPanel.style.display = 'none';
+            });
+            
+            closeProgressBtn.addEventListener('click', () => {
+                progressPanel.style.display = 'none';
+            });
+            
+            closeAboutBtn.addEventListener('click', () => {
+                aboutPanel.style.display = 'none';
+            });
+            
+            closeBenefitsBtn.addEventListener('click', () => {
+                benefitsPanel.style.display = 'none';
+            });
+            
+            closeFaqBtn.addEventListener('click', () => {
+                faqPanel.style.display = 'none';
+            });
+            
+            // Exercise buttons in exercises panel
+            const exercisePanelButtons = exercisesPanel.querySelectorAll('[data-exercise]');
+            exercisePanelButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const exercise = button.getAttribute('data-exercise');
+                    exercisesPanel.style.display = 'none';
+                    
+                    if (exercise === 'basic') {
+                        startExercise(5, 5, 10);
+                    } else if (exercise === 'long') {
+                        startExercise(10, 10, 10);
+                    } else if (exercise === 'quick') {
+                        startExercise(1, 1, 20);
+                    }
+                });
+            });
+            
+            // Progress Tracking
+            logSessionBtn.addEventListener('click', () => {
+                todayCount++;
+                todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+                localStorage.setItem('todayCount', todayCount);
+                
+                // Update streak
+                const lastDate = localStorage.getItem('lastDate');
+                const today = new Date().toDateString();
+                
+                if (lastDate !== today) {
+                    streak++;
+                    streakDisplay.textContent = `Current streak: ${streak} days`;
+                    localStorage.setItem('streak', streak);
+                    localStorage.setItem('lastDate', today);
+                }
+                
+                logSessionBtn.textContent = "Session Logged!";
+                setTimeout(() => {
+                    logSessionBtn.textContent = "Log Completed Session";
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
