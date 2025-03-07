@@ -1,0 +1,292 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #42b883;
+    --dark-color: #2c3e50;
+    --light-color: #f9f9f9;
+    --accent-color: #e74c3c;
+    --font-family: 'Arial', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--dark-color);
+    background-color: var(--light-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+/* Timer Section */
+.timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px 0;
+}
+
+/* Visual Timer */
+.visual-timer-container {
+    width: 250px;
+    height: 250px;
+    position: relative;
+    margin: 20px 0;
+}
+
+.visual-timer {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #e6e6e6;
+    position: relative;
+    overflow: hidden;
+}
+
+.timer-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color);
+    transform-origin: center bottom;
+    transition: transform 0.9s linear; /* Increased transition duration */
+}
+
+.timer-negative {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+    transform-origin: center bottom;
+    transition: transform 0.9s linear; /* Increased transition duration */
+}
+
+.timer-fill.hold {
+    background-color: var(--primary-color);
+}
+
+.timer-fill.relax {
+    background-color: var(--secondary-color);
+}
+
+.timer-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.timer-text {
+    font-size: 60px;
+    font-weight: bold;
+    color: var(--dark-color);
+}
+
+.phase-label {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: var(--dark-color);
+}
+
+.instruction {
+    font-size: 18px;
+    margin: 15px 0;
+    height: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #3a7bc8;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background-color: #b3cef2;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.section-button {
+    background-color: var(--dark-color);
+}
+
+.section-button:hover {
+    background-color: #1a2530;
+}
+
+.exercise-button {
+    min-width: 120px;
+}
+
+.control-button {
+    width: 100%;
+    max-width: 200px;
+    margin: 5px auto;
+}
+
+/* Customize Panel */
+.customize-panel {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    display: none;
+}
+
+.customize-panel h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-group input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Content Panels */
+.content-panel {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    display: none;
+}
+
+.content-panel h2 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.exercise-box {
+    border-left: 4px solid var(--primary-color);
+    padding: 15px;
+    margin: 15px 0;
+    background-color: #f5f9ff;
+    border-radius: 0 8px 8px 0;
+}
+
+.benefit-card {
+    background-color: #f5f9ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Blinking Animation */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.blinking {
+    animation: blink 0.5s infinite;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    color: #7f8c8d;
+    font-size: 12px;
+    background-color: #f1f1f1;
+    margin-top: auto;
+    border-top: 1px solid #ddd;
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+    h1 {
+        font-size: 28px;
+    }
+    
+    .button-container {
+        max-width: 600px;
+        margin: 20px auto;
+    }
+    
+    .customize-panel, .content-panel {
+        max-width: 600px;
+        margin: 20px auto;
+    }
+}
