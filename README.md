@@ -1,5 +1,7 @@
 # Kegel Exercise Timer
 
+Welcome to my GitHub, I created this project because I was tired of the publicity in all the apps I tried.
+
 This project is a web-based Kegel exercise timer that helps users perform Kegel exercises with visual and auditory guidance. The application includes different exercise routines, progress tracking, and customizable exercise options.
 
 ## Project Structure
@@ -47,6 +49,10 @@ This file contains the CSS styles for the web application. It defines the layout
 
 This file contains the JavaScript code that adds interactivity to the web application. It handles the timer functionality, exercise routines, customization options, and progress tracking.
 
+## Future Developments
+
+- **Save Progress and History**: Add the ability to save progress and history to a local file and upload it again. This way, users don't need to install anything and can just access the site.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or improvements.
@@ -59,7 +65,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - This project was inspired by the need for a simple and effective Kegel exercise timer.
 - Special thanks to all contributors and users who provide feedback and support.
-
 
 <!--
 **goliathuy/goliathuy** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
