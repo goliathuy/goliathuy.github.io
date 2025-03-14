@@ -6,7 +6,7 @@ This project is a web-based Kegel exercise timer that helps users perform Kegel 
 
 ## Project Structure
 
-- `kegel-timer.html`: The main HTML file that contains the structure of the web application.
+- `index.html`: The main HTML file that contains the structure of the web application.
 - `styles.css`: The CSS file that styles the web application.
 - `script.js`: The JavaScript file that adds interactivity to the web application.
 
@@ -27,25 +27,25 @@ To run this project, you need a web browser that supports HTML5, CSS3, and JavaS
 ### Installation
 
 1. Clone the repository or download the project files.
-2. Open `kegel-timer.html` in your web browser.
+2. Open `index.html` in your web browser.
 
 ### Usage
 
-1. Open the `kegel-timer.html` file in your web browser.
+1. Open the `index.html` file in your web browser.
 2. Use the buttons to start different exercise routines or customize your own.
 3. Track your progress and read more about Kegel exercises in the informational panels.
 
 ## File Descriptions
 
-### [kegel-timer.html](c:\Users\mario.albornozdocout\projects\test\kegel-exercise\kegel-timer\kegel-timer.html)
+### [index.html]
 
 This file contains the HTML structure of the web application. It includes sections for the timer, exercise buttons, customization panel, and informational panels.
 
-### [styles.css](c:\Users\mario.albornozdocout\projects\test\kegel-exercise\kegel-timer\styles.css)
+### [styles.css]
 
 This file contains the CSS styles for the web application. It defines the layout, colors, fonts, and animations used in the application.
 
-### [script.js](c:\Users\mario.albornozdocout\projects\test\kegel-exercise\kegel-timer\script.js)
+### [script.js]
 
 This file contains the JavaScript code that adds interactivity to the web application. It handles the timer functionality, exercise routines, customization options, and progress tracking.
 
