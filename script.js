@@ -165,6 +165,14 @@ document.addEventListener('DOMContentLoaded', function() {
         countdown.textContent = '0';
         phaseLabel.textContent = 'READY';
         instruction.textContent = 'Select an exercise to begin';
+        
+        // Reset progress ring
+        const progressRing = document.getElementById('rep-progress-ring');
+        const repCount = document.getElementById('rep-count');
+        if (progressRing && repCount) {
+            progressRing.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+            repCount.textContent = '0/0';
+        }
     }
     
     function stopTimer() {
@@ -178,12 +186,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function startExercise(holdTime, relaxTime, repetitions) {
-        console.log('Starting exercise');
+        console.log('Starting exercise with holdTime:', holdTime, 'relaxTime:', relaxTime, 'repetitions:', repetitions);
         stopTimer();
         
         // Initialize audio on first user interaction
         if (!audioContext) {
             initAudio();
+        }
+        
+        // Reset progress ring and counter
+        const progressRing = document.getElementById('rep-progress-ring');
+        const repCount = document.getElementById('rep-count');
+        if (progressRing && repCount) {
+            progressRing.style.background = 'conic-gradient(var(--secondary-color) 0%, transparent 0%)';
+            repCount.textContent = `0/${repetitions}`;
         }
         
         // Add preparation countdown
@@ -211,8 +227,10 @@ document.addEventListener('DOMContentLoaded', function() {
             phaseSeconds = 0;
             phaseDuration = holdTime;
             isHolding = true;
-            count = 0;
+            count = 0; // Make sure count starts at 0
             totalReps = repetitions;
+            
+            console.log('Starting main exercise loop with count:', count, 'totalReps:', totalReps);
             
             startBasicBtn.disabled = true;
             startLongBtn.disabled = true;
@@ -223,21 +241,52 @@ document.addEventListener('DOMContentLoaded', function() {
             instruction.textContent = "Contract your pelvic floor muscles";
             updateTimerVisuals();
             
-            // Add progress indicator
-            const progressIndicator = document.createElement('div');
-            progressIndicator.className = 'progress-indicator';
-            instruction.parentNode.insertBefore(progressIndicator, instruction.nextSibling);
-            
-            timer = setInterval(() => {
+            timer = setInterval(function() {
                 phaseSeconds++;
                 seconds++;
                 updateTimerVisuals();
                 
-                // Update progress indicator
-                progressIndicator.textContent = `Rep ${count + 1}/${totalReps}`;
+                // In the first iteration, we're already in the hold phase of rep 1
+                // Calculate current rep progress (0-based count + 1 for display)
+                let currentRep = count + 1;  // Rep numbers are 1-based for display
+                
+                // Calculate progress for the ring
+                let progressRatio;
+                if (isHolding) {
+                    // During hold, show the progress for the current rep
+                    progressRatio = (count + 0.25) / totalReps;  // 25% through current rep
+                } else {
+                    // During relax, show more progress
+                    progressRatio = (count + 0.75) / totalReps;  // 75% through current rep
+                }
+                
+                // Update the progress ring
+                const progressPercentage = progressRatio * 100;
+                const progressRing = document.getElementById('rep-progress-ring');
+                const repCount = document.getElementById('rep-count');
+                if (progressRing && repCount) {
+                    progressRing.style.background = `conic-gradient(var(--secondary-color) 0% ${progressPercentage}%, transparent ${progressPercentage}% 100%)`;
+                    repCount.textContent = `${currentRep}/${totalReps}`;
+                }
+                
+                // Debug log to track progress
+                if (phaseSeconds === 1) {
+                    console.log(`Phase: ${isHolding ? 'HOLD' : 'RELAX'}, Rep: ${currentRep}/${totalReps}, Count: ${count}, Time: ${phaseSeconds}/${phaseDuration}`);
+                }
                 
                 if (phaseSeconds >= phaseDuration) {
+                    console.log(`Completed ${isHolding ? 'HOLD' : 'RELAX'} phase. Moving to ${isHolding ? 'RELAX' : 'HOLD'}.`);
+                    
                     phaseSeconds = 0;
+                    
+                    // If we're finishing a relax phase (and about to start a hold)
+                    // then we'll increment the rep count
+                    if (!isHolding) {
+                        count++;
+                        console.log(`*** INCREMENTING COUNT to ${count} ***`);
+                    }
+                    
+                    // Toggle the phase
                     isHolding = !isHolding;
                     
                     // Play sound and vibrate on phase change
@@ -245,22 +294,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     vibrate(isHolding ? 200 : 100);
                     
                     if (isHolding) {
-                        count++;
                         phaseDuration = holdTime;
                         instruction.textContent = "Contract your pelvic floor muscles";
                         
+                        // Update the display counter with the new count value
+                        currentRep = count + 1;
+                        progressRatio = count / totalReps;
+                        const progressPercentage = progressRatio * 100;
+                        
+                        if (progressRing && repCount) {
+                            progressRing.style.background = `conic-gradient(var(--secondary-color) 0% ${progressPercentage}%, transparent ${progressPercentage}% 100%)`;
+                            repCount.textContent = `${currentRep}/${totalReps}`;
+                        }
+                        
+                        console.log(`Starting rep ${currentRep} of ${totalReps}`); 
+                        
                         if (count >= totalReps) {
+                            console.log(`Exercise complete! Total count: ${count}, totalReps: ${totalReps}`);
                             clearInterval(timer);
+                            timer = null; // Ensure timer is nullified
                             instruction.textContent = "Well done! Session complete.";
                             countdown.textContent = "✓";
                             phaseLabel.textContent = "DONE";
-                            progressIndicator.remove();
+                            phaseLabel.classList.remove('preparation');
                             playSound(true);
                             vibrate(300);
+                            
+                            // Set progress ring to 100% when complete
+                            if (progressRing && repCount) {
+                                progressRing.style.background = `conic-gradient(var(--secondary-color) 0% 100%, transparent 100% 100%)`;
+                                repCount.textContent = `${totalReps}/${totalReps}`;
+                            }
+                            
                             setTimeout(() => {
                                 stopTimer();
                                 promptLogSession();
                             }, 1500);
+                            
+                            return; // Exit immediately
                         }
                     } else {
                         phaseDuration = relaxTime;

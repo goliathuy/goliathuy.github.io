@@ -131,7 +131,7 @@ p {
     height: 100%;
     transform-origin: center bottom;
     transition: transform 0.9s linear;
-    z-index: 1;
+    z-index: 2;
 }
 
 .timer-fill {
@@ -518,6 +518,56 @@ button:disabled {
 
 .blinking {
     animation: blink 0.5s infinite;
+}
+
+/* Circular rep progress indicator */
+.rep-progress-ring {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    border-radius: 50%;
+    background: conic-gradient(var(--secondary-color) 0%, transparent 0%);
+    z-index: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.rep-count {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    box-shadow: var(--box-shadow-sm);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Visual Timer - adjust position for the progress ring */
+.visual-timer-container {
+    width: 280px;
+    height: 280px;
+    margin: 20px 0;
+    filter: none;
+    box-shadow: none;
+}
+
+/* Update timer fill animation to work with the progress ring */
+.timer-negative, .timer-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center bottom;
+    transition: transform 0.9s linear;
+    z-index: 2;
 }
 
 /* Footer */
