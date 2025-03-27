@@ -242,25 +242,58 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTimerVisuals();
             
             timer = setInterval(function() {
+                // Immediately check if we've already completed all reps
+                if (count >= totalReps) {
+                    console.log("COMPLETED ALL REPS - STOPPING TIMER");
+                    
+                    // Ensure the timer is completely cleared
+                    clearInterval(timer);
+                    timer = null;
+                    
+                    // Update UI to completion state
+                    instruction.textContent = "Well done! Session complete.";
+                    countdown.textContent = "✓";
+                    phaseLabel.textContent = "DONE";
+                    phaseLabel.classList.remove('preparation');
+                    
+                    // Provide feedback
+                    playSound(true);
+                    vibrate(300);
+                    
+                    // Set progress ring to 100%
+                    const progressRing = document.getElementById('rep-progress-ring');
+                    const repCount = document.getElementById('rep-count');
+                    if (progressRing && repCount) {
+                        progressRing.style.background = `conic-gradient(var(--secondary-color) 0% 100%, transparent 100% 100%)`;
+                        repCount.textContent = `${totalReps}/${totalReps}`;
+                    }
+                    
+                    // Log session after a brief delay
+                    setTimeout(() => {
+                        stopTimer();
+                        promptLogSession();
+                    }, 1500);
+                    
+                    // Immediate return to prevent any further processing
+                    return;
+                }
+                
+                // Normal timer logic if we haven't completed all reps
                 phaseSeconds++;
                 seconds++;
                 updateTimerVisuals();
                 
-                // In the first iteration, we're already in the hold phase of rep 1
-                // Calculate current rep progress (0-based count + 1 for display)
-                let currentRep = count + 1;  // Rep numbers are 1-based for display
-                
-                // Calculate progress for the ring
+                // Calculate display elements
+                let currentRep = count + 1;
                 let progressRatio;
+                
                 if (isHolding) {
-                    // During hold, show the progress for the current rep
-                    progressRatio = (count + 0.25) / totalReps;  // 25% through current rep
+                    progressRatio = (count + 0.25) / totalReps;
                 } else {
-                    // During relax, show more progress
-                    progressRatio = (count + 0.75) / totalReps;  // 75% through current rep
+                    progressRatio = (count + 0.75) / totalReps;
                 }
                 
-                // Update the progress ring
+                // Update progress display
                 const progressPercentage = progressRatio * 100;
                 const progressRing = document.getElementById('rep-progress-ring');
                 const repCount = document.getElementById('rep-count');
@@ -269,70 +302,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     repCount.textContent = `${currentRep}/${totalReps}`;
                 }
                 
-                // Debug log to track progress
+                // Debug when phase starts
                 if (phaseSeconds === 1) {
-                    console.log(`Phase: ${isHolding ? 'HOLD' : 'RELAX'}, Rep: ${currentRep}/${totalReps}, Count: ${count}, Time: ${phaseSeconds}/${phaseDuration}`);
+                    console.log(`Phase: ${isHolding ? 'HOLD' : 'RELAX'}, Rep: ${currentRep}/${totalReps}, Count: ${count}`);
                 }
                 
+                // Handle phase transitions
                 if (phaseSeconds >= phaseDuration) {
-                    console.log(`Completed ${isHolding ? 'HOLD' : 'RELAX'} phase. Moving to ${isHolding ? 'RELAX' : 'HOLD'}.`);
-                    
+                    console.log(`Completed ${isHolding ? 'HOLD' : 'RELAX'} phase.`);
                     phaseSeconds = 0;
                     
-                    // If we're finishing a relax phase (and about to start a hold)
-                    // then we'll increment the rep count
+                    // Increment count when completing a RELAX phase
                     if (!isHolding) {
                         count++;
                         console.log(`*** INCREMENTING COUNT to ${count} ***`);
+                        
+                        // IMPORTANT: Immediately check if we've hit the total and exit the phase
+                        if (count >= totalReps) {
+                            console.log(`*** REACHED TOTAL REPS (${count}/${totalReps}) - WILL STOP NEXT ITERATION ***`);
+                        }
                     }
                     
-                    // Toggle the phase
+                    // Toggle phase
                     isHolding = !isHolding;
                     
-                    // Play sound and vibrate on phase change
+                    // Play sound and vibrate
                     playSound(isHolding);
                     vibrate(isHolding ? 200 : 100);
                     
+                    // Set up the next phase
                     if (isHolding) {
                         phaseDuration = holdTime;
                         instruction.textContent = "Contract your pelvic floor muscles";
-                        
-                        // Update the display counter with the new count value
-                        currentRep = count + 1;
-                        progressRatio = count / totalReps;
-                        const progressPercentage = progressRatio * 100;
-                        
-                        if (progressRing && repCount) {
-                            progressRing.style.background = `conic-gradient(var(--secondary-color) 0% ${progressPercentage}%, transparent ${progressPercentage}% 100%)`;
-                            repCount.textContent = `${currentRep}/${totalReps}`;
-                        }
-                        
-                        console.log(`Starting rep ${currentRep} of ${totalReps}`); 
-                        
-                        if (count >= totalReps) {
-                            console.log(`Exercise complete! Total count: ${count}, totalReps: ${totalReps}`);
-                            clearInterval(timer);
-                            timer = null; // Ensure timer is nullified
-                            instruction.textContent = "Well done! Session complete.";
-                            countdown.textContent = "✓";
-                            phaseLabel.textContent = "DONE";
-                            phaseLabel.classList.remove('preparation');
-                            playSound(true);
-                            vibrate(300);
-                            
-                            // Set progress ring to 100% when complete
-                            if (progressRing && repCount) {
-                                progressRing.style.background = `conic-gradient(var(--secondary-color) 0% 100%, transparent 100% 100%)`;
-                                repCount.textContent = `${totalReps}/${totalReps}`;
-                            }
-                            
-                            setTimeout(() => {
-                                stopTimer();
-                                promptLogSession();
-                            }, 1500);
-                            
-                            return; // Exit immediately
-                        }
                     } else {
                         phaseDuration = relaxTime;
                         instruction.textContent = "Relax your muscles";
