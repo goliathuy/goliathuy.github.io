@@ -215,13 +215,60 @@ p {
     box-shadow: var(--box-shadow-sm);
 }
 
-/* Buttons */
+/* Button layout improvements */
 .button-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
     margin: 24px 0;
+    max-width: 600px;
+    width: 100%;
+}
+
+/* Main exercise buttons - arrange in 2x2 grid */
+.button-container:first-of-type {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+    margin: 20px auto;
+}
+
+/* Navigation buttons - make them tabs */
+.button-container:nth-of-type(2) {
+    background-color: white;
+    padding: 5px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    margin: 15px auto;
+}
+
+.section-button {
+    background: none;
+    color: var(--gray-700);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    box-shadow: none;
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.section-button:hover {
+    background: var(--gray-200);
+    transform: translateY(0);
+    color: var(--primary-color);
+    box-shadow: none;
+}
+
+.section-button:active {
+    background: var(--gray-300);
+}
+
+/* Stop button should stand out */
+#stop-btn {
+    margin: 10px auto 5px;
+    font-weight: 600;
 }
 
 button {
@@ -252,14 +299,6 @@ button:disabled {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
-}
-
-.section-button {
-    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
-}
-
-.section-button:hover {
-    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-900) 100%);
 }
 
 .exercise-button {
@@ -294,10 +333,6 @@ button:disabled {
 
 #customize-btn {
     background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
-}
-
-#stop-btn {
-    background: linear-gradient(135deg, var(--accent-color) 0%, #e63946 100%);
 }
 
 /* Customize Panel */
@@ -419,11 +454,12 @@ button:disabled {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin: 20px 0;
-    background-color: white;
-    padding: 16px;
+    margin: 5px 0 20px;
+    background-color: var(--gray-100);
+    padding: 12px;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-sm);
+    width: auto;
+    box-shadow: none;
 }
 
 .toggle {
@@ -531,6 +567,22 @@ footer {
     .exercise-button, .section-button {
         width: 100%;
         max-width: 280px;
+    }
+    
+    .button-container:first-of-type {
+        grid-template-columns: 1fr;
+    }
+    
+    .button-container:nth-of-type(2) {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 8px;
+    }
+    
+    .section-button {
+        flex: 0 0 auto;
+        white-space: nowrap;
     }
 }
 
