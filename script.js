@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const phaseLabel = document.getElementById('phase-label');
     const timerFill = document.getElementById('timer-fill');
     const timerNegative = document.getElementById('timer-negative');
+    const timerClickable = document.getElementById('timer-clickable');
     
     // Panel Elements
     const customizePanel = document.getElementById('customize-panel');
@@ -63,20 +64,24 @@ document.addEventListener('DOMContentLoaded', function() {
         streakDisplay.textContent = `Current streak: ${streak} days`;
     }
     
-    // Timer Variables
-    let timer;
+    // Global variables
+    let timer = null;
     let seconds = 0;
     let phaseSeconds = 0;
-    let phaseDuration = 0;
     let isHolding = true;
     let count = 0;
     let totalReps = 0;
+    let phaseDuration = 0;
+    let audioContext = null;
+    let holdSound = null;
+    let relaxSound = null;
+    let isPaused = false;
+    let currentExerciseParams = null; // Store current exercise parameters for pause/restart
     
-    // Audio Context and Sounds
-    let audioContext;
-    let holdSound;
-    let relaxSound;
+    // Store the timer function globally so we can access it for pause/resume
+    let exerciseTimerFunction = null;
     
+    // Timer Variables
     function initAudio() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -158,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function resetTimer() {
+        stopTimer();
         timerFill.style.transform = 'scaleY(1)';
         timerNegative.style.transform = 'scaleY(0)';
         timerFill.className = 'timer-fill';
@@ -176,18 +182,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function stopTimer() {
-        clearInterval(timer);
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+        
         startBasicBtn.disabled = false;
         startLongBtn.disabled = false;
         startQuickBtn.disabled = false;
         customizeBtn.disabled = false;
         stopBtn.disabled = true;
-        resetTimer();
+        
+        // Reset pause state
+        isPaused = false;
+        if (timerClickable) {
+            timerClickable.classList.remove('paused');
+        }
+    }
+    
+    function togglePause() {
+        if (!timer && !isPaused) return; // No active timer and not paused
+        
+        isPaused = !isPaused;
+        
+        if (isPaused) {
+            // Pause the timer
+            clearInterval(timer);
+            timer = null;
+            instruction.textContent = "Paused - Click timer to resume";
+            timerClickable.classList.add('paused');
+        } else {
+            // Resume the timer
+            timerClickable.classList.remove('paused');
+            instruction.textContent = isHolding ? "Contract your pelvic floor muscles" : "Relax your muscles";
+            
+            // Restart the interval with the global timer function
+            if (exerciseTimerFunction) {
+                timer = setInterval(exerciseTimerFunction, 1000);
+            }
+        }
     }
     
     function startExercise(holdTime, relaxTime, repetitions) {
         console.log('Starting exercise with holdTime:', holdTime, 'relaxTime:', relaxTime, 'repetitions:', repetitions);
         stopTimer();
+        
+        // Store current parameters for restart
+        currentExerciseParams = {
+            holdTime: holdTime,
+            relaxTime: relaxTime, 
+            repetitions: repetitions
+        };
         
         // Initialize audio on first user interaction
         if (!audioContext) {
@@ -241,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
             instruction.textContent = "Contract your pelvic floor muscles";
             updateTimerVisuals();
             
-            timer = setInterval(function() {
+            // Define the timer function and store it globally
+            exerciseTimerFunction = function() {
                 // Immediately check if we've already completed all reps
                 if (count >= totalReps) {
                     console.log("COMPLETED ALL REPS - STOPPING TIMER");
@@ -256,21 +302,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     phaseLabel.textContent = "DONE";
                     phaseLabel.classList.remove('preparation');
                     
+                    // Convert Stop button to Restart
+                    stopBtn.textContent = "Start New Exercise";
+                    stopBtn.classList.add('restart-button');
+                    
                     // Provide feedback
                     playSound(true);
                     vibrate(300);
                     
-                    // Set progress ring to 100%
+                    // ALWAYS ensure progress ring is 100% filled when complete
                     const progressRing = document.getElementById('rep-progress-ring');
                     const repCount = document.getElementById('rep-count');
                     if (progressRing && repCount) {
                         progressRing.style.background = `conic-gradient(var(--secondary-color) 0% 100%, transparent 100% 100%)`;
                         repCount.textContent = `${totalReps}/${totalReps}`;
+                        console.log("Set progress ring to 100%");
                     }
                     
                     // Log session after a brief delay
                     setTimeout(() => {
-                        stopTimer();
+                        // Keep the stop button enabled but change its function to restart
+                        stopBtn.disabled = false;
+                        
+                        // Re-enable other buttons
+                        startBasicBtn.disabled = false;
+                        startLongBtn.disabled = false;
+                        startQuickBtn.disabled = false;
+                        customizeBtn.disabled = false;
+                        
                         promptLogSession();
                     }, 1500);
                     
@@ -320,6 +379,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         // IMPORTANT: Immediately check if we've hit the total and exit the phase
                         if (count >= totalReps) {
                             console.log(`*** REACHED TOTAL REPS (${count}/${totalReps}) - WILL STOP NEXT ITERATION ***`);
+                            
+                            // Immediately fill the ring to 100% when we complete the last rep
+                            const progressRing = document.getElementById('rep-progress-ring');
+                            const repCount = document.getElementById('rep-count');
+                            if (progressRing && repCount) {
+                                progressRing.style.background = `conic-gradient(var(--secondary-color) 0% 100%, transparent 100% 100%)`;
+                                repCount.textContent = `${totalReps}/${totalReps}`;
+                            }
                         }
                     }
                     
@@ -339,7 +406,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         instruction.textContent = "Relax your muscles";
                     }
                 }
-            }, 1000);
+            };
+            
+            // Use the timer function
+            timer = setInterval(exerciseTimerFunction, 1000);
         }
     }
     
@@ -353,7 +423,6 @@ document.addEventListener('DOMContentLoaded', function() {
     startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
     startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
     startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
-    stopBtn.addEventListener('click', stopTimer);
     
     // Custom Exercise
     customizeBtn.addEventListener('click', () => {
@@ -460,4 +529,42 @@ document.addEventListener('DOMContentLoaded', function() {
             logSessionBtn.textContent = "Log Completed Session";
         }, 2000);
     });
+    
+    // Make stop button work as both stop and restart
+    stopBtn.addEventListener('click', () => {
+        if (stopBtn.classList.contains('restart-button')) {
+            // If it's in restart mode, restart the exercise with the same parameters
+            resetTimer();
+            
+            // Check if we have stored parameters and restart with them
+            if (currentExerciseParams) {
+                console.log("Restarting exercise with saved parameters:", currentExerciseParams);
+                startExercise(
+                    currentExerciseParams.holdTime,
+                    currentExerciseParams.relaxTime,
+                    currentExerciseParams.repetitions
+                );
+            } else {
+                // Just reset UI if no parameters
+                instruction.textContent = "Select an exercise to begin";
+                countdown.textContent = "0";
+                phaseLabel.textContent = "READY";
+            }
+            
+            // Reset button state
+            stopBtn.textContent = "Stop Exercise";
+            stopBtn.classList.remove('restart-button');
+        } else {
+            // Normal stop behavior
+            stopTimer();
+            resetTimer();
+        }
+    });
+    
+    // Add click event for timer to pause/resume
+    if (timerClickable) {
+        timerClickable.addEventListener('click', function() {
+            togglePause();
+        });
+    }
 });

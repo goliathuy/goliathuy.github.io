@@ -24,7 +24,7 @@
                     <div class="rep-count" id="rep-count">0/0</div>
                 </div>
                 
-                <div class="visual-timer">
+                <div class="visual-timer pause-on-click" id="timer-clickable">
                     <div class="timer-negative" id="timer-negative"></div>
                     <div class="timer-fill" id="timer-fill"></div>
                     <div class="timer-content">
@@ -33,6 +33,8 @@
                     </div>
                 </div>
             </div>
+            
+            <button class="control-button" id="stop-btn" disabled>Stop Exercise</button>
             
             <div class="instruction" id="instruction">Select an exercise to begin</div>
             
@@ -43,8 +45,6 @@
                 <button class="exercise-button" id="start-quick">Quick Contractions</button>
                 <button class="exercise-button" id="customize-btn">Customize</button>
             </div>
-            
-            <button class="control-button" id="stop-btn" disabled>Stop Exercise</button>
             
             <!-- Section Navigation Buttons -->
             <div class="button-container">
