@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kegel Exercise Timer</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
     <header>
@@ -44,6 +48,17 @@
                 <button class="section-button" id="about-btn">About</button>
                 <button class="section-button" id="benefits-btn">Benefits</button>
                 <button class="section-button" id="faq-btn">FAQ</button>
+            </div>
+            
+            <div class="settings">
+                <label class="toggle">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="toggle-label">Sound Feedback</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="vibration-toggle" checked>
+                    <span class="toggle-label">Vibration</span>
+                </label>
             </div>
         </div>
         
@@ -191,5 +206,13 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(error => console.log('ServiceWorker registration failed:', error));
+        }
+    </script>
 </body>
 </html>

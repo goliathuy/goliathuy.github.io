@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <h1>Icon Generator</h1>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <div id="output"></div>
+
+    <script>
+        function generateIcon(size) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Background circle
+            ctx.fillStyle = '#4a90e2';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Timer circle
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.047;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.39, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Timer progress
+            ctx.strokeStyle = '#42b883';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.39, -Math.PI/2, Math.PI/2);
+            ctx.stroke();
+            
+            // Letter K
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.23}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('K', size/2, size/2);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.textContent = `Download ${size}x${size} icon`;
+            link.className = 'download-link';
+            link.style.display = 'block';
+            link.style.margin = '10px';
+            document.getElementById('output').appendChild(link);
+            
+            // Auto-click to download
+            link.click();
+        }
+
+        // Generate both sizes
+        generateIcon(192);
+        generateIcon(512);
+    </script>
+</body>
+</html>

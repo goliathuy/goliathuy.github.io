@@ -1,0 +1,21 @@
+{
+  "name": "Kegel Exercise Timer",
+  "short_name": "Kegel Timer",
+  "description": "A timer app for Kegel exercises with visual feedback and progress tracking",
+  "start_url": "./kegel-timer.html",
+  "display": "standalone",
+  "background_color": "#f9f9f9",
+  "theme_color": "#4a90e2",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

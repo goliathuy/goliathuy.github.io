@@ -252,15 +252,78 @@ button:disabled {
     padding-bottom: 15px;
 }
 
+/* Settings */
+.settings {
+    margin: 20px 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.toggle input[type="checkbox"] {
+    width: 40px;
+    height: 20px;
+    appearance: none;
+    background-color: #ddd;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+}
+
+.toggle input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+.toggle input[type="checkbox"]:checked::before {
+    transform: translateX(20px);
+}
+
+.toggle-label {
+    font-size: 14px;
+    color: var(--dark-color);
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    font-size: 16px;
+    color: var(--dark-color);
+    margin: 10px 0;
+}
+
+/* Preparation Phase */
+.preparation {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
 /* Blinking Animation */
 @keyframes blink {
-    0% { opacity: 1; }
+    0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
-    100% { opacity: 1; }
 }
 
 .blinking {
-    animation: blink 0.5s infinite;
+    animation: blink 1s infinite;
 }
 
 /* Footer */

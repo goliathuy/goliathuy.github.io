@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const streakDisplay = document.getElementById('streak');
     const logSessionBtn = document.getElementById('log-session');
     
+    // Sound and Vibration Controls
+    const soundToggle = document.getElementById('sound-toggle');
+    const vibrationToggle = document.getElementById('vibration-toggle');
+    
     let todayCount = 0;
     let streak = 0;
     
@@ -67,6 +71,46 @@ document.addEventListener('DOMContentLoaded', function() {
     let isHolding = true;
     let count = 0;
     let totalReps = 0;
+    
+    // Audio Context and Sounds
+    let audioContext;
+    let holdSound;
+    let relaxSound;
+    
+    function initAudio() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create hold sound (higher pitch)
+        holdSound = audioContext.createOscillator();
+        holdSound.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
+        
+        // Create relax sound (lower pitch)
+        relaxSound = audioContext.createOscillator();
+        relaxSound.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
+    }
+    
+    function playSound(isHold) {
+        if (!soundToggle.checked || !audioContext) return;
+        
+        const sound = isHold ? holdSound : relaxSound;
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        
+        sound.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        sound.start();
+        setTimeout(() => {
+            sound.stop();
+            sound.disconnect();
+        }, 200);
+    }
+    
+    function vibrate(duration) {
+        if (vibrationToggle.checked && navigator.vibrate) {
+            navigator.vibrate(duration);
+        }
+    }
     
     // Helper Functions
     function hideAllPanels() {
@@ -136,54 +180,95 @@ document.addEventListener('DOMContentLoaded', function() {
     function startExercise(holdTime, relaxTime, repetitions) {
         console.log('Starting exercise');
         stopTimer();
-        seconds = 0;
-        phaseSeconds = 0;
-        phaseDuration = holdTime;
-        isHolding = true;
-        count = 0;
-        totalReps = repetitions;
         
-        startBasicBtn.disabled = true;
-        startLongBtn.disabled = true;
-        startQuickBtn.disabled = true;
-        customizeBtn.disabled = true;
-        stopBtn.disabled = false;
+        // Initialize audio on first user interaction
+        if (!audioContext) {
+            initAudio();
+        }
         
-        instruction.textContent = "Contract your pelvic floor muscles";
-        updateTimerVisuals();
+        // Add preparation countdown
+        let prepTime = 3;
+        instruction.textContent = "Get ready...";
+        phaseLabel.textContent = "PREP";
+        phaseLabel.classList.add('preparation');
+        countdown.textContent = prepTime;
         
-        timer = setInterval(() => {
-            phaseSeconds++;
-            seconds++;
-            updateTimerVisuals();
-            
-            if (phaseSeconds >= phaseDuration) {
-                phaseSeconds = 0;
-                isHolding = !isHolding;
-                
-                if (isHolding) {
-                    // Starting a new rep
-                    count++;
-                    phaseDuration = holdTime;
-                    instruction.textContent = "Contract your pelvic floor muscles";
-                    
-                    if (count >= totalReps) {
-                        clearInterval(timer);
-                        instruction.textContent = "Well done! Session complete.";
-                        countdown.textContent = "✓";
-                        phaseLabel.textContent = "DONE";
-                        setTimeout(() => {
-                            stopTimer();
-                            promptLogSession();
-                        }, 1500);
-                    }
-                } else {
-                    // Switching to relax phase
-                    phaseDuration = relaxTime;
-                    instruction.textContent = "Relax your muscles";
-                }
+        const prepTimer = setInterval(() => {
+            prepTime--;
+            if (prepTime > 0) {
+                countdown.textContent = prepTime;
+                playSound(true);
+                vibrate(100);
+            } else {
+                clearInterval(prepTimer);
+                phaseLabel.classList.remove('preparation');
+                startMainExercise();
             }
         }, 1000);
+        
+        function startMainExercise() {
+            seconds = 0;
+            phaseSeconds = 0;
+            phaseDuration = holdTime;
+            isHolding = true;
+            count = 0;
+            totalReps = repetitions;
+            
+            startBasicBtn.disabled = true;
+            startLongBtn.disabled = true;
+            startQuickBtn.disabled = true;
+            customizeBtn.disabled = true;
+            stopBtn.disabled = false;
+            
+            instruction.textContent = "Contract your pelvic floor muscles";
+            updateTimerVisuals();
+            
+            // Add progress indicator
+            const progressIndicator = document.createElement('div');
+            progressIndicator.className = 'progress-indicator';
+            instruction.parentNode.insertBefore(progressIndicator, instruction.nextSibling);
+            
+            timer = setInterval(() => {
+                phaseSeconds++;
+                seconds++;
+                updateTimerVisuals();
+                
+                // Update progress indicator
+                progressIndicator.textContent = `Rep ${count + 1}/${totalReps}`;
+                
+                if (phaseSeconds >= phaseDuration) {
+                    phaseSeconds = 0;
+                    isHolding = !isHolding;
+                    
+                    // Play sound and vibrate on phase change
+                    playSound(isHolding);
+                    vibrate(isHolding ? 200 : 100);
+                    
+                    if (isHolding) {
+                        count++;
+                        phaseDuration = holdTime;
+                        instruction.textContent = "Contract your pelvic floor muscles";
+                        
+                        if (count >= totalReps) {
+                            clearInterval(timer);
+                            instruction.textContent = "Well done! Session complete.";
+                            countdown.textContent = "✓";
+                            phaseLabel.textContent = "DONE";
+                            progressIndicator.remove();
+                            playSound(true);
+                            vibrate(300);
+                            setTimeout(() => {
+                                stopTimer();
+                                promptLogSession();
+                            }, 1500);
+                        }
+                    } else {
+                        phaseDuration = relaxTime;
+                        instruction.textContent = "Relax your muscles";
+                    }
+                }
+            }, 1000);
+        }
     }
     
     function promptLogSession() {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Circle -->
+    <circle cx="256" cy="256" r="256" fill="#4a90e2"/>
+    
+    <!-- Timer Design -->
+    <circle cx="256" cy="256" r="200" fill="none" stroke="white" stroke-width="24"/>
+    
+    <!-- Timer Fill (Progress) -->
+    <path d="M 256 456 A 200 200 0 0 1 256 56" fill="none" stroke="#42b883" stroke-width="24" stroke-linecap="round"/>
+    
+    <!-- Center Text -->
+    <text x="256" y="276" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="white" text-anchor="middle">K</text>
+</svg>
