@@ -18,13 +18,28 @@
     <div class="container">
         <!-- Timer Section -->
         <div class="timer-section">
-            <div class="visual-timer-container">
-                <div class="visual-timer">
-                    <div class="timer-negative" id="timer-negative"></div>
-                    <div class="timer-fill" id="timer-fill"></div>
-                    <div class="timer-content">
-                        <div class="timer-text" id="countdown">0</div>
-                        <div class="phase-label" id="phase-label">READY</div>
+            <div class="timer-with-progress">
+                <div class="progress-bar-vertical">
+                    <div class="progress-indicator-label">Reps</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">0/0</div>
+                </div>
+                
+                <div class="visual-timer-container">
+                    <!-- Outer progress indicator -->
+                    <div class="rep-progress-ring" id="rep-progress-ring">
+                        <div class="rep-count" id="rep-count">0/0</div>
+                    </div>
+                    
+                    <div class="visual-timer">
+                        <div class="timer-negative" id="timer-negative"></div>
+                        <div class="timer-fill" id="timer-fill"></div>
+                        <div class="timer-content">
+                            <div class="timer-text" id="countdown">0</div>
+                            <div class="phase-label" id="phase-label">READY</div>
+                        </div>
                     </div>
                 </div>
             </div>
