@@ -110,7 +110,7 @@ p {
     position: relative;
     margin: 20px 0;
     filter: none;
-    box-shadow: var(--box-shadow-sm);
+    box-shadow: none;
 }
 
 .visual-timer {
