@@ -1,6 +1,7 @@
 const CACHE_NAME = 'kegel-timer-v1';
 const ASSETS_TO_CACHE = [
-  './kegel-timer.html',
+  './',
+  './index.html',
   './styles.css',
   './script.js',
   './icons/icon-192.png',

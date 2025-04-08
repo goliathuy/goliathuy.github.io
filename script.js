@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const timerFill = document.getElementById('timer-fill');
     const timerNegative = document.getElementById('timer-negative');
     const timerClickable = document.getElementById('timer-clickable');
+    const controlExerciseBtn = document.getElementById('control-exercise-btn');
     
     // Panel Elements
     const customizePanel = document.getElementById('customize-panel');
@@ -73,43 +74,74 @@ document.addEventListener('DOMContentLoaded', function() {
     let totalReps = 0;
     let phaseDuration = 0;
     let audioContext = null;
-    let holdSound = null;
-    let relaxSound = null;
+    const SOUND_POOL_SIZE = 4; // Number of oscillators to keep in the pool
+    const soundPool = {
+        hold: [],
+        relax: []
+    };
     let isPaused = false;
     let currentExerciseParams = null; // Store current exercise parameters for pause/restart
     
     // Store the timer function globally so we can access it for pause/resume
     let exerciseTimerFunction = null;
     
+    // Button text states
+    const BUTTON_TEXT = {
+        START: 'Start Exercise',
+        STOP: 'Stop Exercise',
+        RESTART: 'Start New Exercise'
+    };
+    
     // Timer Variables
     function initAudio() {
+        if (audioContext) return;
+        
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Create hold sound (higher pitch)
-        holdSound = audioContext.createOscillator();
-        holdSound.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
-        
-        // Create relax sound (lower pitch)
-        relaxSound = audioContext.createOscillator();
-        relaxSound.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
+        // Pre-create oscillators for the pool
+        for (let i = 0; i < SOUND_POOL_SIZE; i++) {
+            soundPool.hold.push(createOscillator(880)); // A5 note
+            soundPool.relax.push(createOscillator(440)); // A4 note
+        }
+    }
+    
+    function createOscillator(frequency) {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        return { oscillator, gainNode };
     }
     
     function playSound(isHold) {
         if (!soundToggle.checked || !audioContext) return;
         
-        const sound = isHold ? holdSound : relaxSound;
-        const gainNode = audioContext.createGain();
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        const pool = isHold ? soundPool.hold : soundPool.relax;
+        const sound = pool.shift(); // Get the first available sound
         
-        sound.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        sound.start();
-        setTimeout(() => {
-            sound.stop();
-            sound.disconnect();
-        }, 200);
+        if (sound) {
+            // Play the sound
+            sound.gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            sound.gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.2);
+            
+            // Put the sound back in the pool after use
+            setTimeout(() => {
+                pool.push(sound);
+            }, 200);
+        }
     }
+    
+    // Clean up audio resources when the page is hidden or unloaded
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && audioContext) {
+            audioContext.suspend();
+        } else if (audioContext) {
+            audioContext.resume();
+        }
+    });
     
     function vibrate(duration) {
         if (vibrationToggle.checked && navigator.vibrate) {
@@ -191,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startLongBtn.disabled = false;
         startQuickBtn.disabled = false;
         customizeBtn.disabled = false;
-        stopBtn.disabled = true;
+        controlExerciseBtn.textContent = BUTTON_TEXT.START;
         
         // Reset pause state
         isPaused = false;
@@ -281,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
             startLongBtn.disabled = true;
             startQuickBtn.disabled = true;
             customizeBtn.disabled = true;
-            stopBtn.disabled = false;
+            controlExerciseBtn.textContent = BUTTON_TEXT.STOP;
             
             instruction.textContent = "Contract your pelvic floor muscles";
             updateTimerVisuals();
@@ -303,8 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     phaseLabel.classList.remove('preparation');
                     
                     // Convert Stop button to Restart
-                    stopBtn.textContent = "Start New Exercise";
-                    stopBtn.classList.add('restart-button');
+                    controlExerciseBtn.textContent = BUTTON_TEXT.RESTART;
+                    controlExerciseBtn.classList.add('restart-button');
                     
                     // Provide feedback
                     playSound(true);
@@ -322,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Log session after a brief delay
                     setTimeout(() => {
                         // Keep the stop button enabled but change its function to restart
-                        stopBtn.disabled = false;
+                        controlExerciseBtn.disabled = false;
                         
                         // Re-enable other buttons
                         startBasicBtn.disabled = false;
@@ -530,30 +562,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     });
     
-    // Make stop button work as both stop and restart
-    stopBtn.addEventListener('click', () => {
-        if (stopBtn.classList.contains('restart-button')) {
+    // Make control button work as both stop and start
+    controlExerciseBtn.addEventListener('click', () => {
+        if (controlExerciseBtn.textContent === BUTTON_TEXT.START) {
+            // Default to basic exercise when using start button
+            startExercise(5, 5, 10);
+        } else if (controlExerciseBtn.classList.contains('restart-button')) {
             // If it's in restart mode, restart the exercise with the same parameters
             resetTimer();
             
             // Check if we have stored parameters and restart with them
             if (currentExerciseParams) {
-                console.log("Restarting exercise with saved parameters:", currentExerciseParams);
                 startExercise(
                     currentExerciseParams.holdTime,
                     currentExerciseParams.relaxTime,
                     currentExerciseParams.repetitions
                 );
             } else {
-                // Just reset UI if no parameters
-                instruction.textContent = "Select an exercise to begin";
-                countdown.textContent = "0";
-                phaseLabel.textContent = "READY";
+                // Default to basic exercise if no parameters
+                startExercise(5, 5, 10);
             }
             
             // Reset button state
-            stopBtn.textContent = "Stop Exercise";
-            stopBtn.classList.remove('restart-button');
+            controlExerciseBtn.textContent = BUTTON_TEXT.STOP;
+            controlExerciseBtn.classList.remove('restart-button');
         } else {
             // Normal stop behavior
             stopTimer();
