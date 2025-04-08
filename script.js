@@ -350,6 +350,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Define the timer function and store it globally
             exerciseTimerFunction = function() {
+                // Don't update if paused
+                if (isPaused) return;
+                
                 // Immediately check if we've already completed all reps
                 if (count >= totalReps) {
                     console.log("COMPLETED ALL REPS - STOPPING TIMER");
