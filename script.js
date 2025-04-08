@@ -219,11 +219,20 @@ document.addEventListener('DOMContentLoaded', function() {
             timer = null;
         }
         
+        // Also clear prep timer if it exists
+        if (prepTimer) {
+            clearInterval(prepTimer);
+            prepTimer = null;
+        }
+        
+        // Reset running flag
+        isExerciseRunning = false;
+        
         startBasicBtn.disabled = false;
         startLongBtn.disabled = false;
         startQuickBtn.disabled = false;
         customizeBtn.disabled = false;
-        controlExerciseBtn.textContent = BUTTON_TEXT.START;
+        updateControlButton('start');
         
         // Reset pause state
         isPaused = false;
@@ -233,31 +242,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function togglePause() {
-        if (!timer && !isPaused) return; // No active timer and not paused
+        if (!isExerciseRunning) return; // No exercise running
         
         isPaused = !isPaused;
         
         if (isPaused) {
             // Pause the timer
-            clearInterval(timer);
-            timer = null;
             instruction.textContent = "Paused - Click timer to resume";
             timerClickable.classList.add('paused');
         } else {
             // Resume the timer
             timerClickable.classList.remove('paused');
-            instruction.textContent = isHolding ? "Contract your pelvic floor muscles" : "Relax your muscles";
-            
-            // Restart the interval with the global timer function
-            if (exerciseTimerFunction) {
-                timer = setInterval(exerciseTimerFunction, 1000);
+            if (prepTimer) {
+                instruction.textContent = "Get ready... Click timer to pause";
+            } else {
+                instruction.textContent = isHolding ? "Contract your pelvic floor muscles" : "Relax your muscles";
             }
         }
     }
     
+    // Add isExerciseRunning flag
+    let isExerciseRunning = false;
+    
+    // Add prepTimer to global scope so we can clear it
+    let prepTimer = null;
+    
     function startExercise(holdTime, relaxTime, repetitions) {
+        // Prevent starting if an exercise is already running
+        if (isExerciseRunning) {
+            console.log('Exercise already running, ignoring start request');
+            return;
+        }
+        
         console.log('Starting exercise with holdTime:', holdTime, 'relaxTime:', relaxTime, 'repetitions:', repetitions);
         stopTimer();
+        
+        // Set running flag
+        isExerciseRunning = true;
         
         // Store current parameters for restart
         currentExerciseParams = {
@@ -279,23 +300,32 @@ document.addEventListener('DOMContentLoaded', function() {
             repCount.textContent = `0/${repetitions}`;
         }
         
+        // Enable control button during countdown
+        controlExerciseBtn.textContent = BUTTON_TEXT.STOP;
+        
         // Add preparation countdown
         let prepTime = 3;
-        instruction.textContent = "Get ready...";
+        instruction.textContent = "Get ready... Click timer to pause";
         phaseLabel.textContent = "PREP";
         phaseLabel.classList.add('preparation');
         countdown.textContent = prepTime;
         
-        const prepTimer = setInterval(() => {
-            prepTime--;
-            if (prepTime > 0) {
-                countdown.textContent = prepTime;
-                playSound(true);
-                vibrate(100);
-            } else {
-                clearInterval(prepTimer);
-                phaseLabel.classList.remove('preparation');
-                startMainExercise();
+        // Enable pause functionality during countdown
+        timerClickable.classList.add('pause-on-click');
+        
+        prepTimer = setInterval(() => {
+            if (!isPaused) {
+                prepTime--;
+                if (prepTime > 0) {
+                    countdown.textContent = prepTime;
+                    playSound(true);
+                    vibrate(100);
+                } else {
+                    clearInterval(prepTimer);
+                    prepTimer = null;
+                    phaseLabel.classList.remove('preparation');
+                    startMainExercise();
+                }
             }
         }, 1000);
         
@@ -443,6 +473,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Use the timer function
             timer = setInterval(exerciseTimerFunction, 1000);
         }
+        
+        // Update control button
+        updateControlButton('stop');
     }
     
     function promptLogSession() {
@@ -564,14 +597,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Make control button work as both stop and start
     controlExerciseBtn.addEventListener('click', () => {
-        if (controlExerciseBtn.textContent === BUTTON_TEXT.START) {
-            // Default to basic exercise when using start button
+        const currentState = controlExerciseBtn.dataset.state || 'start';
+        
+        if (currentState === 'start') {
             startExercise(5, 5, 10);
-        } else if (controlExerciseBtn.classList.contains('restart-button')) {
-            // If it's in restart mode, restart the exercise with the same parameters
+        } else if (currentState === 'restart') {
             resetTimer();
             
-            // Check if we have stored parameters and restart with them
             if (currentExerciseParams) {
                 startExercise(
                     currentExerciseParams.holdTime,
@@ -579,24 +611,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentExerciseParams.repetitions
                 );
             } else {
-                // Default to basic exercise if no parameters
                 startExercise(5, 5, 10);
             }
-            
-            // Reset button state
-            controlExerciseBtn.textContent = BUTTON_TEXT.STOP;
-            controlExerciseBtn.classList.remove('restart-button');
         } else {
-            // Normal stop behavior
             stopTimer();
             resetTimer();
         }
     });
-    
+
     // Add click event for timer to pause/resume
     if (timerClickable) {
         timerClickable.addEventListener('click', function() {
             togglePause();
         });
     }
+
+    function updateControlButton(state) {
+        controlExerciseBtn.dataset.state = state;
+        controlExerciseBtn.textContent = BUTTON_TEXT[state.toUpperCase()];
+    }
+
+    // Set initial button state
+    updateControlButton('start');
 });
