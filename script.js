@@ -636,4 +636,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set initial button state
     updateControlButton('start');
+
+    // Layout change event listener
+    window.addEventListener('layoutChanged', function(e) {
+        // Handle layout-specific adjustments when layout changes
+        const layout = e.detail.layout;
+        console.log(`Layout changed to: ${layout}`);
+        
+        if (layout === 'layout2a') {
+            // Adjust for Card Layout (layout2a)
+            handleCardLayoutSpecifics();
+        } else {
+            // Adjust for Default Layout
+            handleDefaultLayoutSpecifics();
+        }
+    });
+    
+    // Handle different layout specifics
+    function handleCardLayoutSpecifics() {
+        // Find elements that may have been created by the layout manager
+        const settingsDrawer = document.getElementById('settings-drawer');
+        const bottomNav = document.getElementById('bottom-nav');
+        
+        // Add event listeners for bottom nav
+        if (bottomNav) {
+            const navItems = bottomNav.querySelectorAll('.nav-item');
+            navItems.forEach((item, index) => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Handle navigation
+                    const text = this.querySelector('span:last-child').textContent.toLowerCase();
+                    
+                    if (text === 'exercises') {
+                        hideAllPanels();
+                        exercisesPanel.style.display = 'block';
+                    } else if (text === 'progress') {
+                        hideAllPanels();
+                        progressPanel.style.display = 'block';
+                    } else if (text === 'help') {
+                        hideAllPanels();
+                        aboutPanel.style.display = 'block';
+                    } else if (text === 'settings') {
+                        // Toggle settings drawer
+                        if (settingsDrawer) {
+                            settingsDrawer.classList.toggle('visible');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Handle settings drawer toggle
+        if (settingsDrawer) {
+            // Set up sound and vibration toggle sync
+            const soundToggleDrawer = settingsDrawer.querySelector('input[type="checkbox"]');
+            const vibToggleDrawer = settingsDrawer.querySelectorAll('input[type="checkbox"]')[1];
+            
+            if (soundToggleDrawer && soundToggle) {
+                // Sync with main toggle
+                soundToggleDrawer.checked = soundToggle.checked;
+                
+                // Add event listener
+                soundToggleDrawer.addEventListener('change', function() {
+                    soundToggle.checked = this.checked;
+                });
+            }
+            
+            if (vibToggleDrawer && vibrationToggle) {
+                // Sync with main toggle
+                vibToggleDrawer.checked = vibrationToggle.checked;
+                
+                // Add event listener
+                vibToggleDrawer.addEventListener('change', function() {
+                    vibrationToggle.checked = this.checked;
+                });
+            }
+            
+            // Add click outside to close
+            document.addEventListener('click', function(e) {
+                if (settingsDrawer.classList.contains('visible')) {
+                    // Check if click is outside the drawer
+                    if (!settingsDrawer.contains(e.target) && 
+                        !e.target.closest('.nav-item')) {
+                        settingsDrawer.classList.remove('visible');
+                    }
+                }
+            });
+        }
+    }
+    
+    function handleDefaultLayoutSpecifics() {
+        // Any specific adjustments for the default layout can go here
+    }
 });
