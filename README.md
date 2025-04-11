@@ -1,22 +1,34 @@
-# Kegel Exercise Timer
+# Mario Albornoz - Developer Hub & Project Showcase
 
-Welcome to my GitHub, I created this project because I was tired of the publicity in all the apps I tried.
-
-This project is a web-based Kegel exercise timer that helps users perform Kegel exercises with visual and auditory guidance. The application includes different exercise routines, progress tracking, and customizable exercise options.
+This project contains my professional information and the Kegel Exercise Timer application, packaged as a GitHub Pages site.
 
 ## Project Structure
 
-- `index.html`: The main HTML file that contains the structure of the web application.
-- `styles.css`: The CSS file that styles the web application.
-- `script.js`: The JavaScript file that adds interactivity to the web application.
+- `index.html`: Developer Hub page with my professional background and project links
+- `kegel-timer.html`: The standalone Kegel exercise timer application
+- `styles.css`: Shared CSS styling for both pages
+- `hub.js`: JavaScript for the Developer Hub page functionality
+- `script.js`: JavaScript for the Kegel timer application functionality
+- `manifest.json`: PWA manifest file
+- `sw.js`: Service worker for offline capabilities
+- `icons/`: Directory containing icon files for the application
 
-## Features
+## Developer Hub Section
 
-- **Timer Section**: Visual timer to guide users through Kegel exercises.
-- **Exercise Routines**: Predefined routines for basic, long, and quick contractions.
-- **Customization**: Option to customize exercise routines.
-- **Progress Tracking**: Track daily sessions and streaks.
-- **Informational Panels**: Sections for exercises, progress, about, benefits, and FAQs.
+The Developer Hub section features:
+- Professional introduction and background
+- Experience timeline
+- Skills showcase
+- Link to the Kegel timer application
+
+## Kegel Timer Application
+
+The Kegel Exercise Timer application features:
+- Visual timer with hold and relax phases
+- Multiple pre-defined exercise routines
+- Customizable exercise settings
+- Progress tracking
+- Educational content about Kegel exercises
 
 ## Getting Started
 
@@ -27,56 +39,24 @@ To run this project, you need a web browser that supports HTML5, CSS3, and JavaS
 ### Installation
 
 1. Clone the repository or download the project files.
-2. Open `index.html` in your web browser.
+2. Open `index.html` in your web browser to view the Developer Hub.
+3. Access the Kegel Timer application by clicking the "Kegel Timer App" button or directly opening `kegel-timer.html`.
 
-### Usage
+## Purpose
 
-1. Open the `index.html` file in your web browser.
-2. Use the buttons to start different exercise routines or customize your own.
-3. Track your progress and read more about Kegel exercises in the informational panels.
+- **Professional Information**: The index.html serves as an introduction to my background and skills.
+- **Kegel Exercise Timer**: The kegel-timer.html provides a tool for guided Kegel exercises.
+- **AI Code Generation Exploration**: This project demonstrates creating and modifying web content using AI assistance with minimal direct code manipulation.
 
-## File Descriptions
+## Development
 
-### [index.html]
-
-This file contains the HTML structure of the web application. It includes sections for the timer, exercise buttons, customization panel, and informational panels.
-
-### [styles.css]
-
-This file contains the CSS styles for the web application. It defines the layout, colors, fonts, and animations used in the application.
-
-### [script.js]
-
-This file contains the JavaScript code that adds interactivity to the web application. It handles the timer functionality, exercise routines, customization options, and progress tracking.
+The project is structured to allow independent work on both the Developer Hub and the Kegel timer application. You can modify the timer application without affecting the Developer Hub and vice versa.
 
 ## Future Developments
 
-- **Save Progress and History**: Add the ability to save progress and history to a local file and upload it again. This way, users don't need to install anything and can just access the site.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or improvements.
+- **Save Progress and History**: Add the ability to save progress and history to a local file and upload it again.
+- **Expanded Project Collection**: Add more projects and detailed experience sections.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- This project was inspired by the need for a simple and effective Kegel exercise timer.
-- Special thanks to all contributors and users who provide feedback and support.
-
-<!--
-**goliathuy/goliathuy** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->

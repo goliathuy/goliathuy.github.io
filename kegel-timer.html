@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kegel Exercise Timer - Mario Albornoz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <!-- This application was transformed using AI code generation tools as part of an exploration into minimizing direct code manipulation -->
+</head>
+<body>
+    <header>
+        <h1>Kegel Exercise Timer</h1>
+        <a href="index.html" class="back-link">&larr; Back to Developer Hub</a>
+        <p class="ai-subtitle">This project was modified using AI code generation</p>
+    </header>
+
+    <div class="container">
+        <!-- Timer Section -->
+        <div class="timer-section">
+            <div class="visual-timer-container">
+                <div class="visual-timer">
+                    <div class="timer-negative" id="timer-negative"></div>
+                    <div class="timer-fill" id="timer-fill"></div>
+                    <div class="timer-content">
+                        <div class="timer-text" id="countdown">0</div>
+                        <div class="phase-label" id="phase-label">READY</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="instruction" id="instruction">Select an exercise to begin</div>
+            
+            <!-- Exercise Type Buttons -->
+            <div class="button-container">
+                <button class="exercise-button" id="start-basic">Basic Routine</button>
+                <button class="exercise-button" id="start-long">Long Holds</button>
+                <button class="exercise-button" id="start-quick">Quick Contractions</button>
+                <button class="exercise-button" id="customize-btn">Customize</button>
+            </div>
+            
+            <button class="control-button" id="stop-btn" disabled>Stop Exercise</button>
+            
+            <!-- Section Navigation Buttons -->
+            <div class="button-container">
+                <button class="section-button" id="exercises-btn">Exercises</button>
+                <button class="section-button" id="progress-btn">Progress</button>
+                <button class="section-button" id="about-btn">About</button>
+                <button class="section-button" id="benefits-btn">Benefits</button>
+                <button class="section-button" id="faq-btn">FAQ</button>
+            </div>
+            
+            <div class="settings">
+                <label class="toggle">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="toggle-label">Sound Feedback</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="vibration-toggle" checked>
+                    <span class="toggle-label">Vibration</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Customize Panel -->
+        <div class="customize-panel" id="customize-panel">
+            <h2>Customize Your Exercise</h2>
+            <div class="input-group">
+                <label for="custom-hold">Hold Time (seconds):</label>
+                <input type="number" id="custom-hold" value="5" min="1" max="30">
+            </div>
+            <div class="input-group">
+                <label for="custom-relax">Relax Time (seconds):</label>
+                <input type="number" id="custom-relax" value="5" min="1" max="30">
+            </div>
+            <div class="input-group">
+                <label for="custom-reps">Repetitions:</label>
+                <input type="number" id="custom-reps" value="10" min="1" max="50">
+            </div>
+            <button class="control-button" id="start-custom">Start Custom Routine</button>
+            <button class="control-button" id="close-customize">Close</button>
+        </div>
+        
+        <!-- Exercises Panel -->
+        <div class="content-panel" id="exercises-panel">
+            <h2>Kegel Exercise Routines</h2>
+            
+            <div class="exercise-box">
+                <h3>Basic Contraction</h3>
+                <p><strong>How to do it:</strong> Tighten your pelvic floor muscles, hold the contraction for 5 seconds, and then relax for 5 seconds. Repeat 10 times.</p>
+                <p><strong>Tips:</strong> Focus on isolating just the pelvic floor muscles. Avoid tensing your abdomen, thighs, or buttocks.</p>
+                <button class="exercise-button" data-exercise="basic">Start This Exercise</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Long Contraction</h3>
+                <p><strong>How to do it:</strong> Contract your pelvic floor muscles and hold for 10 seconds, then relax for 10 seconds. Repeat 10 times.</p>
+                <p><strong>Goal:</strong> Build up to holding contractions for 10 seconds each.</p>
+                <button class="exercise-button" data-exercise="long">Start This Exercise</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Quick Contractions</h3>
+                <p><strong>How to do it:</strong> Rapidly contract and relax your pelvic floor muscles 20 times in a row.</p>
+                <p><strong>Goal:</strong> Improve muscle responsiveness.</p>
+                <button class="exercise-button" data-exercise="quick">Start This Exercise</button>
+            </div>
+            
+            <button class="control-button" id="close-exercises">Close</button>
+        </div>
+        
+        <!-- Progress Panel -->
+        <div class="content-panel" id="progress-panel">
+            <h2>Track Your Progress</h2>
+            <p>Consistency is key for Kegel exercises. Practice them daily for best results.</p>
+            
+            <div class="exercise-box">
+                <h3>Today's Activity</h3>
+                <div id="today-count">Sessions completed today: 0</div>
+                <button class="control-button" id="log-session" style="margin-top:10px">Log Completed Session</button>
+            </div>
+            
+            <div class="exercise-box">
+                <h3>Your Streak</h3>
+                <div id="streak">Current streak: 0 days</div>
+                <p>Try to maintain your daily practice!</p>
+            </div>
+            
+            <button class="control-button" id="close-progress">Close</button>
+        </div>
+        
+        <!-- About Panel -->
+        <div class="content-panel" id="about-panel">
+            <h2>What are Kegel Exercises?</h2>
+            <p>Kegel exercises strengthen the pelvic floor muscles, which support the bladder, bowel, and in women, the uterus. Named after gynecologist Dr. Arnold Kegel, these exercises can help prevent or control urinary incontinence and other pelvic floor problems.</p>
+            
+            <h3>How to Find Your Pelvic Floor Muscles</h3>
+            <p>To identify your pelvic floor muscles, try to stop urination in midstream. The muscles you use to do this are your pelvic floor muscles. (Note: Don't make a habit of starting and stopping your urine flow as this can lead to incomplete emptying of the bladder.)</p>
+            
+            <h3>When to Do Kegel Exercises</h3>
+            <p>You can do Kegel exercises at any time, while sitting, standing or lying down. You might find it easiest to do them lying down at first. Aim for at least 3 sets of exercises per day.</p>
+            
+            <button class="control-button" id="close-about">Close</button>
+        </div>
+        
+        <!-- Benefits Panel -->
+        <div class="content-panel" id="benefits-panel">
+            <h2>Benefits of Kegel Exercises</h2>
+            
+            <div class="benefit-card">
+                <h3>For Women</h3>
+                <ul>
+                    <li>Reduces urinary incontinence</li>
+                    <li>Prevents pelvic organ prolapse</li>
+                    <li>May improve sexual function</li>
+                    <li>Helps during pregnancy and postpartum recovery</li>
+                </ul>
+            </div>
+            
+            <div class="benefit-card">
+                <h3>For Men</h3>
+                <ul>
+                    <li>Improves urinary control</li>
+                    <li>Can help with recovery after prostate surgery</li>
+                    <li>May improve sexual function</li>
+                    <li>Can help manage symptoms of an overactive bladder</li>
+                </ul>
+            </div>
+            
+            <p>Regular practice of Kegel exercises has been shown to strengthen pelvic floor muscles and provide long-term benefits for bladder and bowel control.</p>
+            
+            <button class="control-button" id="close-benefits">Close</button>
+        </div>
+        
+        <!-- FAQ Panel -->
+        <div class="content-panel" id="faq-panel">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <h3>How often should I do Kegel exercises?</h3>
+                <p>For the best results, practice Kegel exercises 3 times a day, every day. Each session should include 10-15 repetitions of each exercise type.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>How long until I see results?</h3>
+                <p>Most people notice improvements after 4-6 weeks of regular practice. However, this can vary depending on individual circumstances and consistency.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Can I do Kegel exercises anywhere?</h3>
+                <p>Yes! One of the benefits of Kegel exercises is that they can be done anywhere, anytime, and no one will know you're doing them.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Are there any risks with Kegel exercises?</h3>
+                <p>Kegel exercises are generally safe, but if performed incorrectly (such as with too much straining) or too frequently, they might lead to muscle fatigue or increased pelvic tension. If you experience pain or discomfort, consult a healthcare provider.</p>
+            </div>
+            
+            <button class="control-button" id="close-faq">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Disclaimer: This app provides general information about Kegel exercises and is not intended as medical advice. Please consult with a healthcare professional before starting any new exercise program.</p>
+        <p>Created by <a href="index.html">Mario Albornoz</a> | &copy; 2025</p>
+        <p class="ai-generated">Modified with AI assistance to explore code generation capabilities</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(error => console.log('ServiceWorker registration failed:', error));
+        }
+    </script>
+</body>
+</html>
