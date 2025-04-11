@@ -1,25 +1,36 @@
-/* Default layout - Original design */
+/* Classic Layout - Original design */
+
+/* Layout-specific variables */
 body.default-layout {
-    /* Keeping the original styles, just scoping them */
+    /* Layout-specific colors */
+    --layout-primary: #4a90e2;
+    --layout-primary-dark: #3a7bc8;
+    --layout-bg: #f9f9f9;
+    --layout-text: #333;
+    --layout-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+    /* Base layout styles */
     font-family: Arial, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    color: #333;
-    background-color: #f9f9f9;
+    color: var(--layout-text);
+    background-color: var(--layout-bg);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
+/* Header styling */
 body.default-layout header {
-    background-color: #4a90e2;
+    background-color: var(--layout-primary);
     color: white;
     text-align: center;
     padding: 1rem 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--layout-shadow);
 }
 
+/* Main container */
 body.default-layout .container {
     max-width: 800px;
     margin: 0 auto;
@@ -35,16 +46,16 @@ body.default-layout footer {
     display: block; /* Override the hide in layout2a */
 }
 
-/* Hide elements specific to layout2a */
+/* Hide elements specific to the card layout */
 body.default-layout .bottom-nav,
 body.default-layout .fab,
 body.default-layout .settings-drawer {
     display: none;
 }
 
-/* Other default layout specific styles */
+/* Footer styling */
 body.default-layout footer {
-    background-color: #4a90e2;
+    background-color: var(--layout-primary);
     color: white;
     text-align: center;
     padding: 1rem 0;

@@ -1,10 +1,13 @@
 /**
  * Layout Manager for Exercise Timer
- * Handles switching between different layouts
+ * Handles switching between different layouts and their UI components
  */
 class LayoutManager {
+    /**
+     * Initialize the layout manager with available layouts
+     */
     constructor() {
-        // Available layouts
+        // Available layouts configuration
         this.layouts = {
             'default-layout': {
                 name: 'Default Layout',
@@ -16,18 +19,21 @@ class LayoutManager {
             }
         };
         
-        // Initialize with saved layout or default
+        // Initialize with saved layout preference or default
         this.currentLayout = localStorage.getItem('preferred-layout') || 'default-layout';
         
-        // Create DOM elements for layout CSS
-        this.setupLayoutStylesheets();
+        // Set up CSS stylesheets for each layout
+        this._setupLayoutStylesheets();
         
-        // Initialize layout
+        // Apply the initial layout
         this.applyLayout(this.currentLayout);
     }
     
-    setupLayoutStylesheets() {
-        // Add stylesheets for each layout
+    /**
+     * Add stylesheet links to the document head for each layout
+     * @private
+     */
+    _setupLayoutStylesheets() {
         Object.keys(this.layouts).forEach(layoutId => {
             const layout = this.layouts[layoutId];
             const link = document.createElement('link');
@@ -38,38 +44,69 @@ class LayoutManager {
         });
     }
     
+    /**
+     * Apply a specific layout to the application
+     * @param {string} layoutId - The ID of the layout to apply
+     */
     applyLayout(layoutId) {
+        // Validate the layout exists
         if (!this.layouts[layoutId]) {
             console.error(`Layout '${layoutId}' not found`);
             return;
         }
         
-        // Save preference
+        // Save user preference
         localStorage.setItem('preferred-layout', layoutId);
         this.currentLayout = layoutId;
         
+        // Update CSS classes on body
+        this._updateBodyClasses(layoutId);
+        
+        // Add or remove layout-specific elements
+        this._updateLayoutSpecificElements(layoutId);
+        
+        // Update toggle state in settings
+        this._updateLayoutToggleState(layoutId);
+        
+        // Notify other components about the layout change
+        window.dispatchEvent(new CustomEvent('layoutChanged', { 
+            detail: { layout: layoutId } 
+        }));
+    }
+    
+    /**
+     * Update body classes for the active layout
+     * @private
+     * @param {string} layoutId - The active layout ID
+     */
+    _updateBodyClasses(layoutId) {
         // Remove all layout classes from body
         Object.keys(this.layouts).forEach(id => {
             document.body.classList.remove(id);
         });
         
-        // Add new layout class
+        // Add the new layout class
         document.body.classList.add(layoutId);
-        
-        // Update UI elements specific to layouts
-        this.updateLayoutSpecificElements(layoutId);
-        
-        // Update toggle state in settings
+    }
+    
+    /**
+     * Update UI toggle state based on current layout
+     * @private
+     * @param {string} layoutId - The active layout ID
+     */
+    _updateLayoutToggleState(layoutId) {
         const layoutToggle = document.getElementById('layout-toggle');
         if (layoutToggle) {
             layoutToggle.checked = layoutId === 'layout2a';
         }
-        
-        // Dispatch event for other components to react
-        window.dispatchEvent(new CustomEvent('layoutChanged', { detail: { layout: layoutId } }));
     }
     
-    updateLayoutSpecificElements(layoutId) {
+    /**
+     * Update layout-specific UI elements
+     * @private
+     * @param {string} layoutId - The active layout ID
+     */
+    _updateLayoutSpecificElements(layoutId) {
         // Elements specific to layout2a
         const layout2aElements = [
             { id: 'bottom-nav', create: this.createBottomNav.bind(this) },
@@ -77,7 +114,6 @@ class LayoutManager {
             { id: 'settings-drawer', create: this.createSettingsDrawer.bind(this) }
         ];
         
-        // Create or remove layout-specific elements based on current layout
         if (layoutId === 'layout2a') {
             // Add layout2a specific elements if they don't exist
             layout2aElements.forEach(element => {
@@ -94,12 +130,16 @@ class LayoutManager {
         }
     }
     
+    /**
+     * Create the bottom navigation bar for card layout
+     * @returns {HTMLElement} The bottom nav element
+     */
     createBottomNav() {
         const bottomNav = document.createElement('nav');
         bottomNav.id = 'bottom-nav';
         bottomNav.className = 'bottom-nav';
         
-        // Navigation items
+        // Navigation items configuration
         const navItems = [
             { icon: '⏱️', text: 'Timer', active: true },
             { icon: '💪', text: 'Exercises' },
@@ -108,25 +148,9 @@ class LayoutManager {
             { icon: '⚙️', text: 'Settings', onClick: this.toggleSettingsDrawer }
         ];
         
+        // Create navigation items
         navItems.forEach(item => {
-            const navItem = document.createElement('a');
-            navItem.href = '#';
-            navItem.className = `nav-item${item.active ? ' active' : ''}`;
-            
-            const iconSpan = document.createElement('span');
-            iconSpan.className = 'nav-icon';
-            iconSpan.textContent = item.icon;
-            
-            const textSpan = document.createElement('span');
-            textSpan.textContent = item.text;
-            
-            navItem.appendChild(iconSpan);
-            navItem.appendChild(textSpan);
-            
-            if (item.onClick) {
-                navItem.addEventListener('click', item.onClick);
-            }
-            
+            const navItem = this._createNavItem(item);
             bottomNav.appendChild(navItem);
         });
         
@@ -134,6 +158,38 @@ class LayoutManager {
         return bottomNav;
     }
     
+    /**
+     * Create a navigation item for the bottom nav
+     * @private
+     * @param {Object} item - Navigation item configuration
+     * @returns {HTMLElement} The navigation item element
+     */
+    _createNavItem(item) {
+        const navItem = document.createElement('a');
+        navItem.href = '#';
+        navItem.className = `nav-item${item.active ? ' active' : ''}`;
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'nav-icon';
+        iconSpan.textContent = item.icon;
+        
+        const textSpan = document.createElement('span');
+        textSpan.textContent = item.text;
+        
+        navItem.appendChild(iconSpan);
+        navItem.appendChild(textSpan);
+        
+        if (item.onClick) {
+            navItem.addEventListener('click', item.onClick);
+        }
+        
+        return navItem;
+    }
+    
+    /**
+     * Create floating action button
+     * @returns {HTMLElement} The FAB element
+     */
     createFabButton() {
         const fab = document.createElement('button');
         fab.id = 'fab-button';
@@ -143,12 +199,16 @@ class LayoutManager {
         return fab;
     }
     
+    /**
+     * Create settings drawer for card layout
+     * @returns {HTMLElement} The settings drawer element
+     */
     createSettingsDrawer() {
         const drawer = document.createElement('div');
         drawer.id = 'settings-drawer';
         drawer.className = 'settings-drawer';
         
-        // Drawer handle
+        // Drawer handle for pull gesture
         const handle = document.createElement('div');
         handle.className = 'drawer-handle';
         drawer.appendChild(handle);
@@ -159,13 +219,9 @@ class LayoutManager {
         title.textContent = 'Settings';
         drawer.appendChild(title);
         
-        // Sound toggle
-        const soundToggle = this.createToggleSwitch('Sound Feedback', true);
-        drawer.appendChild(soundToggle);
-        
-        // Vibration toggle
-        const vibrationToggle = this.createToggleSwitch('Vibration', true);
-        drawer.appendChild(vibrationToggle);
+        // Add toggle controls
+        drawer.appendChild(this.createToggleSwitch('Sound Feedback', true));
+        drawer.appendChild(this.createToggleSwitch('Vibration', true));
         
         // Layout toggle
         const layoutToggle = this.createToggleSwitch('Card Layout', this.currentLayout === 'layout2a');
@@ -179,6 +235,12 @@ class LayoutManager {
         return drawer;
     }
     
+    /**
+     * Create a toggle switch component
+     * @param {string} label - Label text for the toggle
+     * @param {boolean} checked - Initial toggle state
+     * @returns {HTMLElement} The toggle switch element
+     */
     createToggleSwitch(label, checked) {
         const toggleDiv = document.createElement('div');
         toggleDiv.className = 'toggle-switch';
@@ -205,6 +267,10 @@ class LayoutManager {
         return toggleDiv;
     }
     
+    /**
+     * Toggle visibility of the settings drawer
+     * @param {Event} event - Click event
+     */
     toggleSettingsDrawer(event) {
         if (event) event.preventDefault();
         
@@ -217,29 +283,40 @@ class LayoutManager {
 
 // Initialize layout manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Create global instance
     window.layoutManager = new LayoutManager();
     
     // Add layout toggle to settings in default layout
     const settingsSection = document.querySelector('.settings');
     if (settingsSection) {
-        const layoutToggleLabel = document.createElement('label');
-        layoutToggleLabel.className = 'toggle';
-        
-        const layoutToggleInput = document.createElement('input');
-        layoutToggleInput.type = 'checkbox';
-        layoutToggleInput.id = 'default-layout-toggle';
-        layoutToggleInput.checked = window.layoutManager.currentLayout === 'layout2a';
-        layoutToggleInput.addEventListener('change', (e) => {
-            window.layoutManager.applyLayout(e.target.checked ? 'layout2a' : 'default-layout');
-        });
-        
-        const layoutToggleSpan = document.createElement('span');
-        layoutToggleSpan.className = 'toggle-label';
-        layoutToggleSpan.textContent = 'Card Layout';
-        
-        layoutToggleLabel.appendChild(layoutToggleInput);
-        layoutToggleLabel.appendChild(layoutToggleSpan);
-        
-        settingsSection.appendChild(layoutToggleLabel);
+        const layoutToggle = createDefaultLayoutToggle(window.layoutManager);
+        settingsSection.appendChild(layoutToggle);
     }
 });
+
+/**
+ * Create a layout toggle for the default layout settings
+ * @param {LayoutManager} layoutManager - Reference to layout manager
+ * @returns {HTMLElement} The toggle element
+ */
+function createDefaultLayoutToggle(layoutManager) {
+    const layoutToggleLabel = document.createElement('label');
+    layoutToggleLabel.className = 'toggle';
+    
+    const layoutToggleInput = document.createElement('input');
+    layoutToggleInput.type = 'checkbox';
+    layoutToggleInput.id = 'default-layout-toggle';
+    layoutToggleInput.checked = layoutManager.currentLayout === 'layout2a';
+    layoutToggleInput.addEventListener('change', (e) => {
+        layoutManager.applyLayout(e.target.checked ? 'layout2a' : 'default-layout');
+    });
+    
+    const layoutToggleSpan = document.createElement('span');
+    layoutToggleSpan.className = 'toggle-label';
+    layoutToggleSpan.textContent = 'Card Layout';
+    
+    layoutToggleLabel.appendChild(layoutToggleInput);
+    layoutToggleLabel.appendChild(layoutToggleSpan);
+    
+    return layoutToggleLabel;
+}

@@ -1,44 +1,58 @@
 /* Card-based layout with bottom navigation */
+
+/* Layout-specific variables */
 :root {
     --primary-color: #4361ee;
+    --primary-light: #6f86ff;
+    --primary-dark: #2947c8;
+    --secondary-color: #48cae4;
+    --background-color: #f0f2f5;
+    --card-background: white;
+    --text-color: #333;
     --nav-height: 64px;
     --header-height: 60px;
+    --border-radius: 20px;
+    --transition-standard: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --box-shadow-elevated: 0 6px 12px rgba(0,0,0,0.15);
 }
 
+/* Base styles for card layout */
 body.layout2a {
     font-family: system-ui, -apple-system, sans-serif;
     min-height: 100vh;
-    background: #f0f2f5;
+    background: var(--background-color);
     padding-bottom: calc(var(--nav-height) + 20px);
     padding-top: var(--header-height);
 }
 
-/* Header */
+/* Fixed header */
 body.layout2a header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: var(--header-height);
-    background: white;
+    background: var(--card-background);
     display: flex;
     align-items: center;
     padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--box-shadow);
     z-index: 100;
 }
 
+/* Main content container */
 body.layout2a .container {
     padding: 20px;
 }
 
 /* Timer Card */
 body.layout2a .timer-section {
-    background: white;
-    border-radius: 20px;
+    background: var(--card-background);
+    border-radius: var(--border-radius);
     padding: 24px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--box-shadow);
 }
 
 body.layout2a .visual-timer-container {
@@ -63,12 +77,12 @@ body.layout2a .button-container {
 }
 
 body.layout2a .exercise-button {
-    background: white;
+    background: var(--card-background);
     border-radius: 16px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition-standard);
     border: none;
     cursor: pointer;
     display: flex;
@@ -96,9 +110,9 @@ body.layout2a .fab {
     background: var(--primary-color);
     color: white;
     border: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: var(--box-shadow-elevated);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: var(--transition-standard);
     z-index: 90;
     display: flex;
     align-items: center;
@@ -108,7 +122,7 @@ body.layout2a .fab {
 
 body.layout2a .fab:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    box-shadow: var(--box-shadow-elevated);
 }
 
 /* Bottom Navigation */
@@ -118,7 +132,7 @@ body.layout2a .bottom-nav {
     left: 0;
     right: 0;
     height: var(--nav-height);
-    background: white;
+    background: var(--card-background);
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     display: flex;
     justify-content: space-around;
@@ -153,12 +167,12 @@ body.layout2a .settings-drawer {
     bottom: var(--nav-height);
     left: 0;
     right: 0;
-    background: white;
+    background: var(--card-background);
     padding: 24px;
-    border-radius: 20px 20px 0 0;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
     transform: translateY(100%);
-    transition: transform 0.3s;
+    transition: var(--transition-standard);
     z-index: 95;
 }
 
