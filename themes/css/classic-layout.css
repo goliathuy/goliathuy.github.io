@@ -1,0 +1,53 @@
+/* Default layout - Original design */
+body.default-layout {
+    /* Keeping the original styles, just scoping them */
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+body.default-layout header {
+    background-color: #4a90e2;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+body.default-layout .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    flex: 1;
+}
+
+/* Show sections that are part of the default layout */
+body.default-layout .content-panel,
+body.default-layout .customize-panel,
+body.default-layout .section-button,
+body.default-layout footer {
+    display: block; /* Override the hide in layout2a */
+}
+
+/* Hide elements specific to layout2a */
+body.default-layout .bottom-nav,
+body.default-layout .fab,
+body.default-layout .settings-drawer {
+    display: none;
+}
+
+/* Other default layout specific styles */
+body.default-layout footer {
+    background-color: #4a90e2;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    font-size: 0.8rem;
+    margin-top: auto;
+}
