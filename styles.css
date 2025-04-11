@@ -575,3 +575,59 @@ footer {
     color: #999;
     margin-top: 10px;
 }
+
+/* Google Photos Gallery Styles */
+.photo-gallery-section {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.photo-gallery-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.photo-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 15px;
+    margin: 20px 0;
+}
+
+.gallery-photo {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 150px;
+}
+
+.gallery-photo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.gallery-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-photo:hover img {
+    transform: scale(1.1);
+}
+
+@media (max-width: 767px) {
+    .photo-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
