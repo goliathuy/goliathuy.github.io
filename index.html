@@ -241,9 +241,17 @@
     <script>
         // Register Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('ServiceWorker registered'))
-                .catch(error => console.log('ServiceWorker registration failed:', error));
+            // Only register service worker if we're on HTTPS or localhost (not file://)
+            if (window.location.protocol === 'https:' || 
+                window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1') {
+                
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('ServiceWorker registered'))
+                    .catch(error => console.log('ServiceWorker registration failed:', error));
+            } else {
+                console.log('ServiceWorker not registered: Must be served from HTTPS or localhost');
+            }
         }
     </script>
 </body>
