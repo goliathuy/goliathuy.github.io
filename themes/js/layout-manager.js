@@ -1,5 +1,5 @@
 /**
- * Layout Manager for Kegel Exercise Timer
+ * Layout Manager for Exercise Timer
  * Handles switching between different layouts
  */
 class LayoutManager {
@@ -8,11 +8,11 @@ class LayoutManager {
         this.layouts = {
             'default-layout': {
                 name: 'Default Layout',
-                cssFile: 'themes/css/default-layout.css'
+                cssFile: 'themes/css/classic-layout.css'
             },
             'layout2a': {
                 name: 'Card Layout',
-                cssFile: 'themes/css/layout2a.css'
+                cssFile: 'themes/css/card-layout.css'
             }
         };
         
