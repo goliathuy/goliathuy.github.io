@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Kegel Timer App",
+            "url": "http://localhost:8000/kegel-timer.html",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Timer Server"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Hub Page",
+            "url": "http://localhost:8000/index.html",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Timer Server"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Tests",
+            "url": "http://localhost:8000/tests/test-runner.html",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Test Server"
+        }
+    ]
+}
