@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kegel Timer Tests</title>
+    <link rel="icon" type="image/png" href="../icons/icon-192.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-suite {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .test-name {
+            font-weight: bold;
+        }
+        .test-result {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+        .pass {
+            color: green;
+        }
+        .fail {
+            color: red;
+        }
+        .summary {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        h1 {
+            color: #4a90e2;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #3a7bc8;
+        }
+        .debug-panel {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .toggle-label {
+            margin-left: 10px;
+        }
+        #debug-output {
+            border: 1px solid #ddd;
+            padding: 10px;
+            max-height: 200px;
+            overflow: auto;
+            background-color: #f9f9f9;
+            font-family: monospace;
+            display: none;
+        }
+        #show-test-container {
+            background-color: #42b883;
+        }
+        #reset-debug {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kegel Timer Test Suite</h1>
+    
+    <!-- Debug Controls -->
+    <div class="debug-panel">
+        <h3>Debug Options</h3>
+        <div class="toggle-container">
+            <input type="checkbox" id="debug-mode" />
+            <span class="toggle-label">Enable Debug Mode</span>
+        </div>
+        <div class="toggle-container">
+            <input type="checkbox" id="visible-test-container" />
+            <span class="toggle-label">Show Test Container (normally hidden)</span>
+        </div>
+        <div class="toggle-container">
+            <input type="checkbox" id="break-on-fail" />
+            <span class="toggle-label">Pause execution on test failure</span>
+        </div>
+        <button id="show-test-container">Show Current Test DOM</button>
+        <button id="reset-debug">Clear Debug Output</button>
+        <div id="debug-output"></div>
+    </div>
+    
+    <!-- Test Controls -->
+    <button id="run-all-tests">Run All Tests</button>
+    <button id="run-unit-tests">Run Unit Tests</button>
+    <button id="run-integration-tests">Run Integration Tests</button>
+    
+    <div id="test-results"></div>
+    
+    <!-- Test Framework -->
+    <script src="test-framework.js"></script>
+    
+    <!-- Units Under Test -->
+    <script src="../script.js"></script>
+    <script src="../hub.js"></script>
+    
+    <!-- Unit Tests -->
+    <script src="unit/timer-tests.js"></script>
+    <script src="unit/dom-manipulation-tests.js"></script>
+    <script src="unit/debug-tests.js"></script>
+    
+    <!-- Integration Tests -->
+    <script src="integration/user-flow-tests.js"></script>
+    
+    <!-- Test Runner -->
+    <script>
+        // Debug mode functionality
+        const debugMode = document.getElementById('debug-mode');
+        const visibleTestContainer = document.getElementById('visible-test-container');
+        const breakOnFail = document.getElementById('break-on-fail');
+        const debugOutput = document.getElementById('debug-output');
+        const showTestContainerBtn = document.getElementById('show-test-container');
+        const resetDebugBtn = document.getElementById('reset-debug');
+        
+        // Initialize debug helpers
+        window.testDebug = {
+            isDebugMode: false,
+            breakOnFail: false,
+            log: function(message) {
+                if (this.isDebugMode) {
+                    const entry = document.createElement('div');
+                    entry.textContent = message;
+                    debugOutput.appendChild(entry);
+                    debugOutput.scrollTop = debugOutput.scrollHeight;
+                    console.log('[TEST DEBUG]', message);
+                }
+            },
+            inspect: function(obj, label) {
+                if (this.isDebugMode) {
+                    const entry = document.createElement('div');
+                    entry.textContent = `${label || 'Object'}: ${JSON.stringify(obj, null, 2)}`;
+                    debugOutput.appendChild(entry);
+                    debugOutput.scrollTop = debugOutput.scrollHeight;
+                    console.log('[TEST INSPECT]', label || 'Object', obj);
+                }
+            }
+        };
+        
+        // Debug mode toggle
+        debugMode.addEventListener('change', function() {
+            window.testDebug.isDebugMode = this.checked;
+            if (this.checked) {
+                debugOutput.style.display = 'block';
+                window.testDebug.log('Debug mode enabled');
+            } else {
+                debugOutput.style.display = 'none';
+            }
+        });
+        
+        // Break on fail toggle
+        breakOnFail.addEventListener('change', function() {
+            window.testDebug.breakOnFail = this.checked;
+            window.testDebug.log(`Break on fail ${this.checked ? 'enabled' : 'disabled'}`);
+        });
+        
+        // Visible test container toggle
+        visibleTestContainer.addEventListener('change', function() {
+            const testContainer = document.getElementById('test-container');
+            if (testContainer) {
+                testContainer.style.display = this.checked ? 'block' : 'none';
+                testContainer.style.border = this.checked ? '2px solid red' : 'none';
+                testContainer.style.padding = this.checked ? '10px' : '0';
+                testContainer.style.margin = this.checked ? '10px 0' : '0';
+                window.testDebug.log(`Test container ${this.checked ? 'shown' : 'hidden'}`);
+            } else {
+                window.testDebug.log('No test container available yet');
+            }
+        });
+        
+        // Show current test DOM
+        showTestContainerBtn.addEventListener('click', function() {
+            const testContainer = document.getElementById('test-container');
+            if (testContainer) {
+                alert(`Current Test DOM Contents:\n\n${testContainer.innerHTML}`);
+            } else {
+                alert('No test container available. Run a test first.');
+            }
+        });
+        
+        // Reset debug output
+        resetDebugBtn.addEventListener('click', function() {
+            debugOutput.innerHTML = '';
+            window.testDebug.log('Debug output cleared');
+        });
+        
+        // Extend setupTestDOM to respect visibility setting
+        const originalSetupTestDOM = window.setupTestDOM;
+        window.setupTestDOM = function(html) {
+            const container = originalSetupTestDOM(html);
+            if (visibleTestContainer.checked) {
+                container.style.display = 'block';
+                container.style.border = '2px solid red';
+                container.style.padding = '10px';
+                container.style.margin = '10px 0';
+            }
+            window.testDebug.log(`Test DOM set up with ${html.length} characters of HTML`);
+            return container;
+        };
+        
+        // Run test buttons
+        document.getElementById('run-all-tests').addEventListener('click', function() {
+            window.testDebug.log('Running all tests...');
+            runAllTests();
+        });
+        
+        document.getElementById('run-unit-tests').addEventListener('click', function() {
+            window.testDebug.log('Running unit tests...');
+            runUnitTests();
+        });
+        
+        document.getElementById('run-integration-tests').addEventListener('click', function() {
+            window.testDebug.log('Running integration tests...');
+            runIntegrationTests();
+        });
+        
+        // Auto-run tests when page loads
+        window.addEventListener('load', function() {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>
