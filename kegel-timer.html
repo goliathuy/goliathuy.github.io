@@ -218,5 +218,134 @@
                 .catch(error => console.log('ServiceWorker registration failed:', error));
         }
     </script>
+
+    <!-- LocalStorage Debug Panel -->
+    <div id="ls-debug-panel" style="display: none; position: fixed; bottom: 10px; right: 10px; border: 1px solid #ccc; background-color: white; padding: 10px; max-width: 300px; box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 9999; font-family: monospace; font-size: 12px;">
+        <h4 style="margin-top: 0; margin-bottom: 5px;">localStorage Debug</h4>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+            <button id="ls-debug-toggle" style="background: #4a90e2; color: white; border: none; padding: 3px 8px; cursor: pointer;">Show/Hide</button>
+            <button id="ls-debug-refresh" style="background: #42b883; color: white; border: none; padding: 3px 8px; cursor: pointer;">Refresh</button>
+            <button id="ls-debug-clear" style="background: #e74c3c; color: white; border: none; padding: 3px 8px; cursor: pointer;">Clear All</button>
+        </div>
+        <div id="ls-debug-content" style="max-height: 200px; overflow-y: auto; word-break: break-all;"></div>
+    </div>
+
+    <script>
+    // Debug localStorage utility
+    (function() {
+        // Check if debug mode is enabled via URL parameter (?debug=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugMode = urlParams.get('debug') === 'true';
+        
+        const debugPanel = document.getElementById('ls-debug-panel');
+        const debugContent = document.getElementById('ls-debug-content');
+        const toggleBtn = document.getElementById('ls-debug-toggle');
+        const refreshBtn = document.getElementById('ls-debug-refresh');
+        const clearBtn = document.getElementById('ls-debug-clear');
+        
+        // Show debug panel if debug mode is enabled
+        if (debugMode) {
+            debugPanel.style.display = 'block';
+        }
+        
+        // Display current localStorage content
+        function refreshLocalStorageDisplay() {
+            debugContent.innerHTML = '';
+            
+            if (localStorage.length === 0) {
+                debugContent.innerHTML = '<i>localStorage is empty</i>';
+                return;
+            }
+            
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            
+            // Add table header
+            const header = document.createElement('tr');
+            header.innerHTML = `
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Key</th>
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Value</th>
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Type</th>
+            `;
+            table.appendChild(header);
+            
+            // Add rows for each localStorage item
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${key}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${value}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${typeof value}</td>
+                `;
+                table.appendChild(row);
+            }
+            
+            debugContent.appendChild(table);
+        }
+        
+        // Toggle debug panel visibility
+        toggleBtn.addEventListener('click', function() {
+            const isHidden = debugPanel.style.display === 'none';
+            debugPanel.style.display = isHidden ? 'block' : 'none';
+        });
+        
+        // Refresh localStorage display
+        refreshBtn.addEventListener('click', refreshLocalStorageDisplay);
+        
+        // Clear all localStorage items
+        clearBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all localStorage items?')) {
+                localStorage.clear();
+                refreshLocalStorageDisplay();
+                console.log('localStorage cleared');
+            }
+        });
+        
+        // Automatically display localStorage content on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Log to console
+            console.group('Initial localStorage State');
+            console.log('localStorage items:', localStorage.length);
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`${key}: '${localStorage.getItem(key)}' (${typeof localStorage.getItem(key)})`);
+            }
+            console.groupEnd();
+            
+            // Update panel
+            if (debugMode) {
+                refreshLocalStorageDisplay();
+            }
+        });
+        
+        // Expose debug functions globally
+        window.lsDebug = {
+            show: function() {
+                debugPanel.style.display = 'block';
+                refreshLocalStorageDisplay();
+            },
+            refresh: refreshLocalStorageDisplay,
+            clear: function() {
+                localStorage.clear();
+                refreshLocalStorageDisplay();
+                console.log('localStorage cleared');
+            },
+            getItem: function(key) {
+                const value = localStorage.getItem(key);
+                console.log(`localStorage.getItem('${key}') = '${value}' (${typeof value})`);
+                return value;
+            },
+            setItem: function(key, value) {
+                localStorage.setItem(key, value);
+                console.log(`localStorage.setItem('${key}', '${value}')`);
+                refreshLocalStorageDisplay();
+            }
+        };
+    })();
+    </script>
 </body>
 </html>
