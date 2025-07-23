@@ -26,49 +26,65 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Helper function to hide all panels
     function hideAllPanels() {
-        aboutPanel.style.display = 'none';
-        experiencePanel.style.display = 'none';
-        skillsPanel.style.display = 'none';
-        kegelRedirectPanel.style.display = 'none';
+        if (aboutPanel) aboutPanel.style.display = 'none';
+        if (experiencePanel) experiencePanel.style.display = 'none';
+        if (skillsPanel) skillsPanel.style.display = 'none';
+        if (kegelRedirectPanel) kegelRedirectPanel.style.display = 'none';
     }
     
     // Navigation button event listeners
-    aboutBtn.addEventListener('click', function() {
-        hideAllPanels();
-        aboutPanel.style.display = 'block';
-    });
+    if (aboutBtn) {
+        aboutBtn.addEventListener('click', function() {
+            hideAllPanels();
+            if (aboutPanel) aboutPanel.style.display = 'block';
+        });
+    }
     
-    experienceBtn.addEventListener('click', function() {
-        hideAllPanels();
-        experiencePanel.style.display = 'block';
-    });
+    if (experienceBtn) {
+        experienceBtn.addEventListener('click', function() {
+            hideAllPanels();
+            if (experiencePanel) experiencePanel.style.display = 'block';
+        });
+    }
     
-    skillsBtn.addEventListener('click', function() {
-        hideAllPanels();
-        skillsPanel.style.display = 'block';
-    });
+    if (skillsBtn) {
+        skillsBtn.addEventListener('click', function() {
+            hideAllPanels();
+            if (skillsPanel) skillsPanel.style.display = 'block';
+        });
+    }
     
-    kegelAppBtn.addEventListener('click', function() {
-        hideAllPanels();
-        kegelRedirectPanel.style.display = 'block';
-    });
+    if (kegelAppBtn) {
+        kegelAppBtn.addEventListener('click', function() {
+            hideAllPanels();
+            if (kegelRedirectPanel) kegelRedirectPanel.style.display = 'block';
+        });
+    }
     
     // Close button event listeners
-    closeAboutBtn.addEventListener('click', function() {
-        aboutPanel.style.display = 'none';
-    });
+    if (closeAboutBtn) {
+        closeAboutBtn.addEventListener('click', function() {
+            if (aboutPanel) aboutPanel.style.display = 'none';
+        });
+    }
     
-    closeExperienceBtn.addEventListener('click', function() {
-        experiencePanel.style.display = 'none';
-    });
+    if (closeExperienceBtn) {
+        closeExperienceBtn.addEventListener('click', function() {
+            if (experiencePanel) experiencePanel.style.display = 'none';
+        });
+    }
     
-    closeSkillsBtn.addEventListener('click', function() {
-        skillsPanel.style.display = 'none';
-    });
+    if (closeSkillsBtn) {
+        closeSkillsBtn.addEventListener('click', function() {
+            if (skillsPanel) skillsPanel.style.display = 'none';
+        });
+    }
     
-    closeKegelRedirectBtn.addEventListener('click', function() {
-        kegelRedirectPanel.style.display = 'none';
-    });
+    if (closeKegelRedirectBtn) {
+        closeKegelRedirectBtn.addEventListener('click', function() {
+            if (kegelRedirectPanel) kegelRedirectPanel.style.display = 'none';
+        });
+    }
     
     // Experience show more functionality
     if (showMoreExperienceBtn && moreExperienceContent) {

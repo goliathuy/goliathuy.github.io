@@ -55,12 +55,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load saved data
     if (localStorage.getItem('todayCount')) {
         todayCount = parseInt(localStorage.getItem('todayCount'));
-        todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+        if (todayCountDisplay) {
+            todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+        }
     }
     
     if (localStorage.getItem('streak')) {
         streak = parseInt(localStorage.getItem('streak'));
-        streakDisplay.textContent = `Current streak: ${streak} days`;
+        if (streakDisplay) {
+            streakDisplay.textContent = `Current streak: ${streak} days`;
+        }
     }
     
     // Timer Variables
@@ -278,114 +282,148 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event Listeners
     // Exercise Buttons
-    startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
-    startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
-    startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
-    stopBtn.addEventListener('click', stopTimer);
+    if (startBasicBtn) startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
+    if (startLongBtn) startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
+    if (startQuickBtn) startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
+    if (stopBtn) stopBtn.addEventListener('click', stopTimer);
     
     // Custom Exercise
-    customizeBtn.addEventListener('click', () => {
-        hideAllPanels();
-        customizePanel.style.display = 'block';
-    });
+    if (customizeBtn) {
+        customizeBtn.addEventListener('click', () => {
+            hideAllPanels();
+            customizePanel.style.display = 'block';
+        });
+    }
     
-    startCustomBtn.addEventListener('click', () => {
-        const holdTime = parseInt(customHoldInput.value) || 5;
-        const relaxTime = parseInt(customRelaxInput.value) || 5;
-        const reps = parseInt(customRepsInput.value) || 10;
-        
-        startExercise(holdTime, relaxTime, reps);
-        customizePanel.style.display = 'none';
-    });
+    if (startCustomBtn) {
+        startCustomBtn.addEventListener('click', () => {
+            const holdTime = parseInt(customHoldInput.value) || 5;
+            const relaxTime = parseInt(customRelaxInput.value) || 5;
+            const reps = parseInt(customRepsInput.value) || 10;
+            
+            startExercise(holdTime, relaxTime, reps);
+            customizePanel.style.display = 'none';
+        });
+    }
     
-    closeCustomizeBtn.addEventListener('click', () => {
-        customizePanel.style.display = 'none';
-    });
+    if (closeCustomizeBtn) {
+        closeCustomizeBtn.addEventListener('click', () => {
+            customizePanel.style.display = 'none';
+        });
+    }
     
     // Section Buttons
-    exercisesBtn.addEventListener('click', () => {
-        hideAllPanels();
-        exercisesPanel.style.display = 'block';
-    });
+    if (exercisesBtn) {
+        exercisesBtn.addEventListener('click', () => {
+            hideAllPanels();
+            exercisesPanel.style.display = 'block';
+        });
+    }
     
-    progressBtn.addEventListener('click', () => {
-        hideAllPanels();
-        progressPanel.style.display = 'block';
-    });
+    if (progressBtn) {
+        progressBtn.addEventListener('click', () => {
+            hideAllPanels();
+            progressPanel.style.display = 'block';
+        });
+    }
     
-    aboutBtn.addEventListener('click', () => {
-        hideAllPanels();
-        aboutPanel.style.display = 'block';
-    });
+    if (aboutBtn) {
+        aboutBtn.addEventListener('click', () => {
+            hideAllPanels();
+            aboutPanel.style.display = 'block';
+        });
+    }
     
-    benefitsBtn.addEventListener('click', () => {
-        hideAllPanels();
-        benefitsPanel.style.display = 'block';
-    });
+    if (benefitsBtn) {
+        benefitsBtn.addEventListener('click', () => {
+            hideAllPanels();
+            benefitsPanel.style.display = 'block';
+        });
+    }
     
-    faqBtn.addEventListener('click', () => {
-        hideAllPanels();
-        faqPanel.style.display = 'block';
-    });
+    if (faqBtn) {
+        faqBtn.addEventListener('click', () => {
+            hideAllPanels();
+            faqPanel.style.display = 'block';
+        });
+    }
     
     // Close Buttons
-    closeExercisesBtn.addEventListener('click', () => {
-        exercisesPanel.style.display = 'none';
-    });
+    if (closeExercisesBtn) {
+        closeExercisesBtn.addEventListener('click', () => {
+            exercisesPanel.style.display = 'none';
+        });
+    }
     
-    closeProgressBtn.addEventListener('click', () => {
-        progressPanel.style.display = 'none';
-    });
+    if (closeProgressBtn) {
+        closeProgressBtn.addEventListener('click', () => {
+            progressPanel.style.display = 'none';
+        });
+    }
     
-    closeAboutBtn.addEventListener('click', () => {
-        aboutPanel.style.display = 'none';
-    });
+    if (closeAboutBtn) {
+        closeAboutBtn.addEventListener('click', () => {
+            aboutPanel.style.display = 'none';
+        });
+    }
     
-    closeBenefitsBtn.addEventListener('click', () => {
-        benefitsPanel.style.display = 'none';
-    });
+    if (closeBenefitsBtn) {
+        closeBenefitsBtn.addEventListener('click', () => {
+            benefitsPanel.style.display = 'none';
+        });
+    }
     
-    closeFaqBtn.addEventListener('click', () => {
-        faqPanel.style.display = 'none';
-    });
+    if (closeFaqBtn) {
+        closeFaqBtn.addEventListener('click', () => {
+            faqPanel.style.display = 'none';
+        });
+    }
     
     // Exercise buttons in exercises panel
-    const exercisePanelButtons = exercisesPanel.querySelectorAll('[data-exercise]');
-    exercisePanelButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const exercise = button.getAttribute('data-exercise');
-            exercisesPanel.style.display = 'none';
-            
-            if (exercise === 'basic') {
-                startExercise(5, 5, 10);
-            } else if (exercise === 'long') {
-                startExercise(10, 10, 10);
-            } else if (exercise === 'quick') {
-                startExercise(1, 1, 20);
-            }
+    if (exercisesPanel) {
+        const exercisePanelButtons = exercisesPanel.querySelectorAll('[data-exercise]');
+        exercisePanelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const exercise = button.getAttribute('data-exercise');
+                exercisesPanel.style.display = 'none';
+                
+                if (exercise === 'basic') {
+                    startExercise(5, 5, 10);
+                } else if (exercise === 'long') {
+                    startExercise(10, 10, 10);
+                } else if (exercise === 'quick') {
+                    startExercise(1, 1, 20);
+                }
+            });
         });
-    });
+    }
     
     // Progress Tracking
-    logSessionBtn.addEventListener('click', () => {
-        todayCount++;
-        todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
-        localStorage.setItem('todayCount', todayCount);
-        
-        // Update streak
-        const lastDate = localStorage.getItem('lastDate');
-        const today = new Date().toDateString();
-        
-        if (lastDate !== today) {
-            streak++;
-            streakDisplay.textContent = `Current streak: ${streak} days`;
-            localStorage.setItem('streak', streak);
-            localStorage.setItem('lastDate', today);
-        }
-        
-        logSessionBtn.textContent = "Session Logged!";
-        setTimeout(() => {
-            logSessionBtn.textContent = "Log Completed Session";
-        }, 2000);
-    });
+    if (logSessionBtn) {
+        logSessionBtn.addEventListener('click', () => {
+            todayCount++;
+            if (todayCountDisplay) {
+                todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+            }
+            localStorage.setItem('todayCount', todayCount);
+            
+            // Update streak
+            const lastDate = localStorage.getItem('lastDate');
+            const today = new Date().toDateString();
+            
+            if (lastDate !== today) {
+                streak++;
+                if (streakDisplay) {
+                    streakDisplay.textContent = `Current streak: ${streak} days`;
+                }
+                localStorage.setItem('streak', streak);
+                localStorage.setItem('lastDate', today);
+            }
+            
+            logSessionBtn.textContent = "Session Logged!";
+            setTimeout(() => {
+                logSessionBtn.textContent = "Log Completed Session";
+            }, 2000);
+        });
+    }
 });
