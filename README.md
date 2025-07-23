@@ -1,62 +1,113 @@
-# Mario Albornoz - Developer Hub & Project Showcase
 
-This project contains my professional information and the Kegel Exercise Timer application, packaged as a GitHub Pages site.
+# Kegel Timer & Developer Hub — Dual-Purpose GitHub Pages Site
 
-## Project Structure
+>This project is a dual-purpose GitHub Pages site combining a professional developer hub with a Progressive Web App (PWA) Kegel exercise timer. Built as an exploration of AI-assisted development with robust defensive coding and custom browser-based testing.
 
-- `index.html`: Developer Hub page with my professional background and project links
-- `kegel-timer.html`: The standalone Kegel exercise timer application
-- `styles.css`: Shared CSS styling for both pages
-- `hub.js`: JavaScript for the Developer Hub page functionality
-- `script.js`: JavaScript for the Kegel timer application functionality
-- `manifest.json`: PWA manifest file
-- `sw.js`: Service worker for offline capabilities
-- `icons/`: Directory containing icon files for the application
+---
 
-## Developer Hub Section
+## 📁 Project Structure
 
-The Developer Hub section features:
-- Professional introduction and background
-- Experience timeline
-- Skills showcase
-- Link to the Kegel timer application
+```
+goliathuy.github.io/
+├── index.html                    # Developer portfolio hub
+├── kegel-timer.html              # PWA timer application
+├── hub.js                        # Hub functionality & navigation
+├── script.js                     # Timer logic & PWA features
+├── styles.css                    # Shared styling for both apps
+├── manifest.json                 # PWA manifest configuration
+├── sw.js                         # Service Worker for offline
+├── start-timer.bat               # Development server launcher
+├── debug-tests.bat               # Test debugging utilities
+├── .vscode/
+│   ├── launch.json               # VS Code debugging config
+│   └── tasks.json                # Development tasks
+├── icons/
+│   ├── icon-192.png              # PWA icon (small)
+│   ├── icon-512.png              # PWA icon (large)
+│   └── generate-icons.html       # Icon generation tool
+├── tests/
+│   ├── test-framework.js         # Custom testing framework
+│   ├── test-runner.html          # Browser test runner
+│   ├── unit/
+│   │   ├── timer-tests.js        # Timer functionality tests
+│   │   ├── dom-manipulation-tests.js # DOM operation tests
+│   │   └── debug-tests.js        # Debug panel tests
+│   └── integration/
+│       └── user-flow-tests.js    # End-to-end user flows
+└── docs/
+    ├── project-overview.html     # Visual documentation
+    ├── explanations/
+    │   └── project-overview.md   # Technical architecture
+    ├── implementation/
+    │   └── timer-system.md       # Implementation guide
+    ├── tests/
+    │   └── testing-framework.md  # Testing documentation
+    └── api/
+        └── core-functions.md     # API reference
+```
 
-## Kegel Timer Application
+---
 
-The Kegel Exercise Timer application features:
-- Visual timer with hold and relax phases
-- Multiple pre-defined exercise routines
-- Customizable exercise settings
-- Progress tracking
-- Educational content about Kegel exercises
+## 🏠 Developer Hub
 
-## Getting Started
+- Professional introduction, experience timeline, and skills showcase
+- Panel-based navigation system
+- Direct link to the Kegel Timer app
 
-### Prerequisites
+## ⏱️ Kegel Timer Application
 
-To run this project, you need a web browser that supports HTML5, CSS3, and JavaScript.
+- Visual timer with hold/relax phases
+- Multiple pre-defined and custom exercise routines
+- Progress tracking and streaks (localStorage)
+- Audio and haptic feedback (Web Audio API, Vibration API)
+- PWA: Offline support, installable on mobile
+- Debug panel for localStorage inspection
 
-### Installation
+## 🧪 Testing Framework
 
-1. Clone the repository or download the project files.
-2. Open `index.html` in your web browser to view the Developer Hub.
-3. Access the Kegel Timer application by clicking the "Kegel Timer App" button or directly opening `kegel-timer.html`.
+- Custom browser-based test runner (`test-framework.js`)
+- Unit tests for timer, DOM, and debug panel
+- Integration tests for user flows
+- Run all tests via `tests/test-runner.html`
 
-## Purpose
+## 🚀 Local Development & Workflows
 
-- **Professional Information**: The index.html serves as an introduction to my background and skills.
-- **Kegel Exercise Timer**: The kegel-timer.html provides a tool for guided Kegel exercises.
-- **AI Code Generation Exploration**: This project demonstrates creating and modifying web content using AI assistance with minimal direct code manipulation.
+**Recommended:**
+- Use `start-timer.bat` to launch a Python HTTP server at `localhost:8000` for local development
+- Use VS Code launch configurations for Chrome debugging
 
-## Development
+**Testing:**
+- Open `tests/test-runner.html` in your browser
 
-The project is structured to allow independent work on both the Developer Hub and the Kegel timer application. You can modify the timer application without affecting the Developer Hub and vice versa.
+**VS Code Tasks:**
+- Start Timer Server: Launches Python development server
+- Start Test Server: Alternative HTTP server for testing
 
-## Future Developments
+## 📚 Documentation
 
-- **Save Progress and History**: Add the ability to save progress and history to a local file and upload it again.
-- **Expanded Project Collection**: Add more projects and detailed experience sections.
+- [Project Overview (HTML)](docs/project-overview.html)
+- [API Reference](docs/api/core-functions.md)
+- [Testing Documentation](docs/tests/testing-framework.md)
+- [Implementation Guide](docs/implementation/timer-system.md)
+
+## 💡 Key Patterns & Best Practices
+
+- Defensive coding: Always check for element existence before DOM operations
+- Panel-based UI: `hideAllPanels()` then show target panel
+- LocalStorage: Fallback values and string storage
+- PWA: Service worker cache versioning, manifest updates
+- Custom test framework: Mocks for localStorage and timers
+
+## 🗺️ Mermaid Diagrams & Visual Docs
+
+See [project-overview.html](docs/project-overview.html) for interactive architecture and flow diagrams using Mermaid.js.
+
+## 🔮 Future Developments
+
+- Save progress/history to local file and allow upload
+- Expand project collection and experience sections
+- Add more advanced test cases and visualizations
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
