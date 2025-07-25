@@ -1,4 +1,18 @@
+
 # 📝 Code Review Implementation Progress
+
+## Table of Contents
+- [Reference](#reference)
+- [TODO List](#todo-list-from-code-review)
+- [Actionable Files](#️actionable-files-by-category)
+- [Mapping of Fixes](#mapping-of-fixes-to-filescode-regions)
+- [Execution Steps](#plan-and-implement-bug-fixes)
+- [Performance Plan](#optimize-performance)
+- [Progress Log](#progress-log)
+- [Lessons Learned](#lessons-learned)
+
+## 🚧 Current Focus
+- Improve readability (function naming, constants, error messages)
 
 This document tracks the actionable items from the code review in [code-review.md](explanations/code-review.md), the current todo list, and progress updates as fixes are implemented.
 
@@ -9,6 +23,29 @@ This document tracks the actionable items from the code review in [code-review.m
 
 ---
 
+## ✅ TODO List (from code review)
+
+```markdown
+ [x] Extract and categorize all actionable fixes from the code review.
+ [x] Map each fix to the relevant file(s) and code region(s).
+ [x] Plan and implement bug fixes (timer state, localStorage, audio context, offline detection).
+ [x] Optimize performance (DOM queries, event listeners, service worker strategy).
+ [x] Update/add tests to cover all bug fixes, ensuring no subject is mocked and unimplemented tests fail.
+ [x] Run all tests and verify correctness for bug fixes.
+ [x] Update/add tests to cover all performance changes, ensuring no subject is mocked and unimplemented tests fail.
+ [x] Run all tests and verify correctness for performance optimizations (browser-based test runner: all tests pass).
+ [ ] Improve readability (function naming, constants, error messages).
+ [ ] Update/add tests to cover all readability changes, ensuring no subject is mocked and unimplemented tests fail.
+ [ ] Run all tests and verify correctness for readability improvements.
+ [ ] Apply best practices (state management, event bus, panel navigation).
+ [ ] Update/add tests to cover all best practice changes, ensuring no subject is mocked and unimplemented tests fail.
+ [ ] Run all tests and verify correctness for best practice improvements.
+ [ ] Address security (service worker scope, localStorage validation, XSS).
+ [ ] Update/add tests to cover all security changes, ensuring no subject is mocked and unimplemented tests fail.
+ [ ] Run all tests and verify correctness for security improvements.
+ [ ] Update/add tests to cover all changes, ensuring no subject is mocked and unimplemented tests fail.  # (restored original step for full coverage)
+ [ ] Run all tests and verify correctness.  # (restored original step for full coverage)
+```
 
 ## 🗂️ Actionable Files (by category)
 
@@ -57,52 +94,116 @@ This document tracks the actionable items from the code review in [code-review.m
 
 ---
 
-## ✅ TODO List (from code review)
+## Plan and implement bug fixes
 
-```markdown
-- [x] Extract and categorize all actionable fixes from the code review.
-- [x] Map each fix to the relevant file(s) and code region(s).
-- [x] Plan and implement bug fixes (timer state, localStorage, audio context, offline detection).
-- [ ] Optimize performance (DOM queries, event listeners, service worker strategy).
-- [ ] Improve readability (function naming, constants, error messages).
-- [ ] Apply best practices (state management, event bus, panel navigation).
-- [ ] Address security (service worker scope, localStorage validation, XSS).
-- [ ] Update/add tests to cover all changes, ensuring no subject is mocked and unimplemented tests fail.
-- [ ] Run all tests and verify correctness.
-```
+Steps
+ - **Step 1**: Analyze the code review and extract all actionable fixes (bugs, optimizations, readability, best practices, security).
+ - **Step 2**: For each fix, identify the relevant file(s) and code region(s) to update.
+ - **Step 3**: Plan incremental, testable code changes for each fix.
+ - **Step 4**: Ensure all new/updated tests do not mock the subject under test, and any unimplemented test fails.
+ - **Step 5**: Implement, test, and iterate until all review points are addressed.
 
-## 
-Bug Fixes to Implement:
+### Step 1 - Actinable fixes:
+**Bugs & Edge Cases**
 
-Timer state guard in stopTimer (prevent double-clearing).
-localStorage error handling (catch quota/unavailable).
-AudioContext resume on user interaction if suspended.
-Online/offline detection and user feedback.
-Target files: script.js (mainly), kegel-timer.html (for UI feedback).
+- Timer: Prevent race conditions in stopTimer (add state guard).
+- localStorage: Add error handling for quota exceeded/unavailable.
+- Audio: Resume AudioContext on user interaction if suspended.
+- PWA: Add online/offline detection and user feedback.
 
-Next, I will read the relevant sections of script.js and kegel-timer.html to locate the current implementations and prepare for the incremental fixes.
+**Performance**
 
-Read script.js
+- Cache DOM queries in timer updates.
+- Use event delegation for exercise buttons.
+- Service Worker: Use network-first for HTML, cache-first for assets.
 
-Read kegel-timer.html
+**Readability**
 
-I've reviewed the relevant code in script.js and kegel-timer.html. Here’s the plan for implementing the bug fixes:
+- Use descriptive function names and JSDoc.
+- Replace magic numbers with named constants.
+- Improve error messages.
+
+*Best Practices*
+
+- Add state management pattern (AppState).
+- Add event bus for loose coupling.
+- Ensure panel navigation always hides all panels first.
+
+**Security**
+
+- Explicit cache whitelist in Service Worker.
+- Validate/sanitize localStorage data.
+-- Avoid innerHTML with user data.
+
+**Testing**
+
+-Update/add tests for all above changes.
+- No test should mock the subject under test.
+- Any unimplemented test must fail.
+
+### Step 2 - Bug Fixes to Implement:
+
+1. Timer state guard in stopTimer (prevent double-clearing).
+2. localStorage error handling (catch quota/unavailable).
+3. AudioContext resume on user interaction if suspended.
+4. Online/offline detection and user feedback.
+
+**Target files**: script.js (mainly), kegel-timer.html (for UI feedback).
+
+Here’s the plan for implementing the bug fixes:
 
 1. Timer State Guard (stopTimer)
-Already partially implemented: if (timer) { ... timer = null; }
-Action: Ensure all timer-clearing logic is guarded and robust against rapid/multiple calls.
-2. localStorage Error Handling
-Currently: localStorage.setItem('todayCount', todayCount); (no try/catch)
-Action: Wrap all localStorage.setItem calls in try/catch, with fallback and user feedback.
-3. AudioContext Resume on User Interaction
-Currently: playSound does not check/resume suspended context.
-Action: In playSound, check if audioContext.state === 'suspended' and call audioContext.resume().
-4. Online/Offline Detection
-Currently: No online/offline event listeners or user feedback.
-Action: Add window.addEventListener('online'/'offline', ...) and show status in the UI (e.g., in instruction or a new status element).
+    - Already partially implemented: if (timer) { ... timer = null; }
+    - **Action**: Ensure all timer-clearing logic is guarded and robust against rapid/multiple calls.
 
+2. localStorage Error Handling
+    - Currently: localStorage.setItem('todayCount', todayCount); (no try/catch)
+    - **Action**: Wrap all localStorage.setItem calls in try/catch, with fallback and user feedback.
+
+3. AudioContext Resume on User Interaction
+    - Currently: playSound does not check/resume suspended context.
+    - **Action**: In playSound, check if audioContext.state === 'suspended' and call audioContext.resume().
+
+4. Online/Offline Detection
+    - Currently: No online/offline event listeners or user feedback.
+    - **Action**: Add window.addEventListener('online'/'offline', ...) and show status in the UI (e.g., in instruction or a new status element).
+
+## Optimize performance
+
+**Scope for this step:**
+
+- Cache DOM queries in timer updates (script.js)
+- Use event delegation for exercise buttons (script.js, kegel-timer.html)
+- Service Worker: Use network-first for HTML, cache-first for assets (sw.js)
+
+Here’s the plan:
+
+1. Refactor updateTimerVisuals and related timer UI code to cache DOM elements.
+2. Replace individual exercise button listeners with event delegation.
+3. Update sw.js to use network-first for HTML and cache-first for assets.
+
+- Review of sw.js and implement these optimizations step by step.
+
+**Step-by-step plan for performance optimizations:**
+```markdown
+- [x] Refactor timer UI updates in `script.js` to cache DOM elements.
+- [x] Replace individual exercise button listeners with event delegation in `script.js`.
+- [x] Update `sw.js` to use network-first for HTML and cache-first for assets.
+```
+
+- Update script.js to cache DOM elements in timer updates and implement event delegation for exercise buttons.
+- Update sw.js to use network-first for HTML and cache-first for assets.
+
+**Performance optimizations are complete:**
+
+- Timer UI updates now use cached DOM references.
+- Exercise button listeners use event delegation.
+- Service Worker uses network-first for HTML and cache-first for assets.
 
 ---
+
+<details>
+<summary>Click to expand Progress Log</summary>
 
 ## 🚦 Progress Log
 
@@ -111,8 +212,23 @@ Action: Add window.addEventListener('online'/'offline', ...) and show status in 
 - Mapped each fix to the relevant file(s) and code region(s).
 - Implemented bug fixes: timer state guard, localStorage error handling, AudioContext resume, and online/offline detection in script.js.
 - All syntax errors resolved and file is valid.
-- Ready to proceed with performance optimizations.
+- Implemented performance optimizations: cached DOM queries in timer updates, event delegation for exercise buttons, and network-first/caching strategy in sw.js.
+- Ready to proceed with readability improvements.
+
+**2025-07-25**
+- Verified all performance optimizations in the browser-based test runner (`tests/test-runner.html`).
+- All unit and integration tests pass for performance-related changes.
+- Marked performance optimization and test verification steps as complete in the progress file.
+- Todo Next: Begin readability improvements (function naming, constants, error messages).
+- Reviewed and confirmed that all test update and execution steps for bug fixes and performance optimizations were fully completed and verified.
+- Updated the TODO list to mark these steps as complete.
+- Workflow is now fully auditable and ready for the readability phase.
+
+</details>
 
 ---
+
+## 📝 Lessons Learned
+- (Add notes here as you go!)
 
 _This file will be updated as each step is completed. All progress is based on the actionable items in the referenced code review._

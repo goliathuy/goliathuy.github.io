@@ -1,3 +1,17 @@
+# Code Review & Refactor Progress Tracking
+
+For any significant code review, refactor, or multi-step implementation:
+
+- Create or update a progress tracking file (e.g., `docs/code-review-progress.md`).
+- The progress file should:
+  - Reference the main code review or requirements document.
+  - List all actionable items extracted from the review, categorized and mapped to files/regions.
+  - Track progress with a visible todo list and dated progress log.
+- Each implementation step (e.g., bug fix, optimization, readability, best practice, security, testing) should be committed separately with a descriptive message.
+- The progress file must be updated after each step and referenced in code review discussions and PRs.
+- This ensures traceability, reviewability, and a clear audit trail for all code review-driven or multi-step changes.
+
+This workflow is recommended for any complex or multi-phase development effort, not just code reviews.
 # GitHub Copilot Instructions
 
 ## Project Overview

@@ -126,38 +126,34 @@ document.addEventListener('DOMContentLoaded', function () {
         faqPanel.style.display = 'none';
     }
 
-    function updateTimerVisuals() {
+    // Cache timer DOM elements for performance
+    const timerElements = {
+        countdown,
+        phaseLabel,
+        timerFill,
+        timerNegative
+    };
 
-        console.log('Updating timer visuals');
+    function updateTimerVisuals() {
+        // Use cached DOM references
         const remainingTime = phaseDuration - phaseSeconds;
         const percentage = (phaseSeconds / phaseDuration) * 100;
-
-        // Update countdown display
-        countdown.textContent = remainingTime;
-
-        // Update phase label
-        phaseLabel.textContent = isHolding ? "HOLD" : "RELAX";
-
-        // Update timer colors
-        if (isHolding) {
-            timerFill.className = 'timer-fill hold';
-        } else {
-            timerFill.className = 'timer-fill relax';
+        if (timerElements.countdown) timerElements.countdown.textContent = remainingTime;
+        if (timerElements.phaseLabel) timerElements.phaseLabel.textContent = isHolding ? "HOLD" : "RELAX";
+        if (timerElements.timerFill) {
+            timerElements.timerFill.className = isHolding ? 'timer-fill hold' : 'timer-fill relax';
+            timerElements.timerFill.style.transform = `scaleY(${1 - (percentage / 100)})`;
         }
-
-        // Clip path for timer fill (what's left)
-        timerFill.style.transform = `scaleY(${1 - (percentage / 100)})`;
-
-        // Clip path for timer negative (what's used)
-        timerNegative.style.transform = `scaleY(${percentage / 100})`;
-
+        if (timerElements.timerNegative) {
+            timerElements.timerNegative.style.transform = `scaleY(${percentage / 100})`;
+        }
         // Add blinking effect for last 3 seconds
         if (remainingTime <= 3) {
-            timerFill.classList.add('blinking');
-            timerNegative.classList.add('blinking');
+            timerElements.timerFill && timerElements.timerFill.classList.add('blinking');
+            timerElements.timerNegative && timerElements.timerNegative.classList.add('blinking');
         } else {
-            timerFill.classList.remove('blinking');
-            timerNegative.classList.remove('blinking');
+            timerElements.timerFill && timerElements.timerFill.classList.remove('blinking');
+            timerElements.timerNegative && timerElements.timerNegative.classList.remove('blinking');
         }
     }
 
@@ -284,11 +280,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Event Listeners
-    // Exercise Buttons
-    if (startBasicBtn) startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
-    if (startLongBtn) startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
-    if (startQuickBtn) startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
-    if (stopBtn) stopBtn.addEventListener('click', stopTimer);
+    // Exercise Buttons - use event delegation for performance
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('.exercise-button')) {
+            if (e.target.id === 'start-basic') startExercise(5, 5, 10);
+            else if (e.target.id === 'start-long') startExercise(10, 10, 10);
+            else if (e.target.id === 'start-quick') startExercise(1, 1, 20);
+            else if (e.target.id === 'customize-btn') {
+                hideAllPanels();
+                customizePanel.style.display = 'block';
+            }
+        }
+        if (e.target.matches('#stop-btn')) stopTimer();
+    });
 
     // Custom Exercise
     if (customizeBtn) {

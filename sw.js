@@ -40,25 +40,26 @@ self.addEventListener('install', (event) => {
  * Fetch event - respond with cached assets when available
  */
 self.addEventListener('fetch', (event) => {
-  // Try to match the request with cached assets
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // If found in cache, return the cached version
-        if (response) {
-          console.log('Service Worker: Serving from cache:', event.request.url);
-          return response;
-        }
-        
-        // If not in cache, fetch from network
-        console.log('Service Worker: Fetching from network:', event.request.url);
-        return fetch(event.request)
-          .catch(error => {
-            console.error('Service Worker: Fetch failed:', error);
-            // Could return a custom offline page here
+  // Network-first for HTML documents, cache-first for other assets
+  if (event.request.destination === 'document') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Optionally update cache with fresh HTML
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
           });
-      })
-  );
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => response || fetch(event.request))
+    );
+  }
 });
 
 /**
