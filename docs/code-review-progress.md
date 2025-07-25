@@ -62,7 +62,7 @@ This document tracks the actionable items from the code review in [code-review.m
 ```markdown
 - [x] Extract and categorize all actionable fixes from the code review.
 - [x] Map each fix to the relevant file(s) and code region(s).
-- [ ] Plan and implement bug fixes (timer state, localStorage, audio context, offline detection).
+- [x] Plan and implement bug fixes (timer state, localStorage, audio context, offline detection).
 - [ ] Optimize performance (DOM queries, event listeners, service worker strategy).
 - [ ] Improve readability (function naming, constants, error messages).
 - [ ] Apply best practices (state management, event bus, panel navigation).
@@ -71,6 +71,37 @@ This document tracks the actionable items from the code review in [code-review.m
 - [ ] Run all tests and verify correctness.
 ```
 
+## 
+Bug Fixes to Implement:
+
+Timer state guard in stopTimer (prevent double-clearing).
+localStorage error handling (catch quota/unavailable).
+AudioContext resume on user interaction if suspended.
+Online/offline detection and user feedback.
+Target files: script.js (mainly), kegel-timer.html (for UI feedback).
+
+Next, I will read the relevant sections of script.js and kegel-timer.html to locate the current implementations and prepare for the incremental fixes.
+
+Read script.js
+
+Read kegel-timer.html
+
+I've reviewed the relevant code in script.js and kegel-timer.html. Here’s the plan for implementing the bug fixes:
+
+1. Timer State Guard (stopTimer)
+Already partially implemented: if (timer) { ... timer = null; }
+Action: Ensure all timer-clearing logic is guarded and robust against rapid/multiple calls.
+2. localStorage Error Handling
+Currently: localStorage.setItem('todayCount', todayCount); (no try/catch)
+Action: Wrap all localStorage.setItem calls in try/catch, with fallback and user feedback.
+3. AudioContext Resume on User Interaction
+Currently: playSound does not check/resume suspended context.
+Action: In playSound, check if audioContext.state === 'suspended' and call audioContext.resume().
+4. Online/Offline Detection
+Currently: No online/offline event listeners or user feedback.
+Action: Add window.addEventListener('online'/'offline', ...) and show status in the UI (e.g., in instruction or a new status element).
+
+
 ---
 
 ## 🚦 Progress Log
@@ -78,7 +109,9 @@ This document tracks the actionable items from the code review in [code-review.m
 **2025-07-24**
 - Extracted and categorized all actionable fixes from the code review.
 - Mapped each fix to the relevant file(s) and code region(s).
-- Ready to begin implementation of bug fixes and optimizations.
+- Implemented bug fixes: timer state guard, localStorage error handling, AudioContext resume, and online/offline detection in script.js.
+- All syntax errors resolved and file is valid.
+- Ready to proceed with performance optimizations.
 
 ---
 

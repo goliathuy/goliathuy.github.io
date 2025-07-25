@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // DOM Elements
     const startBasicBtn = document.getElementById('start-basic');
     const startLongBtn = document.getElementById('start-long');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const phaseLabel = document.getElementById('phase-label');
     const timerFill = document.getElementById('timer-fill');
     const timerNegative = document.getElementById('timer-negative');
-    
+
     // Panel Elements
     const customizePanel = document.getElementById('customize-panel');
     const exercisesPanel = document.getElementById('exercises-panel');
@@ -20,38 +20,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const aboutPanel = document.getElementById('about-panel');
     const benefitsPanel = document.getElementById('benefits-panel');
     const faqPanel = document.getElementById('faq-panel');
-    
+
     // Section Buttons
     const exercisesBtn = document.getElementById('exercises-btn');
     const progressBtn = document.getElementById('progress-btn');
     const aboutBtn = document.getElementById('about-btn');
     const benefitsBtn = document.getElementById('benefits-btn');
     const faqBtn = document.getElementById('faq-btn');
-    
+
     // Close Buttons
     const closeExercisesBtn = document.getElementById('close-exercises');
     const closeProgressBtn = document.getElementById('close-progress');
     const closeAboutBtn = document.getElementById('close-about');
     const closeBenefitsBtn = document.getElementById('close-benefits');
     const closeFaqBtn = document.getElementById('close-faq');
-    
+
     // Customize Inputs
     const customHoldInput = document.getElementById('custom-hold');
     const customRelaxInput = document.getElementById('custom-relax');
     const customRepsInput = document.getElementById('custom-reps');
-    
+
     // Progress Tracking
     const todayCountDisplay = document.getElementById('today-count');
     const streakDisplay = document.getElementById('streak');
     const logSessionBtn = document.getElementById('log-session');
-    
+
     // Sound and Vibration Controls
     const soundToggle = document.getElementById('sound-toggle');
     const vibrationToggle = document.getElementById('vibration-toggle');
-    
+
     let todayCount = 0;
     let streak = 0;
-    
+
     // Load saved data
     if (localStorage.getItem('todayCount')) {
         todayCount = parseInt(localStorage.getItem('todayCount'));
@@ -59,14 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
             todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
         }
     }
-    
+
     if (localStorage.getItem('streak')) {
         streak = parseInt(localStorage.getItem('streak'));
         if (streakDisplay) {
             streakDisplay.textContent = `Current streak: ${streak} days`;
         }
     }
-    
+
     // Timer Variables
     let timer;
     let seconds = 0;
@@ -75,47 +75,46 @@ document.addEventListener('DOMContentLoaded', function() {
     let isHolding = true;
     let count = 0;
     let totalReps = 0;
-    
+
     // Audio Context and Sounds
     let audioContext;
     let holdSound;
     let relaxSound;
-    
+
     function initAudio() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
         // Create hold sound (higher pitch)
         holdSound = audioContext.createOscillator();
         holdSound.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
-        
         // Create relax sound (lower pitch)
         relaxSound = audioContext.createOscillator();
         relaxSound.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
     }
-    
+
     function playSound(isHold) {
         if (!soundToggle.checked || !audioContext) return;
-        
+        // Resume context if suspended (Chrome/Edge/Firefox user gesture requirement)
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
         const sound = isHold ? holdSound : relaxSound;
         const gainNode = audioContext.createGain();
         gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        
         sound.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
         sound.start();
         setTimeout(() => {
             sound.stop();
             sound.disconnect();
         }, 200);
     }
-    
+
     function vibrate(duration) {
         if (vibrationToggle.checked && navigator.vibrate) {
             navigator.vibrate(duration);
         }
     }
-    
+
     // Helper Functions
     function hideAllPanels() {
         console.log('Hiding all panels');
@@ -126,31 +125,32 @@ document.addEventListener('DOMContentLoaded', function() {
         benefitsPanel.style.display = 'none';
         faqPanel.style.display = 'none';
     }
-    
+
     function updateTimerVisuals() {
+
         console.log('Updating timer visuals');
         const remainingTime = phaseDuration - phaseSeconds;
         const percentage = (phaseSeconds / phaseDuration) * 100;
-        
+
         // Update countdown display
         countdown.textContent = remainingTime;
-        
+
         // Update phase label
         phaseLabel.textContent = isHolding ? "HOLD" : "RELAX";
-        
+
         // Update timer colors
         if (isHolding) {
             timerFill.className = 'timer-fill hold';
         } else {
             timerFill.className = 'timer-fill relax';
         }
-        
+
         // Clip path for timer fill (what's left)
         timerFill.style.transform = `scaleY(${1 - (percentage / 100)})`;
-        
+
         // Clip path for timer negative (what's used)
         timerNegative.style.transform = `scaleY(${percentage / 100})`;
-        
+
         // Add blinking effect for last 3 seconds
         if (remainingTime <= 3) {
             timerFill.classList.add('blinking');
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timerNegative.classList.remove('blinking');
         }
     }
-    
+
     function resetTimer() {
         timerFill.style.transform = 'scaleY(1)';
         timerNegative.style.transform = 'scaleY(0)';
@@ -170,33 +170,36 @@ document.addEventListener('DOMContentLoaded', function() {
         phaseLabel.textContent = 'READY';
         instruction.textContent = 'Select an exercise to begin';
     }
-    
+
     function stopTimer() {
-        clearInterval(timer);
-        startBasicBtn.disabled = false;
-        startLongBtn.disabled = false;
-        startQuickBtn.disabled = false;
-        customizeBtn.disabled = false;
-        stopBtn.disabled = true;
-        resetTimer();
+        if (timer) {
+            clearInterval(timer);
+            startBasicBtn.disabled = false;
+            startLongBtn.disabled = false;
+            startQuickBtn.disabled = false;
+            customizeBtn.disabled = false;
+            stopBtn.disabled = true;
+            resetTimer();
+            timer = null; // Prevent double-clearing
+        }
     }
-    
+
     function startExercise(holdTime, relaxTime, repetitions) {
         console.log('Starting exercise');
         stopTimer();
-        
+
         // Initialize audio on first user interaction
         if (!audioContext) {
             initAudio();
         }
-        
+
         // Add preparation countdown
         let prepTime = 3;
         instruction.textContent = "Get ready...";
         phaseLabel.textContent = "PREP";
         phaseLabel.classList.add('preparation');
         countdown.textContent = prepTime;
-        
+
         const prepTimer = setInterval(() => {
             prepTime--;
             if (prepTime > 0) {
@@ -209,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 startMainExercise();
             }
         }, 1000);
-        
+
         function startMainExercise() {
             seconds = 0;
             phaseSeconds = 0;
@@ -217,42 +220,42 @@ document.addEventListener('DOMContentLoaded', function() {
             isHolding = true;
             count = 0;
             totalReps = repetitions;
-            
+
             startBasicBtn.disabled = true;
             startLongBtn.disabled = true;
             startQuickBtn.disabled = true;
             customizeBtn.disabled = true;
             stopBtn.disabled = false;
-            
+
             instruction.textContent = "Contract your pelvic floor muscles";
             updateTimerVisuals();
-            
+
             // Add progress indicator
             const progressIndicator = document.createElement('div');
             progressIndicator.className = 'progress-indicator';
             instruction.parentNode.insertBefore(progressIndicator, instruction.nextSibling);
-            
+
             timer = setInterval(() => {
                 phaseSeconds++;
                 seconds++;
                 updateTimerVisuals();
-                
+
                 // Update progress indicator
                 progressIndicator.textContent = `Rep ${count + 1}/${totalReps}`;
-                
+
                 if (phaseSeconds >= phaseDuration) {
                     phaseSeconds = 0;
                     isHolding = !isHolding;
-                    
+
                     // Play sound and vibrate on phase change
                     playSound(isHolding);
                     vibrate(isHolding ? 200 : 100);
-                    
+
                     if (isHolding) {
                         count++;
                         phaseDuration = holdTime;
                         instruction.textContent = "Contract your pelvic floor muscles";
-                        
+
                         if (count >= totalReps) {
                             clearInterval(timer);
                             instruction.textContent = "Well done! Session complete.";
@@ -274,19 +277,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 1000);
         }
     }
-    
+
     function promptLogSession() {
         progressPanel.style.display = 'block';
         window.scrollTo({ top: progressPanel.offsetTop, behavior: 'smooth' });
     }
-    
+
     // Event Listeners
     // Exercise Buttons
     if (startBasicBtn) startBasicBtn.addEventListener('click', () => startExercise(5, 5, 10));
     if (startLongBtn) startLongBtn.addEventListener('click', () => startExercise(10, 10, 10));
     if (startQuickBtn) startQuickBtn.addEventListener('click', () => startExercise(1, 1, 20));
     if (stopBtn) stopBtn.addEventListener('click', stopTimer);
-    
+
     // Custom Exercise
     if (customizeBtn) {
         customizeBtn.addEventListener('click', () => {
@@ -294,24 +297,24 @@ document.addEventListener('DOMContentLoaded', function() {
             customizePanel.style.display = 'block';
         });
     }
-    
+
     if (startCustomBtn) {
         startCustomBtn.addEventListener('click', () => {
             const holdTime = parseInt(customHoldInput.value) || 5;
             const relaxTime = parseInt(customRelaxInput.value) || 5;
             const reps = parseInt(customRepsInput.value) || 10;
-            
+
             startExercise(holdTime, relaxTime, reps);
             customizePanel.style.display = 'none';
         });
     }
-    
+
     if (closeCustomizeBtn) {
         closeCustomizeBtn.addEventListener('click', () => {
             customizePanel.style.display = 'none';
         });
     }
-    
+
     // Section Buttons
     if (exercisesBtn) {
         exercisesBtn.addEventListener('click', () => {
@@ -319,74 +322,103 @@ document.addEventListener('DOMContentLoaded', function() {
             exercisesPanel.style.display = 'block';
         });
     }
-    
+
     if (progressBtn) {
         progressBtn.addEventListener('click', () => {
             hideAllPanels();
             progressPanel.style.display = 'block';
         });
     }
-    
+
     if (aboutBtn) {
         aboutBtn.addEventListener('click', () => {
             hideAllPanels();
             aboutPanel.style.display = 'block';
         });
     }
-    
+
     if (benefitsBtn) {
         benefitsBtn.addEventListener('click', () => {
             hideAllPanels();
             benefitsPanel.style.display = 'block';
         });
     }
-    
+
     if (faqBtn) {
         faqBtn.addEventListener('click', () => {
             hideAllPanels();
             faqPanel.style.display = 'block';
         });
     }
-    
+
     // Close Buttons
     if (closeExercisesBtn) {
         closeExercisesBtn.addEventListener('click', () => {
             exercisesPanel.style.display = 'none';
         });
     }
-    
+
     if (closeProgressBtn) {
         closeProgressBtn.addEventListener('click', () => {
             progressPanel.style.display = 'none';
         });
     }
-    
+
     if (closeAboutBtn) {
         closeAboutBtn.addEventListener('click', () => {
             aboutPanel.style.display = 'none';
         });
     }
-    
+
     if (closeBenefitsBtn) {
         closeBenefitsBtn.addEventListener('click', () => {
             benefitsPanel.style.display = 'none';
         });
     }
-    
+
     if (closeFaqBtn) {
         closeFaqBtn.addEventListener('click', () => {
             faqPanel.style.display = 'none';
         });
     }
-    
+
     // Exercise buttons in exercises panel
     if (exercisesPanel) {
         const exercisePanelButtons = exercisesPanel.querySelectorAll('[data-exercise]');
+
+        // --- Online/Offline Detection ---
+        // Add a status element if not present
+        let statusBar = document.getElementById('status-bar');
+        if (!statusBar) {
+            //TODO: consider the definition of the status bar -at least
+            //      the style- that should be variable and defined by a template
+            statusBar = document.createElement('div');
+            statusBar.id = 'status-bar';
+            statusBar.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:999;background:#ffeaa7;color:#856404;text-align:center;padding:4px;font-size:14px;display:none;';
+            document.body.appendChild(statusBar);
+        }
+        function showStatus(msg, duration = 3000) {
+            statusBar.textContent = msg;
+            statusBar.style.display = 'block';
+            if (duration > 0) {
+                setTimeout(() => { statusBar.style.display = 'none'; }, duration);
+            }
+        }
+        window.addEventListener('online', () => {
+            showStatus('Back online');
+        });
+        window.addEventListener('offline', () => {
+            showStatus('Offline mode - limited functionality', 0);
+        });
+        // Show offline status on load if needed
+        if (!navigator.onLine) {
+            showStatus('Offline mode - limited functionality', 0);
+        }
         exercisePanelButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const exercise = button.getAttribute('data-exercise');
                 exercisesPanel.style.display = 'none';
-                
+
                 if (exercise === 'basic') {
                     startExercise(5, 5, 10);
                 } else if (exercise === 'long') {
@@ -397,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     // Progress Tracking
     if (logSessionBtn) {
         logSessionBtn.addEventListener('click', () => {
@@ -406,11 +438,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
             }
             localStorage.setItem('todayCount', todayCount);
-            
+
             // Update streak
             const lastDate = localStorage.getItem('lastDate');
             const today = new Date().toDateString();
-            
+
             if (lastDate !== today) {
                 streak++;
                 if (streakDisplay) {
@@ -419,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('streak', streak);
                 localStorage.setItem('lastDate', today);
             }
-            
+
             logSessionBtn.textContent = "Session Logged!";
             setTimeout(() => {
                 logSessionBtn.textContent = "Log Completed Session";
