@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ecmel.vscode-html-css",
+    "ms-vscode.js-debug-nightly",
+    "gildaspk.pwa-tools",
+    "eamodio.gitlens",
+    "github.copilot-chat"
+  ]
+}

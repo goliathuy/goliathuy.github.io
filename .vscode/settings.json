@@ -1,0 +1,67 @@
+{
+  "notebook.output.scrolling": true,
+  "editor.formatOnSave": false,
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "jupyter.themeMatplotlibPlots": true,
+  "workbench.colorTheme": "Default Light Modern",
+  "breadcrumbs.enabled": false,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "jupyter.widgetScriptSources": [
+    "unpkg.com",
+    "jsdelivr.com"
+  ],
+  "git.autofetch": true,
+  "python.analysis.fixAll": [
+    "source.unusedImports"
+  ],
+  "markdown.validate.enabled": true,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "liveServer.settings.port": 8000,
+  "editor.tabSize": 2,
+  "editor.fontLigatures": true,
+  "workbench.startupEditor": "none",
+  "workbench.editor.untitled.hint": "hidden",
+  "[python]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true
+  },
+  "editor.renderWhitespace": "none",
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.glyphMargin": false,
+  "editor.formatOnPaste": true,
+  "git.enableSmartCommit": true,
+  "explorer.decorations.badges": false,
+  "editor.lineHeight": 17,
+  "files.autoSave": "afterDelay",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "window.commandCenter": true,
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "explorer.decorations.colors": false,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "markdown.updateLinksOnFileMove.enabled": "prompt",
+  "python.analysis.autoImportCompletions": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.minimap.enabled": false,
+  "files.exclude": {
+    "**/.csv": true,
+    "**/.parquet": true,
+    "**/.pkl": true,
+    "**/.xls": true
+  },
+  "editor.inlineSuggest.enabled": true
+}
