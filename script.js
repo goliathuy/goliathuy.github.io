@@ -1,4 +1,7 @@
+console.log('[script.js] included');
+
 document.addEventListener('DOMContentLoaded', function () {
+console.log('[script.js] loaded');
     // DOM Elements
     const startBasicBtn = document.getElementById('start-basic');
     const startLongBtn = document.getElementById('start-long');
@@ -52,6 +55,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let todayCount = 0;
     let streak = 0;
 
+    // Ensure default localStorage keys exist (set-if-missing) so tests and app have deterministic keys
+    try {
+        const __initialState = { todayCount: '0', streak: '0' };
+        Object.keys(__initialState).forEach(k => {
+            if (!localStorage.getItem(k)) localStorage.setItem(k, __initialState[k]);
+        });
+    } catch (e) {
+        console.error('Error initializing localStorage defaults:', e);
+    }
+
     // Load saved data
     try {
         const savedTodayCount = localStorage.getItem('todayCount');
@@ -86,40 +99,39 @@ document.addEventListener('DOMContentLoaded', function () {
     let count = 0;
     let totalReps = 0;
 
-    // Audio Context and Sounds
+    // Audio Context
     let audioContext;
-    let holdSound;
-    let relaxSound;
 
     function initializeAudioContext() {
+        console.log('[script.js] initializeAudioContext called');
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        // Create hold sound (higher pitch)
-        holdSound = audioContext.createOscillator();
-        holdSound.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
-        // Create relax sound (lower pitch)
-        relaxSound = audioContext.createOscillator();
-        relaxSound.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
     }
 
+    // Create and play a short oscillator per phase. OscillatorNodes may only be started once,
+    // so create one each time instead of reusing a persistent node.
     function playPhaseSound(isHold) {
-        if (!soundToggle.checked || !audioContext) return;
-        // Resume context if suspended (Chrome/Edge/Firefox user gesture requirement)
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
+        try {
+            if (!soundToggle || !soundToggle.checked || !audioContext) return;
+            // Resume context if suspended (Chrome/Edge/Firefox user gesture requirement)
+            if (audioContext.state === 'suspended') audioContext.resume();
+            const osc = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const freq = isHold ? 880 : 440;
+            osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+            osc.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            osc.start();
+            setTimeout(() => {
+                try { osc.stop(); osc.disconnect(); gainNode.disconnect(); } catch (e) { /* noop */ }
+            }, 200);
+        } catch (err) {
+            console.error('playPhaseSound error:', err);
         }
-        const sound = isHold ? holdSound : relaxSound;
-        const gainNode = audioContext.createGain();
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        sound.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        sound.start();
-        setTimeout(() => {
-            sound.stop();
-            sound.disconnect();
-        }, 200);
     }
 
     function triggerVibration(duration) {
+        console.log('[script.js] triggerVibration called', { duration });
         if (vibrationToggle.checked && navigator.vibrate) {
             navigator.vibrate(duration);
         }
@@ -128,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Helper Functions
     function hideAllAppPanels() {
         console.log('Hiding all panels');
+        console.log('[script.js] hideAllAppPanels called');
         customizePanel.style.display = 'none';
         exercisesPanel.style.display = 'none';
         progressPanel.style.display = 'none';
@@ -145,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function updateTimerDisplay() {
+        console.log('[script.js] updateTimerDisplay called');
         // Use cached DOM references
         const remainingTime = phaseDuration - phaseSeconds;
         const percentage = (phaseSeconds / phaseDuration) * 100;
@@ -168,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetTimerUI() {
+        console.log('[script.js] resetTimerUI called');
         timerFill.style.transform = 'scaleY(1)';
         timerNegative.style.transform = 'scaleY(0)';
         timerFill.className = 'timer-fill';
@@ -178,6 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function stopExerciseTimer() {
+        console.log('[script.js] stopExerciseTimer called');
         if (timer) {
             clearInterval(timer);
             startBasicBtn.disabled = false;
@@ -192,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function startKegelExercise(holdTime, relaxTime, repetitions) {
         console.log('Starting exercise');
+        console.log('[script.js] startKegelExercise called', { holdTime, relaxTime, repetitions });        
         stopExerciseTimer();
 
         // Initialize audio on first user interaction
@@ -285,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showLogSessionPrompt() {
+        console.log('[script.js] showLogSessionPrompt called');
         progressPanel.style.display = 'block';
         window.scrollTo({ top: progressPanel.offsetTop, behavior: 'smooth' });
     }
@@ -479,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // LocalStorage Debug Utility (moved from kegel-timer.html)
     (function () {
+        console.log('[script.js] LocalStorage Debug Utility IIFE called');
         // Check if debug mode is enabled via URL parameter (?debug=true)
         const urlParams = new URLSearchParams(window.location.search);
         const debugMode = urlParams.get('debug') === 'true';
@@ -585,19 +604,5 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     })();
 
-    // LocalStorage initialization logic (moved from kegel-timer.html)
-    (function () {
-        const initialState = {
-            todayCount: '0',
-            streak: '0'
-        };
-        function initializeLocalStorage() {
-            Object.keys(initialState).forEach(key => {
-                if (!localStorage.getItem(key)) {
-                    localStorage.setItem(key, initialState[key]);
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', initializeLocalStorage);
-    })();
 });
+// End of script.js
