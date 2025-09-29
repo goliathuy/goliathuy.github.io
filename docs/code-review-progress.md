@@ -1,4 +1,3 @@
-
 # 📝 Code Review Implementation Progress
 
 ## Table of Contents
@@ -34,7 +33,7 @@ This document tracks the actionable items from the code review in [code-review.m
  [x] Run all tests and verify correctness for bug fixes.
  [x] Update/add tests to cover all performance changes, ensuring no subject is mocked and unimplemented tests fail.
  [x] Run all tests and verify correctness for performance optimizations (browser-based test runner: all tests pass).
- [ ] Improve readability (function naming, constants, error messages).
+ [.] Improve readability (function naming, constants, error messages).
  [ ] Update/add tests to cover all readability changes, ensuring no subject is mocked and unimplemented tests fail.
  [ ] Run all tests and verify correctness for readability improvements.
  [ ] Apply best practices (state management, event bus, panel navigation).
@@ -200,6 +199,70 @@ Here’s the plan:
 - Exercise button listeners use event delegation.
 - Service Worker uses network-first for HTML and cache-first for assets.
 
+### 🔍 Readability Improvements: Step-by-Step Plan
+
+1. Extract actionable readability improvements from the code review and mapping (function naming, JSDoc, constants, error messages).
+2. Create a detailed, auditable todo list for readability improvements in the progress file.
+3. Implement the improvements in script.js (and any other relevant files), making small, testable commits.
+4. Update/add tests to cover readability changes if needed.
+5. Run all tests to verify correctness.
+6. Update the progress log after each step for traceability.
+
+```markdown
+- [x] Refactor function names for clarity and consistency in `script.js`
+- [ ] Add/complete JSDoc comments for all exported and major functions in `script.js`
+- [ ] Replace magic numbers with named constants in `script.js`
+- [ ] Improve error messages for clarity and user feedback in `script.js`
+- [ ] Update/add tests to cover readability changes
+- [ ] Run all tests and verify correctness for readability improvements
+- [ ] Update progress log and check off completed steps
+```
+
+#### Refactor function names for clarity and consistency in `script.js
+
+1. Review all function names in script.js.
+2. Identify any that are unclear, inconsistent, or not following best practices.
+3. Propose improved names and present a mapping (old → new) for transparency.
+4. Apply the renaming throughout script.js and update any direct references in related files if needed.
+5. Update the progress log and check off this step in the progress file.
+
+**Main function names in script.js:**
+
+- initAudio
+- playSound
+- vibrate
+- hideAllPanels
+- updateTimerVisuals
+- resetTimer
+- stopTimer
+- startExercise
+- startMainExercise (nested)
+- promptLogSession
+- showStatus
+
+**Proposed mapping:**
+
+| Old Name           | Proposed New Name         | Rationale                                      |
+|--------------------|--------------------------|------------------------------------------------|
+| initAudio          | initializeAudioContext   | More descriptive, matches JS convention        |
+| playSound          | playPhaseSound           | Clarifies what sound is played                 |
+| vibrate            | triggerVibration         | Verb-noun, explicit action                     |
+| hideAllPanels      | hideAllAppPanels         | Clarifies scope (app panels, not all DOM)      |
+| updateTimerVisuals | updateTimerDisplay       | “Display” is more UI-specific                  |
+| resetTimer         | resetTimerUI             | Clarifies it’s UI, not just logic              |
+| stopTimer          | stopExerciseTimer        | More explicit about what is stopped            |
+| startExercise      | startKegelExercise       | Explicit, domain-specific                      |
+| startMainExercise  | runExerciseRoutine       | “run” is more idiomatic for routines           |
+| promptLogSession   | showLogSessionPrompt     | Clearer, verb-noun                             |
+| showStatus         | displayStatusMessage     | More explicit, matches UI naming conventions   |
+
+- Refactor these function names throughout script.js and update all references accordingly.
+
+-------
+
+All function names in script.js have been refactored for clarity and consistency, and all references in the main event listeners and helpers have been updated accordingly.
+Next: Add/complete JSDoc comments for all exported and major functions in script.js.
+
 ---
 
 <details>
@@ -219,11 +282,26 @@ Here’s the plan:
 - Verified all performance optimizations in the browser-based test runner (`tests/test-runner.html`).
 - All unit and integration tests pass for performance-related changes.
 - Marked performance optimization and test verification steps as complete in the progress file.
-- Todo Next: Begin readability improvements (function naming, constants, error messages).
 - Reviewed and confirmed that all test update and execution steps for bug fixes and performance optimizations were fully completed and verified.
 - Updated the TODO list to mark these steps as complete.
 - Workflow is now fully auditable and ready for the readability phase.
-
+- Started readability improvements phase (function naming, constants, error messages).
+- Added detailed, auditable todo list for readability improvements.
+- Completed function name refactor in script.js, including all missed references and consistency checks. All function names and references are now clear and descriptive. Updated the progress file
+- Ran all unit and integration tests in the browser-based test runner after refactor.
+- **Test Results:**
+    - Unit Tests: 7/9 passed
+        - FAIL: Progress tracking functions should update localStorage correctly
+        - FAIL: Progress tracking functions should update localStorage correctly - with debugging
+    - Integration Tests: 1/2 passed
+        - FAIL: Complete exercise flow should work correctly (Phase should be HOLD at beginning)
+    - Overall: 8/11 passed
+- **Analysis of Failing Tests:**
+    - All current test failures are related to recent or past changes (function name refactor, bug fixes, timer logic) and not to future changes like constants, error messages, or best practices.
+    - Progress tracking/localStorage failures are directly tied to the logic and naming refactor in script.js.
+    - The integration test failure (phase should be HOLD at beginning) is related to timer initialization and state transitions, which were in scope for the recent refactor and bug fixes.
+    - These issues should be fixed before moving on to the next steps in the TODO list.
+- **Next:** Review and debug these errors in script.js before proceeding to further readability improvements.
 </details>
 
 ---

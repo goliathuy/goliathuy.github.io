@@ -53,18 +53,28 @@ document.addEventListener('DOMContentLoaded', function () {
     let streak = 0;
 
     // Load saved data
-    if (localStorage.getItem('todayCount')) {
-        todayCount = parseInt(localStorage.getItem('todayCount'));
-        if (todayCountDisplay) {
-            todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+    try {
+        const savedTodayCount = localStorage.getItem('todayCount');
+        if (savedTodayCount && !isNaN(parseInt(savedTodayCount))) {
+            todayCount = parseInt(savedTodayCount);
+            if (todayCountDisplay) {
+                todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
+            }
         }
+    } catch (error) {
+        console.error('Error loading todayCount from localStorage:', error);
     }
 
-    if (localStorage.getItem('streak')) {
-        streak = parseInt(localStorage.getItem('streak'));
-        if (streakDisplay) {
-            streakDisplay.textContent = `Current streak: ${streak} days`;
+    try {
+        const savedStreak = localStorage.getItem('streak');
+        if (savedStreak && !isNaN(parseInt(savedStreak))) {
+            streak = parseInt(savedStreak);
+            if (streakDisplay) {
+                streakDisplay.textContent = `Current streak: ${streak} days`;
+            }
         }
+    } catch (error) {
+        console.error('Error loading streak from localStorage:', error);
     }
 
     // Timer Variables
@@ -81,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let holdSound;
     let relaxSound;
 
-    function initAudio() {
+    function initializeAudioContext() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         // Create hold sound (higher pitch)
         holdSound = audioContext.createOscillator();
@@ -91,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
         relaxSound.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
     }
 
-    function playSound(isHold) {
+    function playPhaseSound(isHold) {
         if (!soundToggle.checked || !audioContext) return;
         // Resume context if suspended (Chrome/Edge/Firefox user gesture requirement)
         if (audioContext.state === 'suspended') {
@@ -109,14 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 200);
     }
 
-    function vibrate(duration) {
+    function triggerVibration(duration) {
         if (vibrationToggle.checked && navigator.vibrate) {
             navigator.vibrate(duration);
         }
     }
 
     // Helper Functions
-    function hideAllPanels() {
+    function hideAllAppPanels() {
         console.log('Hiding all panels');
         customizePanel.style.display = 'none';
         exercisesPanel.style.display = 'none';
@@ -134,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         timerNegative
     };
 
-    function updateTimerVisuals() {
+    function updateTimerDisplay() {
         // Use cached DOM references
         const remainingTime = phaseDuration - phaseSeconds;
         const percentage = (phaseSeconds / phaseDuration) * 100;
@@ -157,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function resetTimer() {
+    function resetTimerUI() {
         timerFill.style.transform = 'scaleY(1)';
         timerNegative.style.transform = 'scaleY(0)';
         timerFill.className = 'timer-fill';
@@ -167,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         instruction.textContent = 'Select an exercise to begin';
     }
 
-    function stopTimer() {
+    function stopExerciseTimer() {
         if (timer) {
             clearInterval(timer);
             startBasicBtn.disabled = false;
@@ -175,18 +185,18 @@ document.addEventListener('DOMContentLoaded', function () {
             startQuickBtn.disabled = false;
             customizeBtn.disabled = false;
             stopBtn.disabled = true;
-            resetTimer();
+            resetTimerUI();
             timer = null; // Prevent double-clearing
         }
     }
 
-    function startExercise(holdTime, relaxTime, repetitions) {
+    function startKegelExercise(holdTime, relaxTime, repetitions) {
         console.log('Starting exercise');
-        stopTimer();
+        stopExerciseTimer();
 
         // Initialize audio on first user interaction
         if (!audioContext) {
-            initAudio();
+            initializeAudioContext();
         }
 
         // Add preparation countdown
@@ -200,16 +210,16 @@ document.addEventListener('DOMContentLoaded', function () {
             prepTime--;
             if (prepTime > 0) {
                 countdown.textContent = prepTime;
-                playSound(true);
-                vibrate(100);
+                playPhaseSound(true);
+                triggerVibration(100);
             } else {
                 clearInterval(prepTimer);
                 phaseLabel.classList.remove('preparation');
-                startMainExercise();
+                runExerciseRoutine();
             }
         }, 1000);
 
-        function startMainExercise() {
+        function runExerciseRoutine() {
             seconds = 0;
             phaseSeconds = 0;
             phaseDuration = holdTime;
@@ -224,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             stopBtn.disabled = false;
 
             instruction.textContent = "Contract your pelvic floor muscles";
-            updateTimerVisuals();
+            updateTimerDisplay();
 
             // Add progress indicator
             const progressIndicator = document.createElement('div');
@@ -234,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
             timer = setInterval(() => {
                 phaseSeconds++;
                 seconds++;
-                updateTimerVisuals();
+                updateTimerDisplay();
 
                 // Update progress indicator
                 progressIndicator.textContent = `Rep ${count + 1}/${totalReps}`;
@@ -244,8 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     isHolding = !isHolding;
 
                     // Play sound and vibrate on phase change
-                    playSound(isHolding);
-                    vibrate(isHolding ? 200 : 100);
+                    playPhaseSound(isHolding);
+                    triggerVibration(isHolding ? 200 : 100);
 
                     if (isHolding) {
                         count++;
@@ -258,11 +268,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             countdown.textContent = "✓";
                             phaseLabel.textContent = "DONE";
                             progressIndicator.remove();
-                            playSound(true);
-                            vibrate(300);
+                            playPhaseSound(true);
+                            triggerVibration(300);
                             setTimeout(() => {
-                                stopTimer();
-                                promptLogSession();
+                                stopExerciseTimer();
+                                showLogSessionPrompt();
                             }, 1500);
                         }
                     } else {
@@ -274,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function promptLogSession() {
+    function showLogSessionPrompt() {
         progressPanel.style.display = 'block';
         window.scrollTo({ top: progressPanel.offsetTop, behavior: 'smooth' });
     }
@@ -283,21 +293,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // Exercise Buttons - use event delegation for performance
     document.addEventListener('click', (e) => {
         if (e.target.matches('.exercise-button')) {
-            if (e.target.id === 'start-basic') startExercise(5, 5, 10);
-            else if (e.target.id === 'start-long') startExercise(10, 10, 10);
-            else if (e.target.id === 'start-quick') startExercise(1, 1, 20);
+            if (e.target.id === 'start-basic') startKegelExercise(5, 5, 10);
+            else if (e.target.id === 'start-long') startKegelExercise(10, 10, 10);
+            else if (e.target.id === 'start-quick') startKegelExercise(1, 1, 20);
             else if (e.target.id === 'customize-btn') {
-                hideAllPanels();
+                hideAllAppPanels();
                 customizePanel.style.display = 'block';
             }
         }
-        if (e.target.matches('#stop-btn')) stopTimer();
+        if (e.target.matches('#stop-btn')) stopExerciseTimer();
     });
 
     // Custom Exercise
     if (customizeBtn) {
         customizeBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             customizePanel.style.display = 'block';
         });
     }
@@ -308,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const relaxTime = parseInt(customRelaxInput.value) || 5;
             const reps = parseInt(customRepsInput.value) || 10;
 
-            startExercise(holdTime, relaxTime, reps);
+            startKegelExercise(holdTime, relaxTime, reps);
             customizePanel.style.display = 'none';
         });
     }
@@ -322,35 +332,35 @@ document.addEventListener('DOMContentLoaded', function () {
     // Section Buttons
     if (exercisesBtn) {
         exercisesBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             exercisesPanel.style.display = 'block';
         });
     }
 
     if (progressBtn) {
         progressBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             progressPanel.style.display = 'block';
         });
     }
 
     if (aboutBtn) {
         aboutBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             aboutPanel.style.display = 'block';
         });
     }
 
     if (benefitsBtn) {
         benefitsBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             benefitsPanel.style.display = 'block';
         });
     }
 
     if (faqBtn) {
         faqBtn.addEventListener('click', () => {
-            hideAllPanels();
+            hideAllAppPanels();
             faqPanel.style.display = 'block';
         });
     }
@@ -401,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
             statusBar.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:999;background:#ffeaa7;color:#856404;text-align:center;padding:4px;font-size:14px;display:none;';
             document.body.appendChild(statusBar);
         }
-        function showStatus(msg, duration = 3000) {
+        function displayStatusMessage(msg, duration = 3000) {
             statusBar.textContent = msg;
             statusBar.style.display = 'block';
             if (duration > 0) {
@@ -409,14 +419,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         window.addEventListener('online', () => {
-            showStatus('Back online');
+            displayStatusMessage('Back online');
         });
         window.addEventListener('offline', () => {
-            showStatus('Offline mode - limited functionality', 0);
+            displayStatusMessage('Offline mode - limited functionality', 0);
         });
         // Show offline status on load if needed
         if (!navigator.onLine) {
-            showStatus('Offline mode - limited functionality', 0);
+            displayStatusMessage('Offline mode - limited functionality', 0);
         }
         exercisePanelButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -424,11 +434,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 exercisesPanel.style.display = 'none';
 
                 if (exercise === 'basic') {
-                    startExercise(5, 5, 10);
+                    startKegelExercise(5, 5, 10);
                 } else if (exercise === 'long') {
-                    startExercise(10, 10, 10);
+                    startKegelExercise(10, 10, 10);
                 } else if (exercise === 'quick') {
-                    startExercise(1, 1, 20);
+                    startKegelExercise(1, 1, 20);
                 }
             });
         });
@@ -437,23 +447,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Progress Tracking
     if (logSessionBtn) {
         logSessionBtn.addEventListener('click', () => {
-            todayCount++;
-            if (todayCountDisplay) {
-                todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
-            }
-            localStorage.setItem('todayCount', todayCount);
-
-            // Update streak
-            const lastDate = localStorage.getItem('lastDate');
-            const today = new Date().toDateString();
-
-            if (lastDate !== today) {
-                streak++;
-                if (streakDisplay) {
-                    streakDisplay.textContent = `Current streak: ${streak} days`;
+            // Update progress
+            try {
+                todayCount++;
+                if (todayCountDisplay) {
+                    todayCountDisplay.textContent = `Sessions completed today: ${todayCount}`;
                 }
-                localStorage.setItem('streak', streak);
-                localStorage.setItem('lastDate', today);
+                localStorage.setItem('todayCount', todayCount);
+
+                const lastDate = localStorage.getItem('lastDate');
+                const today = new Date().toDateString();
+
+                if (lastDate !== today) {
+                    streak++;
+                    if (streakDisplay) {
+                        streakDisplay.textContent = `Current streak: ${streak} days`;
+                    }
+                    localStorage.setItem('streak', streak);
+                    localStorage.setItem('lastDate', today);
+                }
+            } catch (error) {
+                console.error('Error updating progress in localStorage:', error);
             }
 
             logSessionBtn.textContent = "Session Logged!";
@@ -462,4 +476,128 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 2000);
         });
     }
+
+    // LocalStorage Debug Utility (moved from kegel-timer.html)
+    (function () {
+        // Check if debug mode is enabled via URL parameter (?debug=true)
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugMode = urlParams.get('debug') === 'true';
+        const debugPanel = document.getElementById('ls-debug-panel');
+        const debugContent = document.getElementById('ls-debug-content');
+        const toggleBtn = document.getElementById('ls-debug-toggle');
+        const refreshBtn = document.getElementById('ls-debug-refresh');
+        const clearBtn = document.getElementById('ls-debug-clear');
+        // Show debug panel if debug mode is enabled
+        if (debugMode && debugPanel) {
+            debugPanel.style.display = 'block';
+        }
+        // Display current localStorage content
+        function refreshLocalStorageDisplay() {
+            if (!debugContent) return;
+            debugContent.innerHTML = '';
+            if (localStorage.length === 0) {
+                debugContent.innerHTML = '<i>localStorage is empty</i>';
+                return;
+            }
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            // Add table header
+            const header = document.createElement('tr');
+            header.innerHTML = `
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Key</th>
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Value</th>
+                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 4px;">Type</th>
+            `;
+            table.appendChild(header);
+            // Add rows for each localStorage item
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${key}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${value}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 4px;">${typeof value}</td>
+                `;
+                table.appendChild(row);
+            }
+            debugContent.appendChild(table);
+        }
+        // Toggle debug panel visibility
+        if (toggleBtn && debugPanel) {
+            toggleBtn.addEventListener('click', function () {
+                const isHidden = debugPanel.style.display === 'none';
+                debugPanel.style.display = isHidden ? 'block' : 'none';
+            });
+        }
+        // Refresh localStorage display
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', refreshLocalStorageDisplay);
+        }
+        // Clear all localStorage items
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                if (confirm('Are you sure you want to clear all localStorage items?')) {
+                    localStorage.clear();
+                    refreshLocalStorageDisplay();
+                    console.log('localStorage cleared');
+                }
+            });
+        }
+        // Automatically display localStorage content on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Log to console
+            console.group('Initial localStorage State');
+            console.log('localStorage items:', localStorage.length);
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`${key}: '${localStorage.getItem(key)}' (${typeof localStorage.getItem(key)})`);
+            }
+            console.groupEnd();
+            // Update panel
+            if (debugMode) {
+                refreshLocalStorageDisplay();
+            }
+        });
+        // Expose debug functions globally
+        window.lsDebug = {
+            show: function () {
+                if (debugPanel) debugPanel.style.display = 'block';
+                refreshLocalStorageDisplay();
+            },
+            refresh: refreshLocalStorageDisplay,
+            clear: function () {
+                localStorage.clear();
+                refreshLocalStorageDisplay();
+                console.log('localStorage cleared');
+            },
+            getItem: function (key) {
+                const value = localStorage.getItem(key);
+                console.log(`localStorage.getItem('${key}') = '${value}' (${typeof value})`);
+                return value;
+            },
+            setItem: function (key, value) {
+                localStorage.setItem(key, value);
+                console.log(`localStorage.setItem('${key}', '${value}')`);
+                refreshLocalStorageDisplay();
+            }
+        };
+    })();
+
+    // LocalStorage initialization logic (moved from kegel-timer.html)
+    (function () {
+        const initialState = {
+            todayCount: '0',
+            streak: '0'
+        };
+        function initializeLocalStorage() {
+            Object.keys(initialState).forEach(key => {
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, initialState[key]);
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initializeLocalStorage);
+    })();
 });

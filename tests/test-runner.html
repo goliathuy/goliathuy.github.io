@@ -239,6 +239,35 @@
             runIntegrationTests();
         });
         
+        // Test setup: force reset localStorage before each test run
+        (function() {
+            const initialState = {
+                todayCount: '0',
+                streak: '0'
+            };
+            window.__lsTestBackup = {};
+            window.forceResetLocalStorage = function() {
+                // Backup current values
+                Object.keys(initialState).forEach(key => {
+                    window.__lsTestBackup[key] = localStorage.getItem(key);
+                    localStorage.setItem(key, initialState[key]);
+                });
+            };
+            window.restoreLocalStorage = function() {
+                // Restore previous values
+                Object.keys(initialState).forEach(key => {
+                    if (window.__lsTestBackup[key] === null || window.__lsTestBackup[key] === undefined) {
+                        localStorage.removeItem(key);
+                    } else {
+                        localStorage.setItem(key, window.__lsTestBackup[key]);
+                    }
+                });
+            };
+            // Force reset before tests
+            document.addEventListener('DOMContentLoaded', window.forceResetLocalStorage);
+            // Optionally, call window.restoreLocalStorage() after tests complete
+        })();
+        
         // Auto-run tests when page loads
         window.addEventListener('load', function() {
             setTimeout(runAllTests, 500);
