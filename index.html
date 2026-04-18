@@ -1,211 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mario Albornoz - Developer Hub</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4a90e2">
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario Albornoz — Senior Full-Stack Engineer & Technical Co-Founder</title>
+  <meta name="description" content="Portfolio of Mario Albornoz, a Senior Full-Stack Engineer and Technical Co-Founder specializing in PHP, Laravel, TypeScript, and modern edge architectures.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="portfolio-manifest.json">
+  <meta name="theme-color" content="#2A6B5A">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
     <!-- This page was created using AI code generation tools as part of an exploration into minimizing direct code manipulation -->
 </head>
 <body>
-    <header>
-        <h1>Mario Albornoz</h1>
-        <p class="subtitle">Developer Hub & Project Showcase</p>
-    </header>
 
+  <!-- NAVIGATION -->
+  <nav>
     <div class="container">
-        <!-- Introduction Section -->
-        <div class="intro-section">
-            <div class="profile-container">
-                <div class="profile-image">
-                    <!-- Using GitHub profile image -->
-                    <img src="https://github.com/goliathuy.png" alt="Mario Albornoz" class="github-profile-img">
-                </div>
-                <div class="profile-content">
-                    <h2>Welcome to my Developer Hub</h2>
-                    <p>Experienced Software Developer with skills in PHP, JavaScript, and various web technologies. This developer corner shares insights into my technical expertise and showcases my Kegel Exercise Timer project, which serves as a testing ground for AI-assisted development.</p>
-                    <p class="ai-notice">This site was developed through AI code generation exploration to test minimizing direct code manipulation.</p>
-                </div>
-            </div>
-            
-            <!-- Navigation Buttons -->
-            <div class="button-container">
-                <button class="section-button" id="about-btn">About Me</button>
-                <button class="section-button" id="experience-btn">Experience</button>
-                <button class="section-button" id="skills-btn">Skills</button>
-                <button class="accent-button" id="kegel-app-btn">Kegel Timer App</button>
-            </div>
-        </div>
-        
-        <!-- About Me Panel -->
-        <div class="content-panel" id="about-panel">
-            <h2>About Me</h2>
-            <p>I am a Senior Developer specializing in PHP development with extensive experience across multiple technologies. My background includes work with FileNet, Enterprise Content Management, Docker, and various web technologies.</p>
-            
-            <div class="about-section">
-                <h3>Education</h3>
-                <div class="education-item">
-                    <h4>Analista Programador</h4>
-                    <p class="institution">Universidad ORT Uruguay</p>
-                    <p class="date-range">2002 - 2019</p>
-                </div>
-            </div>
-            
-            <div class="about-section">
-                <h3>Certifications</h3>
-                <ul>
-                    <li>Generative AI for Developers</li>
-                    <li>Professional Scrum Master™ I (PSM I)</li>
-                </ul>
-            </div>
-            
-            <div class="about-section">
-                <h3>Contact</h3>
-                <p>LinkedIn: <a href="http://www.linkedin.com/in/marioalbornoz" target="_blank">www.linkedin.com/in/marioalbornoz</a></p>
-            </div>
-            
-            <button class="control-button" id="close-about">Close</button>
-        </div>
-        
-        <!-- Experience Panel -->
-        <div class="content-panel" id="experience-panel">
-            <h2>Professional Experience</h2>
-            
-            <div class="experience-item">
-                <h3>Self-employed</h3>
-                <p class="position">Software analyst and developer</p>
-                <p class="date-range">September 2014 - Present</p>
-                <p>Web sites development on PHP, assisting with solution definition, and 3rd party providers evaluation. Experience with Java, Java Spring, and .NET.</p>
-            </div>
-            
-            <div class="experience-item">
-                <h3>Endava</h3>
-                <p class="position">SE Senior Developer</p>
-                <p class="date-range">May 2022 - July 2024</p>
-                <p>Racing Car Development Company: Developed mobile app (Flutter) and backend API (Laravel, PHP) for race data management. Implemented automation testing (Typescript, Jest) and DevOps (Docker, Gitlab).</p>
-                <p>Staffing Software Company: Migrated PHP/AngularJS to .NET Core/Angular, integrating with acquisitions. Developed new features and optimized performance.</p>
-            </div>
-            
-            <div class="experience-item">
-                <h3>Eightroom</h3>
-                <p class="position">Sr Backend Developer</p>
-                <p class="date-range">March 2022 - May 2022</p>
-                <p>Developed features for online wallet platform using PHP/Laravel. Worked with product managers to design solutions.</p>
-            </div>
-            
-            <div class="experience-item">
-                <h3>woOw</h3>
-                <p class="position">PHP Programmer</p>
-                <p class="date-range">December 2019 - March 2022</p>
-                <p>Led Laravel integrations, connected Netsuite to core systems, and optimized data flow. Migrated Magento 2, implemented modules, and developed a tracking API.</p>
-            </div>
-            
-            <button class="show-more-btn" id="show-more-experience">Show More Experience</button>
-            
-            <div class="hidden-content" id="more-experience">
-                <div class="experience-item">
-                    <h3>ITC S.A. (Innovación, Tecnología y Consultoría)</h3>
-                    <p class="position">Consultor</p>
-                    <p class="date-range">December 2017 - December 2019</p>
-                    <p>Developed and deployed microservices using Laravel. Dockerized several microservices and migrated from MongoDB to MySQL 5.7.</p>
-                </div>
-                
-                <div class="experience-item">
-                    <h3>bits Kingdom</h3>
-                    <p class="position">Senior Programmer and Analyst</p>
-                    <p class="date-range">April 2016 - May 2017</p>
-                    <p>Developed PHP solutions and built projects using Meteor.js (Node.js, MongoDB, HTML, CSS, JavaScript).</p>
-                </div>
-                
-                <div class="experience-item">
-                    <h3>NetSuite</h3>
-                    <p class="position">PS Web Developer</p>
-                    <p class="date-range">June 2015 - March 2016</p>
-                    <p>Implemented custom solutions over NetSuite's ecommerce solution using Javascript and Backbone.js.</p>
-                </div>
-            </div>
-            
-            <button class="control-button" id="close-experience">Close</button>
-        </div>
-        
-        <!-- Skills Panel -->
-        <div class="content-panel" id="skills-panel">
-            <h2>Skills & Expertise</h2>
-            
-            <div class="skills-container">
-                <div class="skill-category">
-                    <h3>Programming Languages</h3>
-                    <ul class="skill-list">
-                        <li>PHP</li>
-                        <li>JavaScript/jQuery</li>
-                        <li>TypeScript</li>
-                        <li>C#</li>
-                        <li>Java</li>
-                        <li>Perl</li>
-                        <li>Cobol</li>
-                    </ul>
-                </div>
-                
-                <div class="skill-category">
-                    <h3>Frameworks & Libraries</h3>
-                    <ul class="skill-list">
-                        <li>Laravel</li>
-                        <li>Magento</li>
-                        <li>.NET Core</li>
-                        <li>Flutter</li>
-                        <li>Angular/AngularJS</li>
-                        <li>Backbone.js</li>
-                        <li>Meteor.js</li>
-                        <li>Java Spring</li>
-                    </ul>
-                </div>
-                
-                <div class="skill-category">
-                    <h3>Tools & Platforms</h3>
-                    <ul class="skill-list">
-                        <li>Docker</li>
-                        <li>Git/Gitlab</li>
-                        <li>AWS</li>
-                        <li>MySQL/Oracle Database</li>
-                        <li>MongoDB</li>
-                        <li>FileNet</li>
-                        <li>Enterprise Content Management</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <button class="control-button" id="close-skills">Close</button>
-        </div>
+      <a href="#hero" class="nav-logo">MARIO ALBORNOZ</a>
+      <ul class="nav-links">
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      </ul>
+    </div>
+  </nav>
 
-        <!-- Kegel App Panel - This is the bridge to the timer application -->
-        <div id="kegel-redirect-panel" class="content-panel">
-            <h2>Kegel Exercise Timer Project</h2>
-            <p>This is a web-based application I developed to provide a simple, ad-free solution for Kegel exercises guidance.</p>
-            <p>The application features:</p>
-            <ul>
-                <li>Visual and auditory guidance for exercises</li>
-                <li>Pre-defined exercise routines</li>
-                <li>Customizable exercise settings</li>
-                <li>Progress tracking</li>
-                <li>Educational content about Kegel exercises</li>
-            </ul>
-            <div class="button-container">
-                <button class="control-button" id="launch-kegel-app">Launch Timer Application</button>
-                <button class="control-button" id="close-kegel-redirect">Close</button>
-            </div>
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="container">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <span class="text-uppercase hero-eyebrow">MARIO ALBORNOZ</span>
+          <h1>Senior Full-Stack Engineer & Technical Co-Founder</h1>
+          <p class="hero-bio">
+            Senior engineer with 20+ years building production systems across PHP/Laravel, 
+            TypeScript, and modern edge architectures. I focus on pragmatic, scalable 
+            architectures that optimize resources and reduce operational friction.
+          </p>
+          <div class="hero-cta">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="#" class="btn btn-outline cv-request-link">CV on Request</a>
+          </div>
         </div>
+        <div class="hero-visual">
+          <div class="img-frame">
+            <img src="https://github.com/goliathuy.png" alt="Mario Albornoz">
+            <div class="location-tag">Montevideo, Uruguay</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar container">
+      <div class="stat-item">
+        <span class="stat-num">20+</span>
+        <span class="stat-label">Years of Experience</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">6+</span>
+        <span class="stat-label">Companies & Clients</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">15+</span>
+        <span class="stat-label">Technologies Shipped</span>
+      </div>
     </div>
 
-    <footer>
-        <p>Connect with me: <a href="http://www.linkedin.com/in/marioalbornoz" target="_blank">LinkedIn</a></p>
-        <p>&copy; 2025 Mario Albornoz | Developer Hub & Projects</p>
-        <p class="ai-generated">Generated with AI assistance to explore code generation capabilities</p>
-    </footer>
+    <!-- EXPERIENCE -->
+    <section id="experience" class="container">
+      <div class="section-header">
+        <span class="text-uppercase section-label">01 // TRACK RECORD</span>
+        <h2>Professional Experience</h2>
+      </div>
 
-    <script src="hub.js"></script>
+      <div class="exp-list">
+        <!-- current role -->
+        <div class="exp-item">
+          <div class="exp-meta">
+            <h3 class="exp-company">tkigo.com</h3>
+            <span class="exp-period">2026 — PRESENT</span>
+          </div>
+          <div class="exp-content">
+            <h4 class="exp-role">Technical Co-Founder & Developer</h4>
+            <p class="exp-desc">
+              Technical Co-Founder developing an upcoming digital coordination platform (currently in stealth). 
+              Architecting a stateless, highly optimized infrastructure leveraging encoded routing 
+              to minimize user friction and operational storage costs.
+            </p>
+            <div class="skill-tags">
+              <span class="tag">Next.js 14</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">Vercel Edge</span>
+              <span class="tag">HMAC</span>
+              <span class="tag">Satori</span>
+              <span class="tag">Supabase</span>
+              <span class="tag">Redis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-meta">
+            <h3 class="exp-company">Self-employed</h3>
+            <span class="exp-period">2014 — PRESENT</span>
+          </div>
+          <div class="exp-content">
+            <h4 class="exp-role">Software Analyst & Developer</h4>
+            <p class="exp-desc">
+              Full-cycle web development, solution architecture, and third-party provider evaluation. 
+              Projects span PHP, Java, Spring, and .NET ecosystems.
+            </p>
+            <div class="skill-tags">
+              <span class="tag">PHP</span>
+              <span class="tag">Java</span>
+              <span class="tag">Spring</span>
+              <span class="tag">.NET</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-meta">
+            <h3 class="exp-company">Endava</h3>
+            <span class="exp-period">2022 — 2024</span>
+          </div>
+          <div class="exp-content">
+            <h4 class="exp-role">SE Senior Developer</h4>
+            <p class="exp-desc">
+              Racing telemetry platform: Flutter mobile app + Laravel backend API + TypeScript/Jest automation 
+              testing. Staffing platform: migrated PHP/AngularJS to .NET Core/Angular, 
+              integrated multiple acquired systems, optimized performance.
+            </p>
+            <div class="skill-tags">
+              <span class="tag">Flutter</span>
+              <span class="tag">Laravel</span>
+              <span class="tag">TypeScript</span>
+              <span class="tag">Docker</span>
+              <span class="tag">.NET Core</span>
+              <span class="tag">Angular</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-meta">
+            <h3 class="exp-company">woOw</h3>
+            <span class="exp-period">2019 — 2022</span>
+          </div>
+          <div class="exp-content">
+            <h4 class="exp-role">PHP Programmer</h4>
+            <p class="exp-desc">
+              Engineered Laravel integrations connecting NetSuite to core systems. Migrated and customized 
+              Magento 2. Built a shipment tracking API.
+            </p>
+            <div class="skill-tags">
+              <span class="tag">Laravel</span>
+              <span class="tag">Magento 2</span>
+              <span class="tag">NetSuite</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-item">
+          <div class="exp-meta">
+            <h3 class="exp-company">ITC S.A.</h3>
+            <span class="exp-period">2017 — 2019</span>
+          </div>
+          <div class="exp-content">
+            <h4 class="exp-role">Consultant</h4>
+            <p class="exp-desc">
+              Microservices in Laravel. Dockerized services. MongoDB → MySQL migration. 
+              Technical consulting for infrastructure modernization.
+            </p>
+            <div class="skill-tags">
+              <span class="tag">Laravel</span>
+              <span class="tag">Docker</span>
+              <span class="tag">MongoDB</span>
+              <span class="tag">MySQL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="container">
+      <div class="section-header">
+        <span class="text-uppercase section-label">02 // PORTFOLIO</span>
+        <h2>Featured Projects</h2>
+      </div>
+
+      <div class="projects-grid">
+        <a href="https://tkigo.com" target="_blank" rel="noopener noreferrer" class="project-card">
+          <span class="text-uppercase project-type">Lead Case Study</span>
+          <h3 class="project-title">tkigo.com</h3>
+          <p class="exp-desc">
+            Technical Co-Founder developing an upcoming digital coordination platform (currently in stealth). 
+            Architecting a stateless, highly optimized infrastructure leveraging encoded routing 
+            to minimize user friction and operational storage costs.
+          </p>
+          <div class="skill-tags">
+            <span class="tag">Next.js 14</span>
+            <span class="tag">Vercel Edge</span>
+            <span class="tag">Supabase</span>
+          </div>
+        </a>
+
+        <a href="kegel-timer.html" class="project-card">
+          <span class="text-uppercase project-type">R&D Experiment</span>
+          <h3 class="project-title">Kegel Exercise Timer</h3>
+          <p class="exp-desc">
+            Clean, ad-free web app for guided wellness routines. Visual + auditory guidance, 
+            customizable settings. Built as an exploration into AI-assisted development workflows.
+          </p>
+          <div class="skill-tags">
+            <span class="tag">Vanilla JS</span>
+            <span class="tag">AI-Assisted</span>
+            <span class="tag">PWA</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="container">
+      <div class="section-header">
+        <span class="text-uppercase section-label">03 // CAPABILITIES</span>
+        <h2>Technical Stack</h2>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skills-col">
+          <h3>Languages</h3>
+          <ul class="skills-list">
+            <li>PHP</li>
+            <li>JavaScript / TypeScript</li>
+            <li>C#</li>
+            <li>Java</li>
+            <li>Dart (Flutter)</li>
+          </ul>
+        </div>
+        <div class="skills-col">
+          <h3>Frameworks</h3>
+          <ul class="skills-list">
+            <li>Next.js 14</li>
+            <li>Laravel</li>
+            <li>Magento 2</li>
+            <li>.NET Core</li>
+            <li>Spring / Flutter</li>
+          </ul>
+        </div>
+        <div class="skills-col">
+          <h3>Infrastructure</h3>
+          <ul class="skills-list">
+            <li>Vercel Edge</li>
+            <li>Docker</li>
+            <li>AWS / Supabase</li>
+            <li>Redis</li>
+            <li>MySQL / Oracle</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="container">
+      <div class="section-header">
+        <span class="text-uppercase section-label">04 // PROFILE</span>
+        <h2>The Editorial Engineer</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-bio">
+          <p>
+            I bridge strong backend fundamentals with frontier tooling. I've worked across 
+            diverse domains: racing telemetry, e-commerce, online wallets, and social coordination. 
+            The common thread is pragmatic engineering — choosing the right tool, 
+            making the architectural decision that <del>makes the problem disappear</del> efficiently handles the complexity.
+          </p>
+          <p>
+            I'm actively exploring AI-assisted development workflows as a core part of my 
+            practice — how much of the software lifecycle can be designed, tested, and shipped 
+            with AI as a collaborator.
+          </p>
+        </div>
+        <div class="about-details">
+          <div class="detail-section">
+            <h4 class="text-uppercase">Education</h4>
+            <div class="edu-item">
+              <span class="edu-degree">Analista Programador</span>
+              <span class="edu-school">Universidad ORT Uruguay</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4 class="text-uppercase">Certifications</h4>
+            <div class="edu-item">
+              <span class="edu-degree">Generative AI for Developers</span>
+              <span class="edu-degree">Scrum Master™ I (PSM I)</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4 class="text-uppercase">Spoken Languages</h4>
+            <div class="edu-item">
+              <span class="edu-degree">Spanish (Native)</span>
+              <span class="edu-degree">English (Professional)</span>
+              <span class="edu-degree">Portuguese (Professional)</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4 class="text-uppercase">Connect</h4>
+            <div class="social-links">
+              <a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="https://github.com/goliathuy" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="#" class="email-obfuscated">Connect via Email</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="container">
+    <div class="footer-top">
+      <div>
+        <h2 class="nav-logo">MARIO ALBORNOZ</h2>
+        <p class="text-uppercase" style="margin-top: 1rem; color: var(--ink-faint);">Senior Full-Stack Engineer</p>
+      </div>
+      <nav class="footer-nav">
+        <ul class="footer-nav" style="list-style: none; display: flex; gap: 2rem; flex-wrap: wrap;">
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>CV on REQUEST → <a href="#" class="email-obfuscated cv-request-link">Connect via Email</a></span>
+      <span>&copy; 2026 Mario Albornoz. Built with Precision.</span>
+    </div>
+  </footer>
+
+  <script src="hub.js"></script>
 </body>
 </html>
