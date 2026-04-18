@@ -1,356 +1,841 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mario Albornoz — Senior Full-Stack Engineer & Technical Co-Founder</title>
-  <meta name="description" content="Portfolio of Mario Albornoz, a Senior Full-Stack Engineer and Technical Co-Founder specializing in PHP, Laravel, TypeScript, and modern edge architectures.">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="portfolio-manifest.json">
-  <meta name="theme-color" content="#2A6B5A">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <!-- This page was created using AI code generation tools as part of an exploration into minimizing direct code manipulation -->
-</head>
-<body>
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mario Albornoz — Senior Full-Stack Engineer</title>
+    <meta
+      name="description"
+      content="Portfolio of Mario Albornoz, a Senior Full-Stack Engineer and Technical Co-Founder."
+    />
 
-  <!-- NAVIGATION -->
-  <nav>
-    <div class="container">
-      <a href="#hero" class="nav-logo">MARIO ALBORNOZ</a>
-      <ul class="nav-links">
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-      </ul>
-    </div>
-  </nav>
+    <link rel="manifest" href="portfolio-manifest.json" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="icons/icon-192.png"
+    />
 
-  <main>
-    <!-- HERO -->
-    <section id="hero" class="container">
-      <div class="hero-grid">
-        <div class="hero-text">
-          <span class="text-uppercase hero-eyebrow">MARIO ALBORNOZ</span>
-          <h1>Senior Full-Stack Engineer & Technical Co-Founder</h1>
-          <p class="hero-bio">
-            Senior engineer with 20+ years building production systems across PHP/Laravel, 
-            TypeScript, and modern edge architectures. I focus on pragmatic, scalable 
-            architectures that optimize resources and reduce operational friction.
-          </p>
-          <div class="hero-cta">
-            <a href="#projects" class="btn btn-primary">View Projects</a>
-            <a href="#" class="btn btn-outline cv-request-link">CV on Request</a>
-          </div>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#a7e9d3",
+              "on-primary": "#ffffff",
+              "secondary-container": "#e2dfde",
+              "surface-container-low": "#f4f3f1",
+              "surface-tint": "#286958",
+              "primary-container": "#2a6b5a",
+              "surface-bright": "#faf9f7",
+              "inverse-surface": "#2f3130",
+              surface: "#faf9f7",
+              background: "#faf9f7",
+              outline: "#707975",
+              "outline-variant": "#bfc9c4",
+              primary: "#075343",
+              secondary: "#5f5e5e",
+              tertiary: "#822c08",
+              "on-surface-variant": "#3f4945",
+              "on-surface": "#1a1c1b",
+              "surface-container-highest": "#e3e2e0",
+            },
+            fontFamily: {
+              headline: ["Newsreader"],
+              body: ["Inter"],
+              label: ["Inter"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-family: "Material Symbols Outlined";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body class="bg-surface text-on-surface font-body antialiased">
+    <nav
+      class="fixed top-0 w-full z-50 border-b border-outline-variant bg-surface/90 backdrop-blur-md transition-colors duration-300"
+    >
+      <div
+        class="flex justify-between items-center max-w-[1440px] mx-auto px-6 md:px-12 h-20"
+      >
+        <div
+          class="font-headline text-2xl font-medium text-on-surface tracking-tighter"
+        >
+          MARIO ALBORNOZ
         </div>
-        <div class="hero-visual">
-          <div class="img-frame">
-            <img src="https://github.com/goliathuy.png" alt="Mario Albornoz">
-            <div class="location-tag">Montevideo, Uruguay</div>
-          </div>
+        <div class="hidden md:flex gap-8">
+          <a
+            class="text-primary font-bold border-b-2 border-primary pb-1 transition-opacity hover:opacity-70"
+            href="#overview"
+            >Overview</a
+          >
+          <a
+            class="text-on-surface font-medium hover:text-tertiary transition-colors duration-300"
+            href="#experience"
+            >Experience</a
+          >
+          <a
+            class="text-on-surface font-medium hover:text-tertiary transition-colors duration-300"
+            href="#projects"
+            >Projects</a
+          >
+          <a
+            class="text-on-surface font-medium hover:text-tertiary transition-colors duration-300"
+            href="#capabilities"
+            >Capabilities</a
+          >
         </div>
-      </div>
-    </section>
-
-    <!-- STATS BAR -->
-    <div class="stats-bar container">
-      <div class="stat-item">
-        <span class="stat-num">20+</span>
-        <span class="stat-label">Years of Experience</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">6+</span>
-        <span class="stat-label">Companies & Clients</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">15+</span>
-        <span class="stat-label">Technologies Shipped</span>
-      </div>
-    </div>
-
-    <!-- EXPERIENCE -->
-    <section id="experience" class="container">
-      <div class="section-header">
-        <span class="text-uppercase section-label">01 // TRACK RECORD</span>
-        <h2>Professional Experience</h2>
-      </div>
-
-      <div class="exp-list">
-        <!-- current role -->
-        <div class="exp-item">
-          <div class="exp-meta">
-            <h3 class="exp-company">tkigo.com</h3>
-            <span class="exp-period">2026 — PRESENT</span>
-          </div>
-          <div class="exp-content">
-            <h4 class="exp-role">Technical Co-Founder & Developer</h4>
-            <p class="exp-desc">
-              Technical Co-Founder developing an upcoming digital coordination platform (currently in stealth). 
-              Architecting a stateless, highly optimized infrastructure leveraging encoded routing 
-              to minimize user friction and operational storage costs.
-            </p>
-            <div class="skill-tags">
-              <span class="tag">Next.js 14</span>
-              <span class="tag">TypeScript</span>
-              <span class="tag">Vercel Edge</span>
-              <span class="tag">HMAC</span>
-              <span class="tag">Satori</span>
-              <span class="tag">Supabase</span>
-              <span class="tag">Redis</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item">
-          <div class="exp-meta">
-            <h3 class="exp-company">Self-employed</h3>
-            <span class="exp-period">2014 — PRESENT</span>
-          </div>
-          <div class="exp-content">
-            <h4 class="exp-role">Software Analyst & Developer</h4>
-            <p class="exp-desc">
-              Full-cycle web development, solution architecture, and third-party provider evaluation. 
-              Projects span PHP, Java, Spring, and .NET ecosystems.
-            </p>
-            <div class="skill-tags">
-              <span class="tag">PHP</span>
-              <span class="tag">Java</span>
-              <span class="tag">Spring</span>
-              <span class="tag">.NET</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item">
-          <div class="exp-meta">
-            <h3 class="exp-company">Endava</h3>
-            <span class="exp-period">2022 — 2024</span>
-          </div>
-          <div class="exp-content">
-            <h4 class="exp-role">SE Senior Developer</h4>
-            <p class="exp-desc">
-              Racing telemetry platform: Flutter mobile app + Laravel backend API + TypeScript/Jest automation 
-              testing. Staffing platform: migrated PHP/AngularJS to .NET Core/Angular, 
-              integrated multiple acquired systems, optimized performance.
-            </p>
-            <div class="skill-tags">
-              <span class="tag">Flutter</span>
-              <span class="tag">Laravel</span>
-              <span class="tag">TypeScript</span>
-              <span class="tag">Docker</span>
-              <span class="tag">.NET Core</span>
-              <span class="tag">Angular</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item">
-          <div class="exp-meta">
-            <h3 class="exp-company">woOw</h3>
-            <span class="exp-period">2019 — 2022</span>
-          </div>
-          <div class="exp-content">
-            <h4 class="exp-role">PHP Programmer</h4>
-            <p class="exp-desc">
-              Engineered Laravel integrations connecting NetSuite to core systems. Migrated and customized 
-              Magento 2. Built a shipment tracking API.
-            </p>
-            <div class="skill-tags">
-              <span class="tag">Laravel</span>
-              <span class="tag">Magento 2</span>
-              <span class="tag">NetSuite</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="exp-item">
-          <div class="exp-meta">
-            <h3 class="exp-company">ITC S.A.</h3>
-            <span class="exp-period">2017 — 2019</span>
-          </div>
-          <div class="exp-content">
-            <h4 class="exp-role">Consultant</h4>
-            <p class="exp-desc">
-              Microservices in Laravel. Dockerized services. MongoDB → MySQL migration. 
-              Technical consulting for infrastructure modernization.
-            </p>
-            <div class="skill-tags">
-              <span class="tag">Laravel</span>
-              <span class="tag">Docker</span>
-              <span class="tag">MongoDB</span>
-              <span class="tag">MySQL</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROJECTS -->
-    <section id="projects" class="container">
-      <div class="section-header">
-        <span class="text-uppercase section-label">02 // PORTFOLIO</span>
-        <h2>Featured Projects</h2>
-      </div>
-
-      <div class="projects-grid">
-        <a href="https://tkigo.com" target="_blank" rel="noopener noreferrer" class="project-card">
-          <span class="text-uppercase project-type">Lead Case Study</span>
-          <h3 class="project-title">tkigo.com</h3>
-          <p class="exp-desc">
-            Technical Co-Founder developing an upcoming digital coordination platform (currently in stealth). 
-            Architecting a stateless, highly optimized infrastructure leveraging encoded routing 
-            to minimize user friction and operational storage costs.
-          </p>
-          <div class="skill-tags">
-            <span class="tag">Next.js 14</span>
-            <span class="tag">Vercel Edge</span>
-            <span class="tag">Supabase</span>
-          </div>
-        </a>
-
-        <a href="kegel-timer.html" class="project-card">
-          <span class="text-uppercase project-type">R&D Experiment</span>
-          <h3 class="project-title">Kegel Exercise Timer</h3>
-          <p class="exp-desc">
-            Clean, ad-free web app for guided wellness routines. Visual + auditory guidance, 
-            customizable settings. Built as an exploration into AI-assisted development workflows.
-          </p>
-          <div class="skill-tags">
-            <span class="tag">Vanilla JS</span>
-            <span class="tag">AI-Assisted</span>
-            <span class="tag">PWA</span>
-          </div>
+        <a
+          href="#"
+          class="hidden md:block bg-primary text-on-primary px-6 py-2 font-body font-semibold tracking-wide hover:bg-primary-container transition-colors duration-300 border-none email-obfuscated cv-request-link"
+        >
+          CV on Request
         </a>
       </div>
-    </section>
+    </nav>
 
-    <!-- SKILLS -->
-    <section id="skills" class="container">
-      <div class="section-header">
-        <span class="text-uppercase section-label">03 // CAPABILITIES</span>
-        <h2>Technical Stack</h2>
-      </div>
+    <main class="pt-20">
+      <section
+        class="min-h-[80vh] flex flex-col justify-center max-w-[1440px] mx-auto px-6 md:px-12 py-24 md:py-32"
+        id="overview"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+          <div class="md:col-span-8 flex flex-col gap-8">
+            <p
+              class="font-label text-sm uppercase tracking-widest text-primary font-bold"
+            >
+              20+ Years Experience • Montevideo, UY
+            </p>
+            <h1
+              class="font-headline text-5xl md:text-[5rem] leading-[1.1] font-normal tracking-[-0.02em] text-on-surface"
+            >
+              Senior Full-Stack Engineer <br />& Technical Co-Founder
+            </h1>
+            <p
+              class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl leading-relaxed"
+            >
+              I focus on pragmatic, scalable architectures that optimize
+              resources and reduce operational friction. Building at the
+              intersection of robust backend infrastructure and frontier
+              tooling.
+            </p>
+            <div class="flex gap-4 pt-4">
+              <a
+                class="bg-primary text-on-primary px-8 py-4 font-body font-semibold hover:bg-primary-container transition-colors duration-300"
+                href="#projects"
+                >View Projects</a
+              >
+              <a
+                class="bg-surface text-on-surface border border-outline px-8 py-4 font-body font-semibold hover:bg-surface-container-low transition-colors duration-300 email-obfuscated"
+                href="#"
+                >Get in Touch</a
+              >
+            </div>
+          </div>
 
-      <div class="skills-grid">
-        <div class="skills-col">
-          <h3>Languages</h3>
-          <ul class="skills-list">
-            <li>PHP</li>
-            <li>JavaScript / TypeScript</li>
-            <li>C#</li>
-            <li>Java</li>
-            <li>Dart (Flutter)</li>
-          </ul>
+          <div
+            class="md:col-span-4 border border-outline-variant p-4 bg-surface-container-lowest transition-all duration-500 hover:border-primary hidden md:block"
+          >
+            <img
+              src="https://github.com/goliathuy.png"
+              alt="Mario Albornoz - Senior Full-Stack Engineer"
+              class="w-full h-auto object-cover grayscale opacity-90 transition-all duration-500 hover:grayscale-0 hover:opacity-100"
+            />
+          </div>
         </div>
-        <div class="skills-col">
-          <h3>Frameworks</h3>
-          <ul class="skills-list">
-            <li>Next.js 14</li>
-            <li>Laravel</li>
-            <li>Magento 2</li>
-            <li>.NET Core</li>
-            <li>Spring / Flutter</li>
-          </ul>
-        </div>
-        <div class="skills-col">
-          <h3>Infrastructure</h3>
-          <ul class="skills-list">
-            <li>Vercel Edge</li>
-            <li>Docker</li>
-            <li>AWS / Supabase</li>
-            <li>Redis</li>
-            <li>MySQL / Oracle</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ABOUT -->
-    <section id="about" class="container">
-      <div class="section-header">
-        <span class="text-uppercase section-label">04 // PROFILE</span>
-        <h2>The Editorial Engineer</h2>
-      </div>
+      <section
+        class="border-t border-outline-variant bg-surface-container-low py-24"
+        id="experience"
+      >
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+          <h2
+            class="font-headline text-3xl md:text-4xl font-medium text-on-surface mb-16"
+          >
+            Track Record
+          </h2>
 
-      <div class="about-grid">
-        <div class="about-bio">
-          <p>
-            I bridge strong backend fundamentals with frontier tooling. I've worked across 
-            diverse domains: racing telemetry, e-commerce, online wallets, and social coordination. 
-            The common thread is pragmatic engineering — choosing the right tool, 
-            making the architectural decision that <del>makes the problem disappear</del> efficiently handles the complexity.
+          <div
+            class="relative border-l border-outline-variant ml-4 md:ml-8 pl-8 md:pl-16 space-y-24"
+          >
+            <div class="relative">
+              <div
+                class="absolute -left-[37px] md:-left-[69px] top-2 w-2 h-2 bg-tertiary"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                  <p
+                    class="font-label text-sm font-bold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    2026 — Present
+                  </p>
+                  <h3 class="font-body text-xl font-bold text-on-surface mt-2">
+                    tkigo.com
+                  </h3>
+                  <p class="font-body text-sm text-primary mt-1">
+                    Technical Co-Founder
+                  </p>
+                </div>
+                <div class="md:col-span-9 flex flex-col gap-6">
+                  <p
+                    class="font-body text-base text-on-surface-variant leading-relaxed"
+                  >
+                    Technical Co-Founder developing an upcoming digital
+                    coordination platform (currently in stealth). Architecting a
+                    stateless, highly optimized infrastructure leveraging
+                    encoded routing to minimize user friction and operational
+                    storage costs.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Next.js 14</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >TypeScript</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Vercel Edge</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Supabase</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <div
+                class="absolute -left-[37px] md:-left-[69px] top-2 w-2 h-2 bg-outline-variant"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                  <p
+                    class="font-label text-sm font-bold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    2014 — Present
+                  </p>
+                  <h3 class="font-body text-xl font-bold text-on-surface mt-2">
+                    Self-employed
+                  </h3>
+                  <p class="font-body text-sm text-primary mt-1">
+                    Software Analyst & Developer
+                  </p>
+                </div>
+                <div class="md:col-span-9 flex flex-col gap-6">
+                  <p
+                    class="font-body text-base text-on-surface-variant leading-relaxed"
+                  >
+                    Full-cycle web development, solution architecture, and
+                    third-party provider evaluation. Projects spanning PHP,
+                    Java, Spring, and .NET ecosystems.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >PHP</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Java</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Spring</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >.NET</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <div
+                class="absolute -left-[37px] md:-left-[69px] top-2 w-2 h-2 bg-outline-variant"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                  <p
+                    class="font-label text-sm font-bold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    2022 — 2024
+                  </p>
+                  <h3 class="font-body text-xl font-bold text-on-surface mt-2">
+                    Endava
+                  </h3>
+                  <p class="font-body text-sm text-primary mt-1">
+                    SE Senior Developer
+                  </p>
+                </div>
+                <div class="md:col-span-9 flex flex-col gap-6">
+                  <p
+                    class="font-body text-base text-on-surface-variant leading-relaxed"
+                  >
+                    Developed a racing telemetry platform combining a Flutter
+                    mobile app with a Laravel backend API, including
+                    TypeScript/Jest automation testing. Also migrated a staffing
+                    platform from PHP/AngularJS to .NET Core/Angular.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Flutter</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Laravel</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >.NET Core</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <div
+                class="absolute -left-[37px] md:-left-[69px] top-2 w-2 h-2 bg-outline-variant"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                  <p
+                    class="font-label text-sm font-bold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    2019 — 2022
+                  </p>
+                  <h3 class="font-body text-xl font-bold text-on-surface mt-2">
+                    woOw
+                  </h3>
+                  <p class="font-body text-sm text-primary mt-1">
+                    PHP Programmer
+                  </p>
+                </div>
+                <div class="md:col-span-9 flex flex-col gap-6">
+                  <p
+                    class="font-body text-base text-on-surface-variant leading-relaxed"
+                  >
+                    Engineered Laravel integrations connecting NetSuite to core
+                    systems. Migrated and customized Magento 2 infrastructure
+                    and built a comprehensive shipment tracking API.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Laravel</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Magento 2</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >NetSuite</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <div
+                class="absolute -left-[37px] md:-left-[69px] top-2 w-2 h-2 bg-outline-variant"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div class="md:col-span-3">
+                  <p
+                    class="font-label text-sm font-bold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    2017 — 2019
+                  </p>
+                  <h3 class="font-body text-xl font-bold text-on-surface mt-2">
+                    ITC S.A.
+                  </h3>
+                  <p class="font-body text-sm text-primary mt-1">Consultant</p>
+                </div>
+                <div class="md:col-span-9 flex flex-col gap-6">
+                  <p
+                    class="font-body text-base text-on-surface-variant leading-relaxed"
+                  >
+                    Built microservices in Laravel and dockerized services.
+                    Executed MongoDB to MySQL migrations and provided technical
+                    consulting for infrastructure modernization.
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Laravel</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >Docker</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >MongoDB</span
+                    >
+                    <span
+                      class="px-3 py-1 bg-surface-container-lowest border border-outline-variant font-label text-xs uppercase tracking-wider text-on-surface"
+                      >MySQL</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="border-t border-outline-variant bg-surface py-24"
+        id="projects"
+      >
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+          <div
+            class="flex justify-between items-end mb-16 border-b border-outline-variant pb-8"
+          >
+            <h2
+              class="font-headline text-3xl md:text-4xl font-medium text-on-surface"
+            >
+              Featured Architecture
+            </h2>
+            <span
+              class="font-label text-sm uppercase tracking-widest text-primary font-bold"
+              >Case Studies</span
+            >
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div
+              class="border border-outline-variant bg-surface-container-highest p-4 md:p-8 flex justify-center h-full items-center overflow-hidden transition-all duration-500 hover:border-primary"
+            >
+              <img
+                src="TkigoMockup.png"
+                alt="Tkigo Mobile Interface Mockup"
+                class="w-full h-auto object-contain grayscale opacity-90 transition-all duration-500 hover:grayscale-0 hover:opacity-100"
+              />
+            </div>
+
+            <div class="flex flex-col gap-8">
+              <h3 class="font-headline text-4xl font-medium text-on-surface">
+                tkigo.com
+              </h3>
+              <p
+                class="font-body text-lg text-on-surface-variant leading-relaxed"
+              >
+                A social event coordination platform built entirely on a
+                "Stateless Paradox" architecture: the URL itself is the
+                database. Using LZ-String compression, event payloads are
+                encoded into deterministic routes, enabling zero sign-up
+                friction and absolutely $0 storage cost.
+              </p>
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-outline-variant pt-8"
+              >
+                <div>
+                  <h4
+                    class="font-body text-sm font-bold text-on-surface uppercase tracking-wider mb-2"
+                  >
+                    Core Solutions
+                  </h4>
+                  <ul
+                    class="space-y-2 font-body text-sm text-on-surface-variant"
+                  >
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      HMAC Data Integrity
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      Satori Edge OG Cards
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      Zero Database Overhead
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4
+                    class="font-body text-sm font-bold text-on-surface uppercase tracking-wider mb-2"
+                  >
+                    Technology
+                  </h4>
+                  <ul
+                    class="space-y-2 font-body text-sm text-on-surface-variant"
+                  >
+                    <li>Next.js 14 & Vercel Edge</li>
+                    <li>TypeScript</li>
+                    <li>Supabase & Redis</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="pt-4">
+                <a
+                  href="https://tkigo.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 font-body font-semibold hover:bg-primary-container transition-colors duration-300"
+                >
+                  Visit Tkigo
+                  <span class="material-symbols-outlined text-sm"
+                    >open_in_new</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mt-24 pt-24 border-t border-outline-variant"
+          >
+            <div
+              class="border border-outline-variant bg-surface-container-highest p-8 md:p-16 flex justify-center h-full items-center order-last lg:order-first"
+            >
+              <div class="text-center">
+                <span
+                  class="material-symbols-outlined text-6xl text-outline mb-4"
+                  >timer</span
+                >
+                <p
+                  class="font-label text-sm uppercase tracking-widest text-on-surface-variant"
+                >
+                  R&D Web App
+                </p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-8">
+              <h3 class="font-headline text-4xl font-medium text-on-surface">
+                Kegel Exercise Timer
+              </h3>
+              <p
+                class="font-body text-lg text-on-surface-variant leading-relaxed"
+              >
+                Clean, ad-free web app for guided wellness routines. Features
+                visual and auditory guidance with customizable settings. Built
+                as an exploration into AI-assisted development workflows and
+                Progressive Web App capabilities.
+              </p>
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-outline-variant pt-8"
+              >
+                <div>
+                  <h4
+                    class="font-body text-sm font-bold text-on-surface uppercase tracking-wider mb-2"
+                  >
+                    Highlights
+                  </h4>
+                  <ul
+                    class="space-y-2 font-body text-sm text-on-surface-variant"
+                  >
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      Visual & Audio Guidance
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      AI-Assisted Workflow
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span
+                        class="material-symbols-outlined text-tertiary text-sm"
+                        >check</span
+                      >
+                      Ad-Free Experience
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4
+                    class="font-body text-sm font-bold text-on-surface uppercase tracking-wider mb-2"
+                  >
+                    Technology
+                  </h4>
+                  <ul
+                    class="space-y-2 font-body text-sm text-on-surface-variant"
+                  >
+                    <li>Vanilla JS</li>
+                    <li>PWA Architecture</li>
+                    <li>AI Tooling</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="pt-4">
+                <a
+                  href="kegel.html"
+                  class="inline-flex items-center gap-2 bg-surface text-on-surface border border-outline px-6 py-3 font-body font-semibold hover:bg-surface-container-low transition-colors duration-300"
+                >
+                  Launch App
+                  <span class="material-symbols-outlined text-sm"
+                    >open_in_new</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="border-t border-outline-variant bg-surface-container-low py-24"
+        id="capabilities"
+      >
+        <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+          <h2
+            class="font-headline text-3xl md:text-4xl font-medium text-on-surface mb-16"
+          >
+            Capabilities & Stack
+          </h2>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+            <div class="flex flex-col gap-8">
+              <h3
+                class="font-body text-lg font-bold text-on-surface uppercase tracking-wider border-b border-outline-variant pb-4"
+              >
+                Core Languages
+              </h3>
+              <div class="space-y-6">
+                <div>
+                  <div class="flex justify-between mb-2">
+                    <span class="font-label text-sm text-on-surface"
+                      >PHP (15+ Years)</span
+                    >
+                  </div>
+                  <div class="w-full bg-surface-container-high h-1">
+                    <div class="bg-primary h-1" style="width: 95%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-2">
+                    <span class="font-label text-sm text-on-surface"
+                      >JavaScript / TypeScript</span
+                    >
+                  </div>
+                  <div class="w-full bg-surface-container-high h-1">
+                    <div class="bg-primary h-1" style="width: 85%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-2">
+                    <span class="font-label text-sm text-on-surface"
+                      >C# / Java / Dart</span
+                    >
+                  </div>
+                  <div class="w-full bg-surface-container-high h-1">
+                    <div class="bg-primary h-1" style="width: 70%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-8">
+              <h3
+                class="font-body text-lg font-bold text-on-surface uppercase tracking-wider border-b border-outline-variant pb-4"
+              >
+                Frameworks & Infra
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface"
+                    >Laravel</span
+                  >
+                </div>
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface"
+                    >Next.js 14</span
+                  >
+                </div>
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface"
+                    >Vercel Edge</span
+                  >
+                </div>
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface"
+                    >.NET Core</span
+                  >
+                </div>
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface">Docker</span>
+                </div>
+                <div
+                  class="border border-outline-variant p-4 bg-surface-container-lowest"
+                >
+                  <span class="font-label text-sm text-on-surface"
+                    >Magento 2</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-8">
+              <h3
+                class="font-body text-lg font-bold text-on-surface uppercase tracking-wider border-b border-outline-variant pb-4"
+              >
+                Certifications & Spoken
+              </h3>
+              <div class="flex flex-col gap-4">
+                <div
+                  class="border border-outline bg-surface-container-lowest p-4 flex items-center justify-between"
+                >
+                  <span
+                    class="font-label text-sm uppercase tracking-widest text-on-surface"
+                    >Scrum Master™ I (PSM I)</span
+                  >
+                </div>
+                <div
+                  class="border border-outline bg-surface-container-lowest p-4 flex items-center justify-between"
+                >
+                  <span
+                    class="font-label text-sm uppercase tracking-widest text-on-surface"
+                    >Generative AI for Devs</span
+                  >
+                </div>
+                <div class="pt-4 space-y-2">
+                  <p class="font-body text-sm text-on-surface-variant">
+                    <strong class="text-on-surface">Spanish:</strong> Native
+                  </p>
+                  <p class="font-body text-sm text-on-surface-variant">
+                    <strong class="text-on-surface">English:</strong>
+                    Professional
+                  </p>
+                  <p class="font-body text-sm text-on-surface-variant">
+                    <strong class="text-on-surface">Portuguese:</strong>
+                    Professional
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-outline-variant bg-surface py-32">
+        <div
+          class="max-w-[900px] mx-auto px-6 md:px-12 text-center flex flex-col items-center gap-12"
+        >
+          <span class="material-symbols-outlined text-4xl text-outline-variant"
+            >code</span
+          >
+          <h2
+            class="font-headline text-3xl md:text-5xl font-normal leading-tight text-on-surface italic"
+          >
+            "I bridge strong backend fundamentals with frontier tooling. I
+            believe in choosing the right tool, making the architectural
+            decision that
+            <del class="opacity-40 text-outline"
+              >makes the problem disappear</del
+            >
+            efficiently handles the complexity."
+          </h2>
+          <div class="w-16 h-[1px] bg-tertiary mx-auto"></div>
+          <p
+            class="font-body text-lg text-on-surface-variant leading-relaxed max-w-2xl text-left"
+          >
+            I've worked across diverse domains: racing telemetry, e-commerce,
+            online wallets, and social coordination. The common thread is
+            pragmatic engineering. I am currently actively exploring AI-assisted
+            development workflows as a core part of my practice — discovering
+            how much of the software lifecycle can be designed, tested, and
+            shipped with AI as a collaborator.
           </p>
-          <p>
-            I'm actively exploring AI-assisted development workflows as a core part of my 
-            practice — how much of the software lifecycle can be designed, tested, and shipped 
-            with AI as a collaborator.
-          </p>
         </div>
-        <div class="about-details">
-          <div class="detail-section">
-            <h4 class="text-uppercase">Education</h4>
-            <div class="edu-item">
-              <span class="edu-degree">Analista Programador</span>
-              <span class="edu-school">Universidad ORT Uruguay</span>
-            </div>
-          </div>
-          <div class="detail-section">
-            <h4 class="text-uppercase">Certifications</h4>
-            <div class="edu-item">
-              <span class="edu-degree">Generative AI for Developers</span>
-              <span class="edu-degree">Scrum Master™ I (PSM I)</span>
-            </div>
-          </div>
-          <div class="detail-section">
-            <h4 class="text-uppercase">Spoken Languages</h4>
-            <div class="edu-item">
-              <span class="edu-degree">Spanish (Native)</span>
-              <span class="edu-degree">English (Professional)</span>
-              <span class="edu-degree">Portuguese (Professional)</span>
-            </div>
-          </div>
-          <div class="detail-section">
-            <h4 class="text-uppercase">Connect</h4>
-            <div class="social-links">
-              <a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-              <a href="https://github.com/goliathuy" target="_blank" rel="noopener noreferrer">GitHub</a>
-              <a href="#" class="email-obfuscated">Connect via Email</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
 
-  <!-- FOOTER -->
-  <footer class="container">
-    <div class="footer-top">
-      <div>
-        <h2 class="nav-logo">MARIO ALBORNOZ</h2>
-        <p class="text-uppercase" style="margin-top: 1rem; color: var(--ink-faint);">Senior Full-Stack Engineer</p>
+    <footer
+      class="w-full border-t border-outline-variant py-16 bg-surface-container-low text-primary flex flex-col md:flex-row justify-between items-center px-12 max-w-[1440px] mx-auto gap-8 transition-all duration-200"
+    >
+      <div
+        class="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface/60"
+      >
+        © 2026 Mario Albornoz. Built with Precision.
       </div>
-      <nav class="footer-nav">
-        <ul class="footer-nav" style="list-style: none; display: flex; gap: 2rem; flex-wrap: wrap;">
-          <li><a href="#experience">Experience</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="https://www.linkedin.com/in/marioalbornoz" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-        </ul>
-      </nav>
-    </div>
-    <div class="footer-bottom">
-      <span>CV on REQUEST → <a href="#" class="email-obfuscated cv-request-link">Connect via Email</a></span>
-      <span>&copy; 2026 Mario Albornoz. Built with Precision.</span>
-    </div>
-  </footer>
+      <div
+        class="flex gap-8 font-label text-[10px] uppercase tracking-widest font-bold"
+      >
+        <a
+          class="text-on-surface/60 hover:text-tertiary underline decoration-1 underline-offset-4 transition-all duration-200"
+          href="https://www.linkedin.com/in/marioalbornoz"
+          target="_blank"
+          rel="noopener noreferrer"
+          >LinkedIn</a
+        >
+        <a
+          class="text-on-surface/60 hover:text-tertiary underline decoration-1 underline-offset-4 transition-all duration-200"
+          href="https://github.com/goliathuy"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub</a
+        >
+        <a
+          class="text-on-surface/60 hover:text-tertiary underline decoration-1 underline-offset-4 transition-all duration-200 email-obfuscated"
+          href="#"
+          >Connect via Email</a
+        >
+      </div>
+    </footer>
 
-  <script src="hub.js"></script>
-</body>
+    <script src="hub.js"></script>
+  </body>
 </html>
