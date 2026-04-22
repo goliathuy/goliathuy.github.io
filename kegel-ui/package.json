@@ -8,8 +8,8 @@
     "dev:kegel": "vite --base /kegel/",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "node ./node_modules/vitest/vitest.mjs run",
+    "test:watch": "node ./node_modules/vitest/vitest.mjs",
     "og:portfolio": "node scripts/generate-og-portfolio.mjs",
     "preview": "vite preview"
   },
