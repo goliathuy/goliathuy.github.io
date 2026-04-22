@@ -170,6 +170,9 @@ export function useKegelTimer() {
   return { view, start, stop }
 }
 
+/** ~30fps view updates during hold/rest — enough for the ring; cuts React work roughly in half vs 60fps rAF. */
+const MAIN_LOOP_SETVIEW_STRIDE = 2
+
 function runMainLoop(
   r: Routine,
   audioEnabled: boolean,
@@ -184,6 +187,7 @@ function runMainLoop(
   let segmentStart = performance.now()
   /** 1 = first hold, 2 = first rest, 3 = second hold, … */
   let subStep = 1
+  let setViewFrame = 0
 
   let stopped = false
   const stopLoop = () => {
@@ -196,8 +200,10 @@ function runMainLoop(
     const now = performance.now()
     let tInPhase = (now - segmentStart) / 1000
     let guard = 0
+    let phaseAdvanced = false
 
     while (tInPhase >= phaseDuration && guard < 32) {
+      phaseAdvanced = true
       guard += 1
       const prevDur = phaseDuration
       isHolding = !isHolding
@@ -226,15 +232,17 @@ function runMainLoop(
       }
     }
 
-    setView(
-      paintExercise({
-        isHolding,
-        phaseDuration,
-        elapsed: tInPhase,
-        subStep,
-        r,
-      })
-    )
+    const next = paintExercise({
+      isHolding,
+      phaseDuration,
+      elapsed: tInPhase,
+      subStep,
+      r,
+    })
+    if (phaseAdvanced || setViewFrame % MAIN_LOOP_SETVIEW_STRIDE === 0) {
+      setView(next)
+    }
+    setViewFrame += 1
     mainRafRef.current = requestAnimationFrame(tick)
   }
 
