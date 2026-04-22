@@ -9,9 +9,21 @@
     <meta name="theme-color" content="#4a90e2">
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="canonical" href="kegel/">
+    <!-- After validation: automatic redirect to the Vite app (see docs/kegel-migration-plan.md §8) -->
+    <meta http-equiv="refresh" content="20;url=kegel/">
+    <style>
+        #kegel-moved-notice { background: #0d47a1; color: #fff; padding: 0.9rem 1.25rem; text-align: center; font: 600 0.95rem/1.4 system-ui, sans-serif; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        #kegel-moved-notice a { color: #b3d4fc; text-decoration: underline; }
+    </style>
     <!-- This application was transformed using AI code generation tools as part of an exploration into minimizing direct code manipulation -->
 </head>
 <body>
+    <div id="kegel-moved-notice" role="status">
+        This page has moved. The current Kegel timer is at
+        <a href="kegel/">/kegel/</a>.
+        You will be redirected in 20 seconds, or use the link now.
+    </div>
     <header>
         <h1>Kegel Exercise Timer</h1>
         <a href="index.html" class="back-link">&larr; Back to Developer Hub</a>
@@ -211,11 +223,11 @@
 
     <script src="script.js"></script>
     <script>
-        // Register Service Worker
+        // Per migration plan: do not re-register; clear legacy caches so the new /kegel/ app is not affected.
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('ServiceWorker registered'))
-                .catch(error => console.log('ServiceWorker registration failed:', error));
+            navigator.serviceWorker.getRegistrations()
+                .then(function (regs) { return Promise.all(regs.map(function (r) { return r.unregister(); })); })
+                .catch(function () { /* ignore */ });
         }
     </script>
 </body>

@@ -32,7 +32,7 @@ jobs:
           cache: npm
           cache-dependency-path: kegel-ui/package-lock.json
 
-      - name: Install and build
+      - name: Install, test, and build
         env:
           # Optional: set in repo → Settings → Secrets and variables; see kegel-ui/.env.example
           VITE_CF_WEB_ANALYTICS_TOKEN: ${{ vars.VITE_CF_WEB_ANALYTICS_TOKEN }}
@@ -41,6 +41,7 @@ jobs:
           set -e
           cd kegel-ui
           npm ci
+          npm test
           npm run build
 
       - name: Sync dist to kegel/

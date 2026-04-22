@@ -19,10 +19,14 @@ if [ ! -d node_modules ]; then
   echo "Kegel UI: no node_modules. From repo root run: (cd kegel-ui && npm ci)"
   exit 1
 fi
+echo "Kegel UI: npm test (pre-push)…"
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*) npm.cmd test ;;
+  *) npm test ;;
+esac
 echo "Kegel UI: npm run build (pre-push)…"
-# Git Bash (MINGW/MSYS): use npm.cmd so the hook does not call a non-executable "npm" shim
 case "$(uname -s 2>/dev/null)" in
   MINGW*|MSYS*) npm.cmd run build ;;
   *) npm run build ;;
 esac
-echo "Kegel UI: build OK"
+echo "Kegel UI: test + build OK"

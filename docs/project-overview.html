@@ -252,11 +252,12 @@
         <h1>🚀 Project Overview: Dual-Purpose GitHub Pages Site</h1>
         
         <div class="overview-box">
-            <p><strong>A dual-purpose GitHub Pages site combining a professional developer hub with a Progressive Web App (PWA) Kegel exercise timer, built as an exploration of AI-assisted development with minimal direct code manipulation.</strong></p>
+            <p><strong>A dual-purpose GitHub Pages site combining a professional developer hub with a Kegel exercise timer, built as an exploration of AI-assisted development with minimal direct code manipulation.</strong></p>
+            <p><strong>Current timer app (primary):</strong> <a href="../kegel/">/kegel/</a> — Vite + React in <code>kegel-ui/</code>, built to <code>kegel/</code>. The legacy <code>kegel-timer.html</code> page is a short redirect bridge to the same origin.</p>
         </div>
 
         <div class="navigation-links">
-            <a href="../kegel-timer.html">🏃‍♀️ Launch Kegel Timer</a>
+            <a href="../kegel/">🏃‍♀️ Launch Kegel app (/kegel/)</a>
             <a href="../index.html">👨‍💻 Developer Hub</a>
             <a href="tests/testing-framework.md">🧪 View Testing Framework</a>
             <a href="api/core-functions.md">📊 API Documentation</a>
@@ -308,9 +309,9 @@
             </div>
             
             <div class="component-card">
-                <h4>⏱️ Kegel Timer PWA</h4>
-                <p><strong>Files:</strong> <code>kegel-timer.html</code> + <code>script.js</code></p>
-                <p>Progressive Web App timer for Kegel exercises with customizable routines, progress tracking, and offline functionality.</p>
+                <h4>⏱️ Kegel timer app</h4>
+                <p><strong>Primary (current):</strong> <code>kegel-ui/</code> → <code>kegel/</code> (Vite + React; see <a href="kegel-migration-plan.md">migration plan</a>).</p>
+                <p><strong>Legacy static page:</strong> <code>kegel-timer.html</code> + <code>script.js</code> (redirects to <code>/kegel/</code>; older PWA + service worker story).</p>
             </div>
             
             <div class="component-card">
