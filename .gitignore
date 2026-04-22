@@ -1,4 +1,6 @@
 .ignore
-.github
 package-lock.json
+!package-lock.json
+!kegel-ui/package-lock.json
 node_modules
+kegel-ui/.env
