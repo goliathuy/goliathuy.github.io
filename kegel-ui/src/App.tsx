@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Activity, BookOpen, Check, Dumbbell, Plus, Timer, Volume2, Smartphone, X } from 'lucide-react'
 import { useKegelTimer, type Routine } from './hooks/useKegelTimer'
@@ -9,32 +9,143 @@ import { loadProgress, logSessionLegacy } from './lib/progressStorage'
 type Tab = 'workout' | 'learn' | 'progress'
 
 const C = 2 * Math.PI * 160
+/** Inner fill reaches full / empty when this fraction of the sub-phase has elapsed (so 100% state is visible briefly). */
+const FILL_VISUAL_COMPLETE_AT = 0.96
+/** Show second countdown in the center only when the active phase is longer than this. */
+const COUNTDOWN_MIN_SEC = 10
 
-function TimerRing({ progress01, holdPhase }: { progress01: number; holdPhase: boolean }) {
-  const offset = C * (1 - Math.min(1, progress01))
+/** One squeeze loop length tracks hold time (short holds = snappier, long holds = slower). */
+function squeezeAnimationDurationSec(holdTimeSec: number): number {
+  return Math.min(Math.max(holdTimeSec, 0.45), 8)
+}
+
+function TimerRing({
+  progress01,
+  holdPhase,
+  prepPhase,
+  isExercisePhase,
+}: {
+  progress01: number
+  holdPhase: boolean
+  prepPhase: boolean
+  isExercisePhase: boolean
+}) {
+  const phaseProgress = Math.min(1, Math.max(0, progress01))
+  const offset = prepPhase ? C : C * (1 - phaseProgress)
+  const isRelaxPhase = isExercisePhase && !holdPhase && !prepPhase
+  const fillLevel = holdPhase
+    ? Math.min(1, progress01 / FILL_VISUAL_COMPLETE_AT)
+    : Math.max(0, 1 - progress01 / FILL_VISUAL_COMPLETE_AT)
+  const visibleFillLevel = prepPhase || !isExercisePhase ? 0 : fillLevel
+  const fillHeight = 290 * visibleFillLevel
+  const fillY = 325 - fillHeight
+  const showActiveArc = isExercisePhase && !prepPhase && !isRelaxPhase
+  const showMarker = isExercisePhase && !prepPhase
+  const markerProgress = isRelaxPhase ? 0 : phaseProgress
+  const markerAngle = 360 * markerProgress
+  const markerX = 180 + 160 * Math.cos((markerAngle * Math.PI) / 180)
+  const markerY = 180 + 160 * Math.sin((markerAngle * Math.PI) / 180)
+
+  /** Last ~1s of prep: 0 → 1 smooth (uses full prep progress 0–1 over 3s). */
+  const prepLastSecT = prepPhase ? Math.min(1, Math.max(0, phaseProgress * 3 - 2)) : 0
+  const prepMarkerEndX = 340
+  const prepMarkerEndY = 180
+  const prepMarkerX = 180 + (prepMarkerEndX - 180) * prepLastSecT
+  const prepMarkerY = 180 + (prepMarkerEndY - 180) * prepLastSecT
+  const prepMarkerR = 7 * prepLastSecT
+  const showPrepMarker = prepLastSecT > 0
+  const dotCx = showPrepMarker ? prepMarkerX : markerX
+  const dotCy = showPrepMarker ? prepMarkerY : markerY
+  const dotR = showPrepMarker ? prepMarkerR : 7
+  const dotOpacity = showPrepMarker ? prepLastSecT : showMarker ? 1 : 0
+  /** Subtle “plop” as prep dot settles on the start position (last ~15% of landing). */
+  const dotPlopScale =
+    showPrepMarker && prepLastSecT >= 0.85
+      ? 1 + 0.24 * Math.sin(Math.min(1, (prepLastSecT - 0.85) / 0.15) * Math.PI)
+      : 1
+
   return (
-    <svg className="w-[min(100vw-3rem,22rem)] h-[min(100vw-3rem,22rem)] -rotate-90" viewBox="0 0 360 360">
+    <svg className="w-full max-w-[22rem] aspect-square shrink-0 -rotate-90" viewBox="0 0 360 360">
+      <defs>
+        <linearGradient id="timer-active-gradient" x1="20" y1="180" x2="340" y2="180" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#6D8CFF" />
+          <stop offset="100%" stopColor="#3B63E6" />
+        </linearGradient>
+        <filter id="timer-active-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <clipPath id="timer-fill-clip">
+          <rect x="35" y={fillY} width="290" height={fillHeight} />
+        </clipPath>
+      </defs>
       <circle
         cx="180"
         cy="180"
         r="145"
-        fill={holdPhase ? 'var(--color-kegel-primary)' : 'var(--color-kegel-surface)'}
-        fillOpacity={holdPhase ? 0.18 : 0}
-        className="transition-[fill-opacity,fill] duration-300"
+        fill="var(--color-kegel-secondary)"
+        fillOpacity="0.35"
+        clipPath="url(#timer-fill-clip)"
       />
-      <circle cx="180" cy="180" r="160" fill="none" stroke="var(--color-kegel-border)" strokeWidth="14" />
       <circle
         cx="180"
         cy="180"
         r="160"
         fill="none"
-        stroke={holdPhase ? 'var(--color-kegel-primary)' : 'var(--color-kegel-secondary)'}
-        strokeWidth="14"
+        stroke="#e3e5f6"
+        strokeWidth="16"
+        className={prepPhase ? 'animate-pulse' : ''}
+      />
+      <circle
+        cx="180"
+        cy="180"
+        r="160"
+        fill="none"
+        stroke="url(#timer-active-gradient)"
+        strokeWidth="16"
         strokeLinecap="round"
         strokeDasharray={C}
         strokeDashoffset={offset}
-        className="transition-[stroke] duration-200"
+        filter="url(#timer-active-glow)"
+        className={showActiveArc ? 'opacity-100' : 'opacity-0'}
       />
+      <circle
+        cx="180"
+        cy="180"
+        r="160"
+        fill="none"
+        stroke="url(#timer-active-gradient)"
+        strokeWidth="16"
+        className={isRelaxPhase ? 'opacity-100' : 'opacity-0'}
+      />
+      <circle
+        cx="180"
+        cy="180"
+        r="160"
+        fill="none"
+        stroke="#e3e5f6"
+        strokeWidth="16"
+        strokeLinecap="round"
+        strokeDasharray={C}
+        strokeDashoffset={offset}
+        className={isRelaxPhase ? 'opacity-100' : 'opacity-0'}
+      />
+      <g
+        transform={`translate(${dotCx}, ${dotCy}) scale(${dotPlopScale}) translate(${-dotCx}, ${-dotCy})`}
+      >
+        <circle
+          cx={dotCx}
+          cy={dotCy}
+          r={dotR}
+          fill="#3B63E6"
+          stroke="#f7f8ff"
+          strokeWidth="4"
+          opacity={dotOpacity}
+        />
+      </g>
     </svg>
   )
 }
@@ -63,6 +174,36 @@ export default function App() {
   const canPickRoutine = view.phase === 'READY' || view.phase === 'DONE'
   const showRing =
     view.phase === 'PREP' || view.phase === 'HOLD' || view.phase === 'RELAX' || view.phase === 'READY' || view.phase === 'DONE'
+  const showCenterStart = view.phase === 'READY'
+
+  const showExerciseCountdown =
+    (view.phase === 'HOLD' && currentRoutine.holdTime > COUNTDOWN_MIN_SEC) ||
+    (view.phase === 'RELAX' && currentRoutine.relaxTime > COUNTDOWN_MIN_SEC)
+  const showCenterPhaseWord =
+    running && view.subStep > 0 && (view.phase === 'HOLD' || view.phase === 'RELAX')
+  const showCenterGlyph =
+    (view.phase === 'READY' && !showCenterStart) || view.phase === 'DONE'
+
+  /** Final ~1s of prep (smooth): text exits up / dot enters from center. */
+  const prepLastSecT =
+    view.phase === 'PREP' ? Math.min(1, Math.max(0, view.progress01 * 3 - 2)) : 0
+
+  /** Prep halo grows in the last ~1s; green starts at that size. Kept modest so halos track the SVG ring. */
+  const PREP_HANDOFF_BOOST = 1.07
+  /** Stay at handoff size while fading out so blue doesn’t shrink (jarring “side” motion) before green shows. */
+  const prepGlowScale =
+    view.phase === 'PREP' ? 1 + (PREP_HANDOFF_BOOST - 1) * prepLastSecT : PREP_HANDOFF_BOOST
+
+  /** Green: handoff boost × inner squeeze (min ~0.82 at full hold). */
+  const phaseT = Math.min(1, Math.max(0, view.progress01 / FILL_VISUAL_COMPLETE_AT))
+  const squeezeInner =
+    view.phase === 'HOLD'
+      ? 1 - 0.18 * phaseT
+      : view.phase === 'RELAX'
+        ? 0.82 + 0.18 * phaseT
+        : 1
+  const workoutGlowScale =
+    view.phase === 'HOLD' || view.phase === 'RELAX' ? PREP_HANDOFF_BOOST * squeezeInner : PREP_HANDOFF_BOOST
 
   const onStart = useCallback(() => {
     start(currentRoutine, audio, haptic)
@@ -96,42 +237,122 @@ export default function App() {
         {tab === 'workout' && (
           <div className="space-y-6">
             <div className="bg-kegel-white rounded-3xl border border-kegel-border p-6 flex flex-col items-center shadow-sm">
-              <div className="relative flex items-center justify-center">
-                {showRing && (
-                  <TimerRing
-                    progress01={
-                      view.phase === 'PREP' ? (3 - view.remaining) / 3 : view.progress01
-                    }
-                    holdPhase={
-                      view.phase === 'HOLD' || view.phase === 'PREP' || (view.phase === 'DONE' && view.isHolding)
-                    }
-                  />
+              <div
+                className={`flex flex-col items-center w-full max-w-[22rem] mx-auto ${
+                  running ? 'ring-glow-host' : ''
+                }`}
+              >
+                {running && (
+                  <>
+                    <div
+                      className={`ring-glow-layer ring-glow-workout ${
+                        view.phase === 'HOLD' || view.phase === 'RELAX' ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={
+                        {
+                          '--workout-glow-scale': String(
+                            view.phase === 'HOLD' || view.phase === 'RELAX' ? workoutGlowScale : PREP_HANDOFF_BOOST,
+                          ),
+                        } as CSSProperties
+                      }
+                      aria-hidden
+                    />
+                    <div
+                      className={`ring-glow-layer ring-glow-prep ${view.phase === 'PREP' ? 'opacity-100' : 'opacity-0'}`}
+                      style={
+                        {
+                          '--prep-glow-scale': String(prepGlowScale),
+                        } as CSSProperties
+                      }
+                      aria-hidden
+                    />
+                  </>
                 )}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
-                  <p className="text-xs font-bold tracking-widest text-kegel-muted uppercase mb-1">
-                    {view.phase === 'READY' && 'Ready'}
-                    {view.phase === 'PREP' && 'Prep'}
-                    {view.phase === 'HOLD' && 'Hold'}
-                    {view.phase === 'RELAX' && 'Relax'}
-                    {view.phase === 'DONE' && 'Done'}
-                  </p>
-                  <p
-                    className={`font-headline text-5xl sm:text-6xl font-extrabold text-kegel-primary ${
-                      (view.blinkLastThree && running) || view.phase === 'PREP' ? 'animate-pulse' : ''
-                    }`}
-                    aria-live="polite"
-                  >
-                    {view.phase === 'READY' && '—'}
-                    {view.phase === 'PREP' && view.remaining}
-                    {view.phase === 'HOLD' && view.remaining}
-                    {view.phase === 'RELAX' && view.remaining}
-                    {view.phase === 'DONE' && '✓'}
-                  </p>
-                  {running && view.subStep > 0 && (
-                    <p className="mt-2 text-center text-sm font-semibold text-kegel-secondary">
-                      Rep {view.repDisplay} / {view.totalReps} · {view.subPhase === 'hold' ? 'Squeeze' : 'Rest'}
+                <div className="relative flex items-center justify-center ring-stack">
+                {running && <div className="ring-inner-occluder" aria-hidden />}
+                {showRing && (
+                  <div className="relative z-10 pointer-events-none">
+                    <TimerRing
+                      progress01={view.progress01}
+                      holdPhase={view.phase === 'HOLD'}
+                      prepPhase={view.phase === 'PREP'}
+                      isExercisePhase={view.phase === 'HOLD' || view.phase === 'RELAX'}
+                    />
+                  </div>
+                )}
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-2">
+                  {showCenterStart ? null : showCenterPhaseWord ? (
+                    <p
+                      className={`font-headline text-4xl sm:text-5xl font-extrabold text-kegel-primary tracking-wide leading-none inline-block ${
+                        view.subPhase === 'hold' ? 'text-squeeze-animate' : ''
+                      }`}
+                      style={
+                        view.subPhase === 'hold'
+                          ? { animationDuration: `${squeezeAnimationDurationSec(currentRoutine.holdTime)}s` }
+                          : undefined
+                      }
+                      aria-live="polite"
+                    >
+                      {view.subPhase === 'hold' ? 'Squeeze' : 'Rest'}
                     </p>
+                  ) : showCenterGlyph ? (
+                    <p className="font-headline text-8xl sm:text-9xl font-extrabold text-kegel-primary" aria-live="polite">
+                      {view.phase === 'READY' && '—'}
+                      {view.phase === 'DONE' && '✓'}
+                    </p>
+                  ) : running && view.phase === 'PREP' ? (
+                    <div
+                      className="flex flex-col items-center justify-center min-h-[7rem] sm:min-h-[8rem] max-w-[17rem] px-1"
+                      aria-live="polite"
+                      style={{
+                        opacity: 1 - prepLastSecT,
+                        transform: `translateY(${-18 * prepLastSecT}px)`,
+                      }}
+                    >
+                      <p className="font-headline text-5xl sm:text-6xl font-extrabold text-kegel-primary animate-pulse">
+                        {view.remaining}
+                      </p>
+                      <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-kegel-muted">
+                        Starting session
+                      </p>
+                      <p className="font-headline text-sm sm:text-base font-bold text-kegel-on leading-tight mt-0.5">
+                        {currentRoutine.name}
+                      </p>
+                      <p className="text-xs text-kegel-primary font-semibold mt-1.5 leading-snug">
+                        {currentRoutine.holdTime}s squeeze · {currentRoutine.relaxTime}s rest · {currentRoutine.reps}{' '}
+                        reps
+                      </p>
+                    </div>
+                  ) : running && (view.phase === 'HOLD' || view.phase === 'RELAX') ? (
+                    <div className="min-h-[7rem] sm:min-h-[8rem]" aria-hidden />
+                  ) : null}
+                  {showCenterStart && (
+                    <button
+                      type="button"
+                      onClick={onStart}
+                      className="mt-2 h-28 w-28 rounded-full border border-kegel-primary/30 bg-gradient-to-b from-kegel-primary to-kegel-primary-dim text-white font-headline text-base font-bold shadow-[0_8px_24px_rgba(0,88,187,0.28)] hover:opacity-95 transition-opacity flex items-center justify-center"
+                    >
+                      Start
+                    </button>
                   )}
+                  {running && view.subStep > 0 && (
+                    <div className="absolute inset-x-0 bottom-[4.5rem] text-center px-6">
+                      <p className="text-base font-semibold text-kegel-primary">
+                        Rep {view.repDisplay} / {view.totalReps}
+                      </p>
+                      {showExerciseCountdown && (
+                        <p
+                          className={`mt-1 font-headline text-2xl sm:text-3xl font-extrabold text-kegel-on ${
+                            view.blinkLastThree && running ? 'animate-pulse' : ''
+                          }`}
+                          aria-live="polite"
+                        >
+                          {view.remaining}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
                 </div>
               </div>
               <p className="text-center text-sm text-kegel-on mt-4 max-w-sm leading-relaxed">{view.instruction}</p>
@@ -177,7 +398,7 @@ export default function App() {
                     Log this session to progress
                   </button>
                 )}
-                {!running && (view.phase === 'READY' || view.phase === 'DONE') && (
+                {!running && view.phase === 'DONE' && (
                   <button
                     type="button"
                     onClick={onStart}
