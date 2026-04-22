@@ -73,6 +73,7 @@ npm run dev:kegel
 ## Documentation
 
 - [Kegel migration plan](docs/kegel-migration-plan.md) — scope, cutover, storage, CI
+- [Kegel UI backlog](kegel-ui/TODO.md) — post–v1 tasks for `kegel-ui` (supersedes the archived [code review progress](docs/code-review-progress.md) for `script.js`)
 - [Project overview (HTML)](docs/project-overview.html)
 - [API / service worker (legacy)](docs/api/core-functions.md)
 - [Timer implementation (legacy)](docs/implementation/timer-system.md)

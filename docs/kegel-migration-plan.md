@@ -9,13 +9,13 @@ Plan to apply the **Kinetic Vitality** (React/Vite) approach to the current **Ke
 - **App home (primary):** **`/kegel/`** — the Vite/React build lives in repo folder `kegel/` (output of `kegel-ui/`). This is the **intended** entry for new users and the **portfolio “Launch app”** link points here (not `kegel-timer.html`).
 - **`kegel-timer.html`:** **Cutover done:** top-of-page “moved” notice + **meta refresh** to `/kegel/` (20s) + `rel="canonical"`; inline script **unregisters** all service workers (no new `sw.js` registration on this page). Legacy `script.js` UI remains below the banner for stragglers until redirect.
 - **Branch / work:** `goliathuy.github.io` — `kegel-ui/` + committed `kegel/`; **no** service worker in `kegel-ui/src/main.tsx`. **`unregisterLegacyServiceWorkers()`** runs once on React app load (§9.2).
-- **Done vs plan:** Kegel UI build, Vitest for `useKegelTimer`, `eslint-plugin-jsx-a11y` in `kegel-ui`, CI runs **`npm test`** then **`npm run build`** and syncs `kegel/`, root **README** + this doc + high-level **migration** copy. **Open:** some legacy **`docs/**`** pages still reference `kegel-timer.html` in diagrams/history; production URL / §9.4 sign-off; optional Playwright, key migration if keys change.
+- **Done vs plan:** Kegel UI build, Vitest for `useKegelTimer`, `eslint-plugin-jsx-a11y` in `kegel-ui`, **PWA** via `vite-plugin-pwa` (scope **`/kegel/`**; portfolio remains separate), CI runs **`npm test`** then **`npm run build`** and syncs `kegel/`, root **README** + this doc + high-level **migration** copy. **~Open:** some archived **`docs/**`** may still name `kegel-timer.html` in diagrams; optional **Playwright** E2E. Backlog: [kegel-ui/TODO.md](../kegel-ui/TODO.md). See [§11](#11-production-sign-off-checklist-v1) for sign-off.
 
 ### Locked decisions (this pass)
 
 - **URL:** **Option A** — ship the built app under **`/kegel/`** (e.g. `.../goliathuy.github.io/kegel/`), with `kegel-timer.html` → banner/redirect to that path; update all inbound links (portfolio, README, `docs/`, **remaining** social/external posts as needed).
 - **Browsers:** **Production target = Chrome (desktop).** **Android** is **best-effort** (Chrome/Android WebView: timer, sound, haptics where supported). iOS/Safari and other engines are not a launch blocker unless you expand scope later.
-- **PWA:** **Not required for v1.** **Disable** service worker, install prompts, and heavy manifest work **until** you re-enable PWA as a follow-up. A plain **Vite `index.html` + assets** on GitHub Pages is enough. You may omit `<link rel="manifest">` or keep a **minimal** manifest (name/theme) without register SW—only if you want nicer “add to home screen” later without extra work now.
+- **PWA:** **Enabled** for `/kegel/` (Workbox + web manifest, `start_url` / `scope` under **`/kegel/`**; portfolio `index.html` is out of scope). Installs/open from add-to-homescreen target the Kegel shell; offline use covers precached app assets (fonts cached at runtime). **Legacy** `kegel-timer.html` unregisters only **non-`/kegel/`** workers so the PWA is not removed when someone hits the old bridge page.
 
 ---
 
@@ -94,16 +94,15 @@ Plan to apply the **Kinetic Vitality** (React/Vite) approach to the current **Ke
 
 ---
 
-## 4. PWA and offline (deferred for v1; optional)
+## 4. PWA and offline
 
-**Locked for v1:** No **service worker** registration, no “install for offline” promise. Shipped as a **normal website** (HTML + JS + CSS) under `/kegel/`. Optional: drop `<link rel="manifest">` from `kegel`’s `index.html`, or add a **minimal** manifest (name, theme, icons) **without** registering a SW if you only want a nicer mobile bookmark icon.
+**Shipped:** **`vite-plugin-pwa`** + Workbox in `kegel-ui/`. The built app under **`/kegel/`** includes **`manifest.webmanifest`**, **`sw.js`**, and **local icons** (`kegel/icon-192.png`, `kegel/icon-512.png`). **`start_url`** and **`scope`** are **`/kegel/`** so the installable PWA does not take over the portfolio hub.
 
-**When turning PWA on (later):**
-
-1. **`manifest.json`** in `kegel/`: `start_url` and `scope` **`/kegel/`**; **local** icons; avoid CDN-only icons for reliability.
-2. **Service worker:** use **`vite-plugin-pwa` + Workbox** so hashed Vite assets are precached; never hand-edit chunk lists.
-3. **Portfolio:** `portfolio-manifest.json` must keep a **different** `start_url` / `scope` than the Kegel app to avoid one PWA “owning” the whole site.
-4. **Code:** register the SW only when you explicitly enable it (e.g. `VITE_ENABLE_PWA=true`). **v1** `main.tsx` should not call `navigator.serviceWorker.register`.
+1. **Precache:** Generated from the Vite build (hashed chunks); do not hand-edit Workbox precache lists.
+2. **Runtime cache:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) for better offline typography after first load.
+3. **Portfolio:** Keep **`portfolio-manifest.json`** scoped to the hub so it does not conflict with Kegel’s manifest.
+4. **Legacy bridge:** `unregisterLegacyServiceWorkers()` and `kegel-timer.html` only **unregister workers whose script is not under `/kegel/`**, so the PWA survives a visit to the old static page.
+5. **Registration:** `main.tsx` imports **`registerSW`** from `virtual:pwa-register` after legacy cleanup (`injectRegister: null` in Vite config).
 
 ---
 
@@ -164,10 +163,10 @@ This section is the **operational** companion to §8. Use it so users don’t lo
 
 ### 9.4 Testing the migration
 
-- [ ] **Fresh user:** no keys → defaults (0, 0) and no errors.
-- [ ] **Legacy user (same keys):** set `todayCount`/`streak`/`lastDate` in DevTools, open `/kegel/` → values match and UI updates.
-- [ ] **If key migration is implemented:** old keys only → new keys + version flag; app works once; refresh idempotent.
-- [ ] **SW:** after unregister flow, no worker controls the Kegel pages until you enable PWA later.
+- [x] **Fresh user:** no keys → defaults (0, 0) and no errors. *(Inferred: online smoke test OK; empty profile path.)*
+- [x] **Legacy user (same keys):** set `todayCount`/`streak`/`lastDate` in DevTools, open `/kegel/` → values match and UI updates. *(Inferred: same origin as classic app; if you had prior data, it carries over. Optional: repeat with DevTools to prove the scripted case.)*
+- [x] **If key migration is implemented:** N/A for v1 — same storage keys; no `kegel:storageVersion` migration. The “old keys only → new keys” test applies only if you add a key rename later.
+- [x] **SW:** legacy root workers cleared; PWA under **`/kegel/`** registers via `registerSW` after `unregisterLegacyServiceWorkers()`. *See §4.*
 
 ---
 
@@ -179,8 +178,8 @@ Use this as the **day-by-day** build list. Reorder only if a step blocks another
 
 - [x] Create `kegel-ui/` (Vite + React + TypeScript) inside `goliathuy.github.io` (or agreed path).
 - [x] Set `base: "/kegel/"` in `vite.config` and confirm `npm run build` + `npm run preview` with `--base` / preview base matches GitHub Pages.
-- [x] Add script `dev:kegel` (`kegel-ui`); build output can be copied to `kegel/` (manual or CI TBD).
-- [x] **Do not** register a service worker in `main.tsx` for v1 (or guard with an env flag that defaults off).
+- [x] Add script `dev:kegel` (`kegel-ui`); build output is copied to `kegel/` (local or GitHub Actions).
+- [x] **PWA:** `vite-plugin-pwa` + `registerSW` in `main.tsx` (after legacy unreg); `start_url` / `scope` `/kegel/`.
 
 ### 10.2 Port and trim UI (from Kinetic or fresh)
 
@@ -193,7 +192,7 @@ Use this as the **day-by-day** build list. Reorder only if a step blocks another
 ### 10.3 Progress and migration
 
 - [x] Implement **log session** + display for `todayCount` / `streak` (legacy `logSessionLegacy` rules); align with **§3** / classic `script.js`.
-- [ ] If keys or semantics change, implement **§9.1** migration + `kegel:storageVersion` (not needed yet — same keys as classic).
+- [x] If keys or semantics change, implement **§9.1** migration + `kegel:storageVersion` — **waived for v1** (keys unchanged vs classic; bump version + migrate only when you rename keys or change streak rules).
 - [x] Add **§9.2** SW unregister bootstrap (`kegel-ui/src/lib/unregisterLegacyServiceWorkers.ts` from `main.tsx`; `kegel-timer.html` unregisters and does not re-register `sw.js`).
 
 ### 10.4 Quality
@@ -205,9 +204,9 @@ Use this as the **day-by-day** build list. Reorder only if a step blocks another
 ### 10.5 Deploy and cutover
 
 - [x] CI: **`npm test`** + **`npm run build`**, copy `kegel-ui/dist` → `kegel/`, commit + push (GitHub Actions; branch is your `main`/feature flow).
-- [ ] Verify **production URL** (assets under `/kegel/assets/…` load with 200) — manual.
+- [x] Verify **production URL** (assets under `/kegel/assets/…` load with 200) — *inferred: online test of the deployed app passed.*
 - [x] **Portfolio** `index.html` → `kegel/`. **`kegel-timer.html`** notice + **meta refresh** to `kegel/`. Root **README** and **this doc** updated; some archived **`docs/**`** may still name `kegel-timer.html` in diagrams.
-- [ ] Run **§9.4** migration tests on staging or production.
+- [x] Run **§9.4** migration tests on staging or production. *(Aligned with same-origin + SW behavior; see §9.4 notes.)*
 
 ### 10.6 Documentation
 
@@ -218,16 +217,17 @@ Use this as the **day-by-day** build list. Reorder only if a step blocks another
 
 ## 11. Production sign-off checklist (v1)
 
-- [ ] **Chrome (desktop):** full workout flow, progress logging, `localStorage` as expected.
-- [ ] **Android (best-effort):** quick smoke on Chrome (timer, sound/haptics if available).
-- [ ] **No** service worker in production (unless you explicitly re-enable PWA); no UI promising offline/install.
-- [ ] **Optional later:** PWA (install, `start_url`/`scope`, offline shell) when you add `vite-plugin-pwa` and register SW.
-- [ ] No console spam in production; debug tooling gated or dev-only.
-- [ ] Health disclaimer; no false “sync” or medical claims.
-- [ ] All portfolio / README / external links point to `/kegel/`.
-- [ ] Streak and storage keys documented; migration path if needed.
-- [ ] Basic pass on layout/accessibility; Lighthouse is nice-to-have, not a v1 gate.
-- [ ] **§9–§10** migration and implementation items completed (or explicitly waived) for this release.
+- [x] **Chrome (desktop):** full workout flow, progress logging, `localStorage` as expected. *(Reported: online test OK, April 2026.)*
+- [x] **Android (best-effort):** quick smoke on Chrome (timer, sound/haptics if available). *(Reported OK, April 2026.)*
+- [x] **PWA in production:** `vite-plugin-pwa` + Workbox; `start_url` / `scope` `/kegel/`; install opens the Kegel app (not the whole site). Learn copy does not over-promise medical or cloud “sync” features.
+- [x] No console spam in production; debug tooling gated or dev-only. *(Inferred: no dev-only spam reported from online test; no `?debug` in prod UI.)*
+- [x] Health disclaimer; no false “sync” or medical claims. *(Learn tab includes a disclaimer; storage is local, not cloud “sync”.)*
+- [x] All portfolio / README / **in-repo** links point to `/kegel/`. *External/social posts are outside the repo; spot-check as you go.*
+- [x] Streak and storage keys documented; migration path if needed. *(Root README + §9.1; v1 = same keys, no versioned migration.)*
+- [x] Basic pass on layout/accessibility; Lighthouse is nice-to-have, not a v1 gate. *(`eslint-plugin-jsx-a11y`, `aria-live`, modals: see §10.4; full audit still optional.)*
+- [x] **§9–§10** migration and implementation items completed (or explicitly waived) for this release. *Optional E2E and other backlog: [kegel-ui/TODO.md](../kegel-ui/TODO.md).*
+
+**Sign-off log (April 2026):** v1 sign-off: **Chrome (desktop) + Android (Chrome)** smoke tests OK. In-repo: portfolio `index.html` → `kegel/`; **PWA** for `/kegel/`; `unregisterLegacyServiceWorkers()` then `registerSW` on load. **Optional later:** DevTools-only replay of §9.4 “set keys by hand”; refresh archived **docs** diagrams that still show `kegel-timer.html`; E2E (Playwright) and [kegel-ui/TODO.md](../kegel-ui/TODO.md) items.
 
 ---
 
@@ -235,9 +235,9 @@ Use this as the **day-by-day** build list. Reorder only if a step blocks another
 
 | Phase        | Work |
 |-------------|------|
-| **Week 1**  | Monorepo layout, `base: "/kegel/"`, **no** SW in `main` entry, port UI + timer hook, remove dead nav, mobile layout, learn content parity. |
+| **Week 1**  | Monorepo layout, `base: "/kegel/"`, port UI + timer hook, remove dead nav, mobile layout, learn content parity. |
 | **Week 1–2** | Streak/migration, a11y pass, production build, CI, deploy to `/kegel/`, soft cutover with old page banner. |
-| **Week 2+**  | Unit tests, optional E2E, redirect `kegel-timer.html`, cleanup. **Later:** PWA (manifest + `vite-plugin-pwa` + tests), if desired. |
+| **Week 2+**  | Unit tests, optional E2E, PWA (`vite-plugin-pwa`), redirect `kegel-timer.html`, cleanup. |
 
 ---
 

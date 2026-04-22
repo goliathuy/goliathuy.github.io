@@ -224,11 +224,21 @@
 
     <script src="script.js"></script>
     <script>
-        // Per migration plan: do not re-register; clear legacy caches so the new /kegel/ app is not affected.
+        // Clear legacy workers (e.g. root sw.js); keep /kegel/ PWA registration intact.
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations()
-                .then(function (regs) { return Promise.all(regs.map(function (r) { return r.unregister(); })); })
-                .catch(function () { /* ignore */ });
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+                return Promise.all(regs.map(function (r) {
+                    var script = (r.active && r.active.scriptURL) || (r.waiting && r.waiting.scriptURL) || (r.installing && r.installing.scriptURL);
+                    if (script) {
+                        try {
+                            if (new URL(script, location.origin).pathname.indexOf('/kegel/') === 0) {
+                                return Promise.resolve();
+                            }
+                        } catch (e) { /* fall through to unregister */ }
+                    }
+                    return r.unregister();
+                }));
+            }).catch(function () { /* ignore */ });
         }
     </script>
 </body>
