@@ -15,7 +15,7 @@ function TimerRing({ progress01, holdPhase }: { progress01: number; holdPhase: b
   return (
     <svg className="w-[min(100vw-3rem,22rem)] h-[min(100vw-3rem,22rem)] -rotate-90" viewBox="0 0 360 360">
       <circle cx="180" cy="180" r="160" fill="none" stroke="var(--color-kegel-border)" strokeWidth="14" />
-      <motion.circle
+      <circle
         cx="180"
         cy="180"
         r="160"
@@ -24,8 +24,8 @@ function TimerRing({ progress01, holdPhase }: { progress01: number; holdPhase: b
         strokeWidth="14"
         strokeLinecap="round"
         strokeDasharray={C}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
+        strokeDashoffset={offset}
+        className="transition-[stroke] duration-200"
       />
     </svg>
   )
@@ -45,6 +45,12 @@ export default function App() {
     setProgress(loadProgress())
   }, [])
 
+  useEffect(() => {
+    if (tab === 'progress') {
+      setProgress(loadProgress())
+    }
+  }, [tab])
+
   const running = view.phase === 'PREP' || view.phase === 'HOLD' || view.phase === 'RELAX'
   const canPickRoutine = view.phase === 'READY' || view.phase === 'DONE'
   const showRing =
@@ -54,8 +60,11 @@ export default function App() {
     start(currentRoutine, audio, haptic)
   }, [start, currentRoutine, audio, haptic])
 
-  const onLog = useCallback(() => {
+  const onLog = useCallback((opts?: { goToProgress?: boolean }) => {
     setProgress(logSessionLegacy())
+    if (opts?.goToProgress) {
+      setTab('progress')
+    }
   }, [])
 
   return (
@@ -65,7 +74,9 @@ export default function App() {
           <Dumbbell className="w-7 h-7 text-kegel-primary shrink-0" />
           <div className="min-w-0">
             <h1 className="font-headline text-lg font-bold text-kegel-on truncate">Kegel timer</h1>
-            <p className="text-xs text-kegel-muted truncate">Pelvic floor sessions</p>
+            <p className="text-xs text-kegel-muted truncate">
+              Today {progress.todayCount} · Streak {progress.streak}
+            </p>
           </div>
         </div>
         <a href="../index.html" className="text-xs font-medium text-kegel-primary hover:underline shrink-0">
@@ -83,7 +94,9 @@ export default function App() {
                     progress01={
                       view.phase === 'PREP' ? (3 - view.remaining) / 3 : view.progress01
                     }
-                    holdPhase={view.phase === 'HOLD' || view.phase === 'PREP' || (view.phase === 'DONE' && view.isHolding)}
+                    holdPhase={
+                      view.phase === 'HOLD' || view.phase === 'PREP' || (view.phase === 'DONE' && view.isHolding)
+                    }
                   />
                 )}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-2">
@@ -106,9 +119,9 @@ export default function App() {
                     {view.phase === 'RELAX' && view.remaining}
                     {view.phase === 'DONE' && '✓'}
                   </p>
-                  {running && (
-                    <p className="mt-2 text-sm font-semibold text-kegel-secondary">
-                      Rep {view.repDisplay} / {view.totalReps}
+                  {running && view.subStep > 0 && (
+                    <p className="mt-2 text-center text-sm font-semibold text-kegel-secondary">
+                      Rep {view.repDisplay} / {view.totalReps} · {view.subPhase === 'hold' ? 'Squeeze' : 'Rest'}
                     </p>
                   )}
                 </div>
@@ -147,6 +160,15 @@ export default function App() {
                   </div>
                 )}
 
+                {view.phase === 'DONE' && (
+                  <button
+                    type="button"
+                    onClick={() => onLog({ goToProgress: true })}
+                    className="w-full py-4 rounded-2xl bg-kegel-secondary text-white font-headline text-lg font-bold shadow-md hover:opacity-90"
+                  >
+                    Log this session to progress
+                  </button>
+                )}
                 {!running && (view.phase === 'READY' || view.phase === 'DONE') && (
                   <button
                     type="button"
@@ -224,14 +246,16 @@ export default function App() {
             </div>
             <button
               type="button"
-              onClick={onLog}
+              onClick={() => onLog()}
               className="w-full py-3 rounded-2xl bg-kegel-secondary text-white font-headline font-semibold"
             >
               Log completed session
             </button>
-            <p className="text-xs text-kegel-muted text-center">
-              Same keys as the classic app: <code className="bg-kegel-surface px-1 rounded">todayCount</code>,{' '}
+            <p className="text-xs text-kegel-muted text-center leading-relaxed">
+              Storage is compatible with the classic app (<code className="bg-kegel-surface px-1 rounded">todayCount</code>,{' '}
               <code className="bg-kegel-surface px-1 rounded">streak</code>, <code className="bg-kegel-surface px-1 rounded">lastDate</code>
+              ). This build also uses <code className="bg-kegel-surface px-1 rounded">kegel_sessionDay</code> so “today” resets on a new
+              calendar day.
             </p>
           </div>
         )}

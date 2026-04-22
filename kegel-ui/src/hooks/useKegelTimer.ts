@@ -14,13 +14,18 @@ export interface Routine {
 export interface KegelTimerView {
   phase: PhaseLabel
   remaining: number
+  /** 1..totalReps (same as legacy “rep round”) */
   repDisplay: number
   totalReps: number
+  /** 1 = first hold, 2 = first rest, 3 = second hold, … (advances every hold/rest) */
+  subStep: number
+  subTotal: number
   instruction: string
-  /** Remaining time fraction: 0 = full, 1 = end (depleted) for ring */
+  /** 0..1 within the current sub-phase (smooth) */
   progress01: number
   blinkLastThree: boolean
   isHolding: boolean
+  subPhase: 'hold' | 'relax' | 'prep' | 'idle'
 }
 
 const idle: KegelTimerView = {
@@ -28,31 +33,40 @@ const idle: KegelTimerView = {
   remaining: 0,
   repDisplay: 0,
   totalReps: 0,
+  subStep: 0,
+  subTotal: 0,
   instruction: 'Select a routine, then start.',
   progress01: 0,
   blinkLastThree: false,
   isHolding: true,
+  subPhase: 'idle',
 }
 
 function paintExercise(params: {
   isHolding: boolean
-  count: number
   phaseDuration: number
-  phaseSeconds: number
+  elapsed: number
+  subStep: number
   r: Routine
 }): KegelTimerView {
-  const { isHolding, count, phaseDuration, phaseSeconds, r } = params
-  const rem = Math.max(0, phaseDuration - phaseSeconds)
-  const frac = phaseDuration > 0 ? phaseSeconds / phaseDuration : 0
+  const { isHolding, phaseDuration, elapsed, subStep, r } = params
+  const t = Math.max(0, Math.min(phaseDuration, elapsed))
+  const remF = Math.max(0, phaseDuration - t)
+  const remaining = Math.max(0, Math.ceil(remF - 1e-9))
+  const progress01 = phaseDuration > 0 ? t / phaseDuration : 0
+  const subTotal = 2 * r.reps
   return {
     phase: isHolding ? 'HOLD' : 'RELAX',
-    remaining: rem,
-    repDisplay: count + 1,
+    remaining,
+    repDisplay: Math.min(r.reps, Math.max(1, Math.ceil(subStep / 2))),
     totalReps: r.reps,
+    subStep,
+    subTotal,
     instruction: isHolding ? 'Contract your pelvic floor muscles' : 'Relax your muscles',
-    progress01: Math.min(1, frac),
-    blinkLastThree: rem <= 3 && rem > 0,
+    progress01: Math.min(1, progress01),
+    blinkLastThree: remaining > 0 && remaining <= 3,
     isHolding,
+    subPhase: isHolding ? 'hold' : 'relax',
   }
 }
 
@@ -61,38 +75,40 @@ const doneView = (r: Routine): KegelTimerView => ({
   remaining: 0,
   repDisplay: r.reps,
   totalReps: r.reps,
+  subStep: 2 * r.reps,
+  subTotal: 2 * r.reps,
   instruction: 'Well done! Session complete.',
   progress01: 1,
   blinkLastThree: false,
   isHolding: true,
+  subPhase: 'idle',
 })
 
-/**
- * Port of `goliathuy.github.io/script.js` `startKegelExercise` + `runExerciseRoutine`.
- */
 export function useKegelTimer() {
   const [view, setView] = useState<KegelTimerView>(idle)
-  const mainIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const prepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const mainRafRef = useRef<number | null>(null)
+  const prepRafRef = useRef<number | null>(null)
+  const loopStopRef = useRef<() => void>(() => {})
 
   const clearMain = useCallback(() => {
-    if (mainIntervalRef.current) {
-      clearInterval(mainIntervalRef.current)
-      mainIntervalRef.current = null
+    loopStopRef.current()
+    if (mainRafRef.current != null) {
+      cancelAnimationFrame(mainRafRef.current)
+      mainRafRef.current = null
     }
   }, [])
 
-  const clearPrep = useCallback(() => {
-    if (prepIntervalRef.current) {
-      clearInterval(prepIntervalRef.current)
-      prepIntervalRef.current = null
+  const clearPrepRaf = useCallback(() => {
+    if (prepRafRef.current != null) {
+      cancelAnimationFrame(prepRafRef.current)
+      prepRafRef.current = null
     }
   }, [])
 
   const clearAll = useCallback(() => {
     clearMain()
-    clearPrep()
-  }, [clearMain, clearPrep])
+    clearPrepRaf()
+  }, [clearMain, clearPrepRaf])
 
   const stop = useCallback(() => {
     clearAll()
@@ -103,42 +119,50 @@ export function useKegelTimer() {
     (r: Routine, audioEnabled: boolean, hapticEnabled: boolean) => {
       clearAll()
 
-      let prepTime = 3
+      const prepStart = performance.now()
       setView({
         phase: 'PREP',
         remaining: 3,
         repDisplay: 1,
         totalReps: r.reps,
+        subStep: 0,
+        subTotal: 2 * r.reps,
         instruction: 'Get ready...',
         progress01: 0,
         blinkLastThree: false,
         isHolding: true,
+        subPhase: 'prep',
       })
       playPhaseSound(true, audioEnabled)
       triggerVibration(100, hapticEnabled)
 
-      prepIntervalRef.current = setInterval(() => {
-        prepTime -= 1
-        if (prepTime > 0) {
-          setView({
-            phase: 'PREP',
-            remaining: prepTime,
-            repDisplay: 1,
-            totalReps: r.reps,
-            instruction: 'Get ready...',
-            progress01: (3 - prepTime) / 3,
-            blinkLastThree: false,
-            isHolding: true,
-          })
-          playPhaseSound(true, audioEnabled)
-          triggerVibration(100, hapticEnabled)
-        } else {
-          clearPrep()
-          runMainLoop(r, audioEnabled, hapticEnabled, setView, mainIntervalRef)
+      const tickPrep = () => {
+        const e = (performance.now() - prepStart) / 1000
+        if (e >= 3) {
+          clearPrepRaf()
+          runMainLoop(r, audioEnabled, hapticEnabled, setView, mainRafRef, loopStopRef)
+          return
         }
-      }, 1000)
+        const rem = Math.max(0, Math.ceil(3 - e - 1e-9))
+        const pr = Math.min(1, e / 3)
+        setView({
+          phase: 'PREP',
+          remaining: rem,
+          repDisplay: 1,
+          totalReps: r.reps,
+          subStep: 0,
+          subTotal: 2 * r.reps,
+          instruction: 'Get ready...',
+          progress01: pr,
+          blinkLastThree: false,
+          isHolding: true,
+          subPhase: 'prep',
+        })
+        prepRafRef.current = requestAnimationFrame(tickPrep)
+      }
+      prepRafRef.current = requestAnimationFrame(tickPrep)
     },
-    [clearAll, clearPrep]
+    [clearAll, clearPrepRaf]
   )
 
   useEffect(() => () => clearAll(), [clearAll])
@@ -151,52 +175,47 @@ function runMainLoop(
   audioEnabled: boolean,
   hapticEnabled: boolean,
   setView: React.Dispatch<React.SetStateAction<KegelTimerView>>,
-  mainIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>
+  mainRafRef: React.MutableRefObject<number | null>,
+  loopStopRef: React.MutableRefObject<() => void>
 ) {
-  let phaseSeconds = 0
-  let phaseDuration = r.holdTime
   let isHolding = true
   let count = 0
+  let phaseDuration = r.holdTime
+  let segmentStart = performance.now()
+  /** 1 = first hold, 2 = first rest, 3 = second hold, … */
+  let subStep = 1
+
+  let stopped = false
+  const stopLoop = () => {
+    stopped = true
+  }
+  loopStopRef.current = stopLoop
 
   const tick = () => {
-    setView(
-      paintExercise({
-        isHolding,
-        count,
-        phaseDuration,
-        phaseSeconds,
-        r,
-      })
-    )
-  }
+    if (stopped) return
+    const now = performance.now()
+    let tInPhase = (now - segmentStart) / 1000
+    let guard = 0
 
-  tick()
-
-  mainIntervalRef.current = setInterval(() => {
-    phaseSeconds += 1
-    setView(
-      paintExercise({
-        isHolding,
-        count,
-        phaseDuration,
-        phaseSeconds,
-        r,
-      })
-    )
-
-    if (phaseSeconds >= phaseDuration) {
-      phaseSeconds = 0
+    while (tInPhase >= phaseDuration && guard < 32) {
+      guard += 1
+      const prevDur = phaseDuration
       isHolding = !isHolding
-      playPhaseSound(isHolding, audioEnabled)
-      triggerVibration(isHolding ? 200 : 100, hapticEnabled)
+      subStep += 1
+      if (guard === 1) {
+        playPhaseSound(isHolding, audioEnabled)
+        triggerVibration(isHolding ? 200 : 100, hapticEnabled)
+      }
+      segmentStart += prevDur * 1000
+      tInPhase = (now - segmentStart) / 1000
 
       if (isHolding) {
         count += 1
         phaseDuration = r.holdTime
         if (count >= r.reps) {
-          if (mainIntervalRef.current) {
-            clearInterval(mainIntervalRef.current)
-            mainIntervalRef.current = null
+          if (mainRafRef.current != null) {
+            cancelAnimationFrame(mainRafRef.current)
+            mainRafRef.current = null
           }
           setView(doneView(r))
           triggerVibration(300, hapticEnabled)
@@ -205,15 +224,20 @@ function runMainLoop(
       } else {
         phaseDuration = r.relaxTime
       }
-      setView(
-        paintExercise({
-          isHolding,
-          count,
-          phaseDuration,
-          phaseSeconds: 0,
-          r,
-        })
-      )
     }
-  }, 1000)
+
+    setView(
+      paintExercise({
+        isHolding,
+        phaseDuration,
+        elapsed: tInPhase,
+        subStep,
+        r,
+      })
+    )
+    mainRafRef.current = requestAnimationFrame(tick)
+  }
+
+  segmentStart = performance.now()
+  mainRafRef.current = requestAnimationFrame(tick)
 }
