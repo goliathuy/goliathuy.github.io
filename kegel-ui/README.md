@@ -15,6 +15,16 @@ Part of the `goliathuy.github.io` migration. Production build is copied to `/keg
 
 `base` is set to `/kegel/` in `vite.config.ts`. There is **no** service worker in `main.tsx` (v1).
 
+## WSL + Windows and `node_modules`
+
+The repo path is the same files whether you open `C:\…` or `/mnt/c/…`, but **`npm install` is per OS**: Rollup (and similar tools) pull **native** optional binaries for the current platform. A Linux install does not add Windows `.node` addons, and vice versa.
+
+`package.json` uses an **`overrides`** entry so **`rollup` resolves to `@rollup/wasm-node`** everywhere (WSL, Windows, CI). It is a bit slower than native Rollup but avoids missing-binary failures when you mix shells or share one tree on the drive.
+
+After pulling lockfile changes, run **`npm ci`** (or `npm install`) in **`kegel-ui/`** from the environment you use for **`git push`** so `node_modules` matches the lockfile. If **`rm -rf node_modules`** errors on `/mnt/c/` in WSL (I/O on `.node` files), delete **`kegel-ui\node_modules`** from Windows Explorer or run **`npm ci`** in PowerShell from that folder.
+
+If **`npm ci`** on Windows fails with **`EPERM`** / **`unlink`** on a path under **`node_modules\`** (often a **`.node`** file under **`@tailwindcss`** or similar): something still has the binary open. Quit **Node**-based processes in this repo (stop **Vite** / **`npm run dev`**, test runners, any terminal **`node`** still running), **close Cursor/VS Code** (or the window with this folder), **close WSL** sessions that have touched **`/mnt/c/.../kegel-ui`**, then retry. If it persists, use **Task Manager** to end stray **`Node.js`** tasks, or reboot, then **delete the whole `kegel-ui\node_modules` folder in Explorer** and run **`npm ci`** again. Temporarily pausing real-time **antivirus** for that path also helps on some machines.
+
 ## Usage (traffic) and link previews (optional)
 
 - **Link previews vs traffic:** `VITE_KEGEL_OG_IMAGE` only sets **Open Graph** metadata for when someone pastes a `/kegel/` link; it does **not** provide metrics. **Visit counts** use something like the **Cloudflare Web Analytics** beacon (`VITE_CF_WEB_ANALYTICS_TOKEN`) on the real pages.
