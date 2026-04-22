@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: "Lexend", system-ui, sans-serif;
+
+  --color-kegel-surface: #f7f5ff;
+  --color-kegel-on: #232c51;
+  --color-kegel-muted: #515981;
+  --color-kegel-primary: #0058bb;
+  --color-kegel-primary-dim: #004ca4;
+  --color-kegel-secondary: #00675f;
+  --color-kegel-border: #dde1ff;
+  --color-kegel-white: #ffffff;
+  --color-kegel-error: #c62828;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  @apply bg-kegel-surface text-kegel-on antialiased font-sans;
+}
+
+/* Squeeze only: full → tight. No in-animation “release”; the next loop snaps back to full (when duration resets). */
+@keyframes kegel-squeeze {
+  0% {
+    transform: scale(1, 1) translateY(0);
+  }
+  12% {
+    transform: scale(0.96, 0.96) translateY(-0.6px);
+  }
+  18% {
+    transform: scale(0.97, 0.95) translateY(0.4px);
+  }
+  28% {
+    transform: scale(0.90, 0.92) translateY(0.42px);
+  }
+  44% {
+    transform: scale(0.87, 0.84) translateY(-0.35px);
+  }
+  58% {
+    transform: scale(0.82, 0.84) translateY(-0.35px);
+  }
+  92%,
+  100% {
+    transform: scale(0.8, 0.8) translateY(0.5px);
+  }
+}
+
+.text-squeeze-animate {
+  animation-name: kegel-squeeze;
+  animation-duration: 1.25s;
+  /* Ease into the tightest point; no easing “out” to full size within one cycle */
+  animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  animation-iteration-count: infinite;
+  transform-origin: center center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-squeeze-animate {
+    animation: none;
+  }
+
+  .ring-glow-prep {
+    animation: none;
+    filter: blur(16px);
+    transform: translate(-50%, -50%) scale(calc(var(--ring-glow-base) * var(--prep-glow-scale, 1)));
+  }
+
+  .ring-glow-prep,
+  .ring-glow-workout {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Shared halo diameter: prep and workout use the same base scale so crossfade is size-continuous */
+@keyframes prep-glow-breathe {
+  0%,
+  100% {
+    filter: blur(12px);
+    box-shadow:
+      0 0 36px rgba(0, 88, 187, 0.2),
+      0 0 72px rgba(0, 88, 187, 0.1);
+  }
+  50% {
+    filter: blur(19px);
+    box-shadow:
+      0 0 48px rgba(0, 88, 187, 0.26),
+      0 0 92px rgba(0, 88, 187, 0.12);
+  }
+}
+
+/* Real DOM layers (not ::before/::after) so blue ↔ green can crossfade without a hard swap */
+.ring-glow-host {
+  position: relative;
+  /* Slightly inset vs the timer SVG so blur/scale doesn’t read larger than the stroke ring. */
+  --ring-glow-base: 0.96;
+}
+
+.ring-glow-host > .ring-stack {
+  position: relative;
+  z-index: 1;
+}
+
+/* Inner hub: blocks wide glow under the timer (stroke inner ⌀304 / 360, r=160−8). */
+.ring-inner-occluder {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  width: 84.44%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-kegel-white);
+  pointer-events: none;
+}
+
+.ring-glow-layer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* Match timer host width (100% of card, max 22rem) — avoid 100vw so scaled blur isn’t clipped at screen edge. */
+  width: 100%;
+  max-width: 22rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  transform-origin: center center;
+  transition: opacity 0.65s ease-in-out;
+}
+
+.ring-glow-prep {
+  transform: translate(-50%, -50%) scale(calc(var(--ring-glow-base) * var(--prep-glow-scale, 1)));
+  /* Opacity only: animating transform here lagged behind JS and fought breathe keyframes → “ring from the edge”. */
+  transition: opacity 0.65s ease-in-out;
+  will-change: filter;
+  /* Hub covered by .ring-inner-occluder — gradient can stay wide on the band. */
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0%,
+    transparent 52%,
+    rgba(0, 88, 187, 0.14) 62%,
+    rgba(0, 88, 187, 0.3) 74%,
+    rgba(0, 88, 187, 0.22) 86%,
+    rgba(0, 88, 187, 0.07) 95%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 36px rgba(0, 88, 187, 0.2),
+    0 0 72px rgba(0, 88, 187, 0.1);
+  animation: prep-glow-breathe 2.2s ease-in-out infinite;
+}
+
+/* Green: base × (handoff boost × squeeze inner). Handoff matches prep peak in last second. */
+.ring-glow-workout {
+  transform: translate(-50%, -50%) scale(calc(var(--ring-glow-base) * var(--workout-glow-scale, 1)));
+  transition:
+    opacity 0.65s ease-in-out,
+    transform 0.05s linear;
+  will-change: transform, opacity;
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0%,
+    transparent 50%,
+    rgba(90, 210, 180, 0.36) 62%,
+    rgba(72, 168, 148, 0.5) 74%,
+    rgba(0, 120, 108, 0.36) 86%,
+    rgba(0, 103, 95, 0.12) 94%,
+    transparent 100%
+  );
+  filter: blur(11px);
+  box-shadow:
+    0 0 40px rgba(72, 168, 148, 0.32),
+    0 0 84px rgba(0, 103, 95, 0.12);
+}

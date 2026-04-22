@@ -1,0 +1,68 @@
+# Builds kegel-ui (Vite) and commits static output to kegel/ for GitHub Pages.
+# Does not run on pushes that only change kegel/ (avoids bot commit loops).
+name: Kegel UI build
+
+on:
+  push:
+    paths:
+      - 'kegel-ui/**'
+      - '.github/workflows/kegel-build.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: kegel-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Caches the npm download cache (not node_modules) keyed on kegel-ui/package-lock.json
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: kegel-ui/package-lock.json
+
+      - name: Install, test, and build
+        env:
+          # Optional: set in repo → Settings → Secrets and variables; see kegel-ui/.env.example
+          VITE_CF_WEB_ANALYTICS_TOKEN: ${{ vars.VITE_CF_WEB_ANALYTICS_TOKEN }}
+          VITE_KEGEL_OG_IMAGE: ${{ vars.VITE_KEGEL_OG_IMAGE }}
+        run: |
+          set -e
+          cd kegel-ui
+          npm ci
+          npm test
+          npm run build
+
+      - name: Sync dist to kegel/
+        run: |
+          set -e
+          rm -rf kegel/assets
+          # Remove prior root build artifacts; keep e.g. kegel/README.md
+          for f in kegel/index.html kegel/vite.svg; do
+            if [ -f "$f" ]; then rm -f "$f"; fi
+          done
+          cp -r kegel-ui/dist/. kegel/
+
+      - name: Commit and push if changed
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kegel/
+          if git diff --staged --quiet; then
+            echo "No changes under kegel/ — build matches committed output."
+            exit 0
+          fi
+          git commit -m "chore(kegel): update static build from kegel-ui [skip ci]"
+          git push

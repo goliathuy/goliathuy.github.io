@@ -31,29 +31,68 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   /**
-   * SCROLL REVEAL / OBSERVER
-   * Adding a fade-in effect to sections as they enter the viewport
+   * SCROLL REVEAL — keep sections visible if IO is late/missing (common on mobile WebKit).
    */
-  const observerOptions = {
-    threshold: 0.1
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  const reveal = (el) => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
   };
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          reveal(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0, rootMargin: '0px 0px 5% 0px' }
+  );
 
-  // Apply to major sections
   const sections = document.querySelectorAll('section, .stats-bar');
-  sections.forEach(section => {
+  sections.forEach((section) => {
     section.style.opacity = '0';
     section.style.transform = 'translateY(20px)';
-    section.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+    section.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
     observer.observe(section);
   });
+
+  const revealInViewNow = () => {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    sections.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.height > 0 && r.top < vh && r.bottom > 0) {
+        reveal(el);
+        try {
+          observer.unobserve(el);
+        } catch (_e) {
+          /* ignore */
+        }
+      }
+    });
+  };
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(revealInViewNow);
+  });
+  setTimeout(revealInViewNow, 50);
+  setTimeout(revealInViewNow, 300);
+
+  setTimeout(() => {
+    sections.forEach((el) => {
+      if (getComputedStyle(el).opacity === '0') {
+        reveal(el);
+        try {
+          observer.unobserve(el);
+        } catch (_e) {
+          /* ignore */
+        }
+      }
+    });
+  }, 2000);
 });

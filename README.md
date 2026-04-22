@@ -1,113 +1,84 @@
 
-# Kegel Timer & Developer Hub — Dual-Purpose GitHub Pages Site
+# Kegel Timer & Developer Hub — GitHub Pages Site
 
->This project is a dual-purpose GitHub Pages site combining a professional developer hub with a Progressive Web App (PWA) Kegel exercise timer. Built as an exploration of AI-assisted development with robust defensive coding and custom browser-based testing.
+This repo hosts a professional developer portfolio (`index.html`) and the **Kegel exercise timer**. The **primary timer app** is the Vite + React build under **`/kegel/`** (source: `kegel-ui/`). The legacy static page **`kegel-timer.html`** remains as a bridge: it shows a “moved” notice and redirects to `/kegel/`.
 
 ---
 
-## 📁 Project Structure
+## Primary Kegel app (`/kegel/`)
+
+- **Live URL (example):** `https://goliathuy.github.io/kegel/` (exact path depends on your GitHub Pages setup).
+- **Source:** `kegel-ui/` — run `npm ci && npm run build`; output goes to `kegel/` (or let CI update `kegel/` on push).
+- **Tests:** `cd kegel-ui && npm test` (Vitest + Testing Library on `useKegelTimer`, etc.).
+- **Privacy / analytics:** Optional **Cloudflare Web Analytics** (public beacon token in build via `VITE_CF_WEB_ANALYTICS_TOKEN`). Documented in `kegel-ui/README.md` and `kegel-ui/.env.example`.
+
+### Migration from `kegel-timer.html`
+
+If you bookmarked the old page, open **`/kegel/`** instead. Storage uses the **same origin** on GitHub Pages, so `localStorage` keys (`todayCount`, `streak`, `lastDate`, etc.) carry over. The React app unregisters any legacy **service worker** on load so cached assets do not block the new bundle.
+
+More detail: [docs/kegel-migration-plan.md](docs/kegel-migration-plan.md).
+
+---
+
+## Project structure (high level)
 
 ```
 goliathuy.github.io/
-├── index.html                    # Developer portfolio hub
-├── kegel-timer.html              # PWA timer application
-├── hub.js                        # Hub functionality & navigation
-├── script.js                     # Timer logic & PWA features
-├── styles.css                    # Shared styling for both apps
-├── manifest.json                 # PWA manifest configuration
-├── sw.js                         # Service Worker for offline
-├── start-timer.bat               # Development server launcher
-├── debug-tests.bat               # Test debugging utilities
-├── .vscode/
-│   ├── launch.json               # VS Code debugging config
-│   └── tasks.json                # Development tasks
-├── icons/
-│   ├── icon-192.png              # PWA icon (small)
-│   ├── icon-512.png              # PWA icon (large)
-│   └── generate-icons.html       # Icon generation tool
-├── tests/
-│   ├── test-framework.js         # Custom testing framework
-│   ├── test-runner.html          # Browser test runner
-│   ├── unit/
-│   │   ├── timer-tests.js        # Timer functionality tests
-│   │   ├── dom-manipulation-tests.js # DOM operation tests
-│   │   └── debug-tests.js        # Debug panel tests
-│   └── integration/
-│       └── user-flow-tests.js    # End-to-end user flows
-└── docs/
-    ├── project-overview.html     # Visual documentation
-    ├── explanations/
-    │   └── project-overview.md   # Technical architecture
-    ├── implementation/
-    │   └── timer-system.md       # Implementation guide
-    ├── tests/
-    │   └── testing-framework.md  # Testing documentation
-    └── api/
-        └── core-functions.md     # API reference
+├── index.html                 # Developer portfolio hub
+├── kegel/                     # Built Kegel app (Vite output; commit or CI-generated)
+├── kegel-ui/                  # Vite + React + TypeScript source for /kegel/
+├── kegel-timer.html           # Legacy static timer → redirects to kegel/
+├── script.js                  # Legacy timer logic (still used by kegel-timer.html only)
+├── sw.js                      # Legacy service worker (legacy page no longer registers it)
+├── styles.css, manifest.json  # Shared / legacy assets
+├── tests/                     # Legacy browser test runner (deprecated for Kegel — use kegel-ui tests)
+└── docs/                      # Architecture notes; kegel-migration-plan.md
 ```
 
 ---
 
-## 🏠 Developer Hub
+## Developer hub (portfolio)
 
-- Professional introduction, experience timeline, and skills showcase
-- Panel-based navigation system
-- Direct link to the Kegel Timer app
+- Introduction, experience, projects, capabilities.
+- “Launch app” points to **`kegel/`**.
 
-## ⏱️ Kegel Timer Application
+---
 
-- Visual timer with hold/relax phases
-- Multiple pre-defined and custom exercise routines
-- Progress tracking and streaks (localStorage)
-- Audio and haptic feedback (Web Audio API, Vibration API)
-- PWA: Offline support, installable on mobile
-- Debug panel for localStorage inspection
+## Legacy static timer & tests
 
-## 🧪 Testing Framework
+- **`kegel-timer.html` + `script.js`:** older single-page flow; not the recommended entry. Prefer **`/kegel/`**.
+- **`tests/test-runner.html`:** custom browser-based runner for the legacy stack. **Not** the source of truth for the React app; kept for reference. New work should use **`kegel-ui`** + Vitest.
 
-- Custom browser-based test runner (`test-framework.js`)
-- Unit tests for timer, DOM, and debug panel
-- Integration tests for user flows
-- Run all tests via `tests/test-runner.html`
+---
 
-## 🚀 Local Development & Workflows
+## Local development
 
-**Recommended:**
-- Use `start-timer.bat` to launch a Python HTTP server at `localhost:8000` for local development
-- Use VS Code launch configurations for Chrome debugging
+**Kegel (React):**
 
-**Testing:**
-- Open `tests/test-runner.html` in your browser
+```bash
+cd kegel-ui
+npm ci
+npm run dev:kegel
+# open the URL Vite prints; use /kegel/ base
+```
 
-**VS Code Tasks:**
-- Start Timer Server: Launches Python development server
-- Start Test Server: Alternative HTTP server for testing
+**Legacy page (optional):**
 
-## 📚 Documentation
+- Use `start-timer.bat` or a static server at the repo root so `kegel-timer.html` resolves.
 
-- [Project Overview (HTML)](docs/project-overview.html)
-- [API Reference](docs/api/core-functions.md)
-- [Testing Documentation](docs/tests/testing-framework.md)
-- [Implementation Guide](docs/implementation/timer-system.md)
+**VS Code:** see `.vscode/` for launch and tasks.
 
-## 💡 Key Patterns & Best Practices
+---
 
-- Defensive coding: Always check for element existence before DOM operations
-- Panel-based UI: `hideAllPanels()` then show target panel
-- LocalStorage: Fallback values and string storage
-- PWA: Service worker cache versioning, manifest updates
-- Custom test framework: Mocks for localStorage and timers
+## Documentation
 
-## 🗺️ Mermaid Diagrams & Visual Docs
+- [Kegel migration plan](docs/kegel-migration-plan.md) — scope, cutover, storage, CI
+- [Project overview (HTML)](docs/project-overview.html)
+- [API / service worker (legacy)](docs/api/core-functions.md)
+- [Timer implementation (legacy)](docs/implementation/timer-system.md)
 
-See [project-overview.html](docs/project-overview.html) for interactive architecture and flow diagrams using Mermaid.js.
-
-## 🔮 Future Developments
-
-- Save progress/history to local file and allow upload
-- Expand project collection and experience sections
-- Add more advanced test cases and visualizations
+---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE).

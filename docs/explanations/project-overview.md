@@ -2,6 +2,8 @@
 
 > **Technical explanation of the Kegel Timer & Developer Hub project architecture**
 
+**Update (2026):** The **primary** Kegel app is **`/kegel/`** (Vite + React in `kegel-ui/`, output in `kegel/`). The legacy **PWA** pages below describe the older **`kegel-timer.html` + `script.js`** stack. See [kegel-migration-plan.md](../kegel-migration-plan.md).
+
 ## 📋 Explanation Request
 
 Please provide a technical explanation for the following code/feature/issue:

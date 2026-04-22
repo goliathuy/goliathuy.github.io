@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# Build Kegel UI before a push; fails the push if the build fails.
+# Skip: SKIP_KEGEL_BUILD=1 git push
+# or:  git push --no-verify
+if [ -n "$SKIP_KEGEL_BUILD" ] || [ -n "$HUSKY_SKIP" ]; then
+  echo "pre-push: skipping Kegel build (SKIP_KEGEL_BUILD or HUSKY_SKIP is set)"
+  exit 0
+fi
+
+if [ -n "$CI" ]; then
+  echo "pre-push: skipping Kegel build (CI is set — use GitHub Actions for the build there)"
+  exit 0
+fi
+
+set -e
+ROOT=$(git rev-parse --show-toplevel)
+cd "$ROOT/kegel-ui"
+if [ ! -d node_modules ]; then
+  echo "Kegel UI: no node_modules. From repo root run: (cd kegel-ui && npm ci)"
+  exit 1
+fi
+echo "Kegel UI: npm test (pre-push)…"
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*) npm.cmd test ;;
+  *) npm test ;;
+esac
+echo "Kegel UI: npm run build (pre-push)…"
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*) npm.cmd run build ;;
+  *) npm run build ;;
+esac
+echo "Kegel UI: test + build OK"
