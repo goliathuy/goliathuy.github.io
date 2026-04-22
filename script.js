@@ -98,6 +98,8 @@ console.log('[script.js] loaded');
     let isHolding = true;
     let count = 0;
     let totalReps = 0;
+    let prepTimer = null;
+    let progressIndicator = null;
 
     // Audio Context
     let audioContext;
@@ -194,15 +196,26 @@ console.log('[script.js] loaded');
 
     function stopExerciseTimer() {
         console.log('[script.js] stopExerciseTimer called');
+        const wasRunning = Boolean(timer || prepTimer || progressIndicator);
+        if (prepTimer) {
+            clearInterval(prepTimer);
+            prepTimer = null;
+        }
         if (timer) {
             clearInterval(timer);
+            timer = null; // Prevent double-clearing
+        }
+        if (progressIndicator) {
+            progressIndicator.remove();
+            progressIndicator = null;
+        }
+        if (wasRunning) {
             startBasicBtn.disabled = false;
             startLongBtn.disabled = false;
             startQuickBtn.disabled = false;
             customizeBtn.disabled = false;
             stopBtn.disabled = true;
             resetTimerUI();
-            timer = null; // Prevent double-clearing
         }
     }
 
@@ -223,7 +236,7 @@ console.log('[script.js] loaded');
         phaseLabel.classList.add('preparation');
         countdown.textContent = prepTime;
 
-        const prepTimer = setInterval(() => {
+        prepTimer = setInterval(() => {
             prepTime--;
             if (prepTime > 0) {
                 countdown.textContent = prepTime;
@@ -231,6 +244,7 @@ console.log('[script.js] loaded');
                 triggerVibration(100);
             } else {
                 clearInterval(prepTimer);
+                prepTimer = null;
                 phaseLabel.classList.remove('preparation');
                 runExerciseRoutine();
             }
@@ -254,7 +268,7 @@ console.log('[script.js] loaded');
             updateTimerDisplay();
 
             // Add progress indicator
-            const progressIndicator = document.createElement('div');
+            progressIndicator = document.createElement('div');
             progressIndicator.className = 'progress-indicator';
             instruction.parentNode.insertBefore(progressIndicator, instruction.nextSibling);
 
@@ -285,6 +299,7 @@ console.log('[script.js] loaded');
                             countdown.textContent = "✓";
                             phaseLabel.textContent = "DONE";
                             progressIndicator.remove();
+                            progressIndicator = null;
                             playPhaseSound(true);
                             triggerVibration(300);
                             setTimeout(() => {
