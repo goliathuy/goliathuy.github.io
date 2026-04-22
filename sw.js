@@ -4,15 +4,18 @@
  */
 
 // Cache name - update version when assets change significantly
-const CACHE_NAME = 'kegel-timer-v1';
+const CACHE_NAME = 'kegel-timer-v3';
 
 // Assets to cache for offline use
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './kegel-timer.html',
   './styles.css',
+  './kegel-timer.css',
   './script.js',
   './manifest.json',
+  './kegel-timer.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
