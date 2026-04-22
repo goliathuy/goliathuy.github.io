@@ -24,6 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Caches the npm download cache (not node_modules) keyed on kegel-ui/package-lock.json
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -32,6 +33,10 @@ jobs:
           cache-dependency-path: kegel-ui/package-lock.json
 
       - name: Install and build
+        env:
+          # Optional: set in repo → Settings → Secrets and variables; see kegel-ui/.env.example
+          VITE_CF_WEB_ANALYTICS_TOKEN: ${{ vars.VITE_CF_WEB_ANALYTICS_TOKEN }}
+          VITE_KEGEL_OG_IMAGE: ${{ vars.VITE_KEGEL_OG_IMAGE }}
         run: |
           set -e
           cd kegel-ui

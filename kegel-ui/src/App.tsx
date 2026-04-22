@@ -14,6 +14,14 @@ function TimerRing({ progress01, holdPhase }: { progress01: number; holdPhase: b
   const offset = C * (1 - Math.min(1, progress01))
   return (
     <svg className="w-[min(100vw-3rem,22rem)] h-[min(100vw-3rem,22rem)] -rotate-90" viewBox="0 0 360 360">
+      <circle
+        cx="180"
+        cy="180"
+        r="145"
+        fill={holdPhase ? 'var(--color-kegel-primary)' : 'var(--color-kegel-surface)'}
+        fillOpacity={holdPhase ? 0.18 : 0}
+        className="transition-[fill-opacity,fill] duration-300"
+      />
       <circle cx="180" cy="180" r="160" fill="none" stroke="var(--color-kegel-border)" strokeWidth="14" />
       <circle
         cx="180"
